@@ -8,7 +8,7 @@ import {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
-import { Connect4Move } from '../../types/CoveyTownSocket';
+// import { Connect4Move } from '../../types/CoveyTownSocket';
 import Connect4Game from './Connect4Game';
 
 describe('Connect4Game', () => {
