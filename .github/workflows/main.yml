@@ -29,16 +29,16 @@ jobs:
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
         run: cd townService; npm install && npm run prestart
       - name: Lint backend service
-        run: npm run lint
+        run: cd townService; npm run lint
       - name: Test backend service
-        run: npm test
+        run: cd townService; npm test
 
       - name: Build frontend components
         run: cd frontend; npm install && npm run prestart
       - name: Lint frontend components
-        run: npm run lint
+        run: cd frontend; npm run lint
       - name: Test frontend components
-        run: npm test
+        run: cd frontend; npm test
         
 #   deploy:
 #     if: github.ref == 'refs/heads/master'
