@@ -21,16 +21,25 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: Build and test backend service
+      - name: Build backend service
         env: # Pass the Twilio secrets into environmental variables for the backend tests to use
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_API_AUTH_TOKEN: ${{ secrets.TWILIO_API_AUTH_TOKEN }}
           TWILIO_API_KEY_SECRET: ${{ secrets.TWILIO_API_KEY_SECRET }}
           TWILIO_API_KEY_SID: ${{ secrets.TWILIO_API_KEY_SID }}
-        run: cd townService; npm install && npm run prestart && npm run lint && npm test
+        run: cd townService; npm install && npm run prestart
+      - name: Lint backend service
+        run: cd townService; npm run lint
+      - name: Test backend service
+        run: cd townService; npm test
 
-      - name: Build and test frontend components
-        run: cd frontend; npm install && npm run prestart && npm run lint && npm test
+      - name: Build frontend components
+        run: cd frontend; npm install && npm run prestart
+      - name: Lint frontend components
+        run: cd frontend; npm run lint
+      - name: Test frontend components
+        run: cd frontend; npm test
+        
 #   deploy:
 #     if: github.ref == 'refs/heads/master'
 #     needs: build-and-test
