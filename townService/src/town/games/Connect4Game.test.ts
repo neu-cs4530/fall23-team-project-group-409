@@ -38,11 +38,11 @@ describe('Connect4Game', () => {
       expect(() => game.join(player3)).toThrowError(GAME_FULL_MESSAGE);
     });
     describe('When the player can be added', () => {
-      it('makes the first player X and initializes the state with status WAITING_TO_START', () => {
+      it('makes the first player Yellow and initializes the state with status WAITING_TO_START', () => {
         const player = createPlayerForTesting();
         game.join(player);
-        expect(game.state.x).toEqual(player.id);
-        expect(game.state.o).toBeUndefined();
+        expect(game.state.yellow).toEqual(player.id);
+        expect(game.state.red).toBeUndefined();
         expect(game.state.moves).toHaveLength(0);
         expect(game.state.status).toEqual('WAITING_TO_START');
         expect(game.state.winner).toBeUndefined();
@@ -54,9 +54,9 @@ describe('Connect4Game', () => {
           game.join(player1);
           game.join(player2);
         });
-        it('makes the second player O', () => {
-          expect(game.state.x).toEqual(player1.id);
-          expect(game.state.o).toEqual(player2.id);
+        it('makes the second player Red', () => {
+          expect(game.state.yellow).toEqual(player1.id);
+          expect(game.state.red).toEqual(player2.id);
         });
         it('sets the game status to IN_PROGRESS', () => {
           expect(game.state.status).toEqual('IN_PROGRESS');
@@ -81,8 +81,8 @@ describe('Connect4Game', () => {
           const player2 = createPlayerForTesting();
           game.join(player1);
           game.join(player2);
-          expect(game.state.x).toEqual(player1.id);
-          expect(game.state.o).toEqual(player2.id);
+          expect(game.state.yellow).toEqual(player1.id);
+          expect(game.state.red).toEqual(player2.id);
 
           game.leave(player1);
 
@@ -90,16 +90,16 @@ describe('Connect4Game', () => {
           expect(game.state.winner).toEqual(player2.id);
           expect(game.state.moves).toHaveLength(0);
 
-          expect(game.state.x).toEqual(player1.id);
-          expect(game.state.o).toEqual(player2.id);
+          expect(game.state.yellow).toEqual(player1.id);
+          expect(game.state.red).toEqual(player2.id);
         });
         test('when o leaves', () => {
           const player1 = createPlayerForTesting();
           const player2 = createPlayerForTesting();
           game.join(player1);
           game.join(player2);
-          expect(game.state.x).toEqual(player1.id);
-          expect(game.state.o).toEqual(player2.id);
+          expect(game.state.yellow).toEqual(player1.id);
+          expect(game.state.red).toEqual(player2.id);
 
           game.leave(player2);
 
@@ -107,20 +107,20 @@ describe('Connect4Game', () => {
           expect(game.state.winner).toEqual(player1.id);
           expect(game.state.moves).toHaveLength(0);
 
-          expect(game.state.x).toEqual(player1.id);
-          expect(game.state.o).toEqual(player2.id);
+          expect(game.state.yellow).toEqual(player1.id);
+          expect(game.state.red).toEqual(player2.id);
         });
       });
       it('when the game is not in progress, it should set the game status to WAITING_TO_START and remove the player', () => {
         const player1 = createPlayerForTesting();
         game.join(player1);
-        expect(game.state.x).toEqual(player1.id);
-        expect(game.state.o).toBeUndefined();
+        expect(game.state.yellow).toEqual(player1.id);
+        expect(game.state.red).toBeUndefined();
         expect(game.state.status).toEqual('WAITING_TO_START');
         expect(game.state.winner).toBeUndefined();
         game.leave(player1);
-        expect(game.state.x).toBeUndefined();
-        expect(game.state.o).toBeUndefined();
+        expect(game.state.yellow).toBeUndefined();
+        expect(game.state.red).toBeUndefined();
         expect(game.state.status).toEqual('WAITING_TO_START');
         expect(game.state.winner).toBeUndefined();
       });
