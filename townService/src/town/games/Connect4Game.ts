@@ -35,7 +35,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     ];
     // Checks each row from the bottom up for emptyness, and place the lowest (latest) undefined row with the move
     for (const move of moves) {
-      for (let i = 5; i >= 0; i++) {
+      for (let i = 5; i >= 0; i--) {
         if (board[i][move.col] === '') {
           board[i][move.col] = move.gamePiece;
           break;
@@ -45,49 +45,87 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     return board;
   }
 
-  // IMPLEMENT THIS
   private _checkForGameEnding() {
     const board = this._board;
-    // A game ends when there are 4 in a row
-    // Check for 4 in a row or column
-    for (let i = 0; i < 3; i++) {
-      if (board[i][0] !== '' && board[i][0] === board[i][1] && board[i][0] === board[i][2]) {
-        this.state = {
-          ...this.state,
-          status: 'OVER',
-          winner: board[i][0] === 'X' ? this.state.x : this.state.o,
-        };
-        return;
+    // A game ends when there are 4 in a row, column, or diagonal
+
+    // lambda functions to check for each win condition
+    const cH = (r: number, c: number) =>
+      board[r][c] === board[r][c + 1] &&
+      board[r][c] === board[r][c + 2] &&
+      board[r][c] === board[r][c + 3];
+
+    const cV = (r: number, c: number) =>
+      board[r][c] === board[r + 1][c] &&
+      board[r][c] === board[r + 2][c] &&
+      board[r][c] === board[r + 3][c];
+
+    const cDL = (r: number, c: number) =>
+      board[r][c] === board[r + 1][c - 1] &&
+      board[r][c] === board[r + 2][c - 2] &&
+      board[r][c] === board[r + 3][c - 3];
+
+    const cDR = (r: number, c: number) =>
+      board[r][c] === board[r + 1][c + 1] &&
+      board[r][c] === board[r + 2][c + 2] &&
+      board[r][c] === board[r + 3][c + 3];
+
+    // create a 'checking matrix' which defines functions to be applied to each spot of the board to check for winner
+    // for example, spot (0,0) must be checked horizontally, vertically, and diagonally to the right
+    const checkMat = [
+      [
+        [cH, cV, cDR],
+        [cH, cV, cDR],
+        [cH, cV, cDR],
+        [cH, cV, cDR, cDL],
+        [cV, cDL],
+        [cV, cDL],
+        [cV, cDL],
+      ],
+      [
+        [cH, cV, cDR],
+        [cH, cV, cDR],
+        [cH, cV, cDR],
+        [cH, cV, cDR, cDL],
+        [cV, cDL],
+        [cV, cDL],
+        [cV, cDL],
+      ],
+      [
+        [cH, cV, cDR],
+        [cH, cV, cDR],
+        [cH, cV, cDR],
+        [cH, cV, cDR, cDL],
+        [cV, cDL],
+        [cV, cDL],
+        [cV, cDL],
+      ],
+      [[cH], [cH], [cH], [cH], [], [], []],
+      [[cH], [cH], [cH], [cH], [], [], []],
+      [[cH], [cH], [cH], [cH], [], [], []],
+    ];
+
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[0].length; j++) {
+        // get the calculations for each column
+        // if at least one is true, update the winner and return
+        let isWinner = false;
+        checkMat[i][j].forEach(fun => {
+          isWinner = isWinner || fun(i, j);
+        });
+        if (isWinner) {
+          this.state = {
+            ...this.state,
+            status: 'OVER',
+            winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
+          };
+          return;
+        }
       }
-      if (board[0][i] !== '' && board[0][i] === board[1][i] && board[0][i] === board[2][i]) {
-        this.state = {
-          ...this.state,
-          status: 'OVER',
-          winner: board[0][i] === 'X' ? this.state.x : this.state.o,
-        };
-        return;
-      }
     }
-    // Check for 3 in a diagonal
-    if (board[0][0] !== '' && board[0][0] === board[1][1] && board[0][0] === board[2][2]) {
-      this.state = {
-        ...this.state,
-        status: 'OVER',
-        winner: board[0][0] === 'X' ? this.state.x : this.state.o,
-      };
-      return;
-    }
-    // Check for 3 in the other diagonal
-    if (board[0][2] !== '' && board[0][2] === board[1][1] && board[0][2] === board[2][0]) {
-      this.state = {
-        ...this.state,
-        status: 'OVER',
-        winner: board[0][2] === 'X' ? this.state.x : this.state.o,
-      };
-      return;
-    }
+
     // Check for no more moves
-    if (this.state.moves.length === 9) {
+    if (this.state.moves.length === 6 * 7) {
       this.state = {
         ...this.state,
         status: 'OVER',
