@@ -22,23 +22,34 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     });
   }
 
+  // DONE
   private get _board() {
     const { moves } = this.state;
     const board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', ''],
     ];
+    // Checks each row from the bottom up for emptyness, and place the lowest (latest) undefined row with the move
     for (const move of moves) {
-      board[move.row][move.col] = move.gamePiece;
+      for (let i = 5; i >= 0; i++) {
+        if (board[i][move.col] === '') {
+          board[i][move.col] = move.gamePiece;
+          break;
+        }
+      }
     }
     return board;
   }
 
+  // IMPLEMENT THIS
   private _checkForGameEnding() {
     const board = this._board;
-    // A game ends when there are 3 in a row
-    // Check for 3 in a row or column
+    // A game ends when there are 4 in a row
+    // Check for 4 in a row or column
     for (let i = 0; i < 3; i++) {
       if (board[i][0] !== '' && board[i][0] === board[i][1] && board[i][0] === board[i][2]) {
         this.state = {
@@ -85,18 +96,23 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
   }
 
+  // IMPLEMENT
   private _validateMove(move: Connect4Move) {
     // A move is valid if the space is empty
+    let count = 0;
     for (const m of this.state.moves) {
-      if (m.col === move.col && m.row === move.row) {
-        throw new InvalidParametersError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
+      if (m.col === move.col) {
+        count++;
+        if (count === 6) {
+          throw new InvalidParametersError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
+        }
       }
     }
 
     // A move is only valid if it is the player's turn
-    if (move.gamePiece === 'X' && this.state.moves.length % 2 === 1) {
+    if (move.gamePiece === 'Yellow' && this.state.moves.length % 2 === 1) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece === 'O' && this.state.moves.length % 2 === 0) {
+    } else if (move.gamePiece === 'Red' && this.state.moves.length % 2 === 0) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
     }
     // A move is valid only if game is in progress
@@ -135,16 +151,16 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
    * @throws InvalidParametersError if the move is invalid
    */
   public applyMove(move: GameMove<Connect4Move>): void {
-    let gamePiece: 'X' | 'O';
-    if (move.playerID === this.state.x) {
-      gamePiece = 'X';
+    // DONE
+    let gamePiece: 'Yellow' | 'Red';
+    if (move.playerID === this.state.yellow) {
+      gamePiece = 'Yellow';
     } else {
-      gamePiece = 'O';
+      gamePiece = 'Red';
     }
     const cleanMove = {
       gamePiece,
       col: move.move.col,
-      row: move.move.row,
     };
     this._validateMove(cleanMove);
     this._applyMove(cleanMove);
@@ -160,23 +176,23 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
    *  or the game is full (GAME_FULL_MESSAGE)
    */
   protected _join(player: Player): void {
-    if (this.state.x === player.id || this.state.o === player.id) {
+    if (this.state.yellow === player.id || this.state.red === player.id) {
       throw new InvalidParametersError(PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
-    if (!this.state.x) {
+    if (!this.state.yellow) {
       this.state = {
         ...this.state,
-        x: player.id,
+        yellow: player.id,
       };
-    } else if (!this.state.o) {
+    } else if (!this.state.red) {
       this.state = {
         ...this.state,
-        o: player.id,
+        red: player.id,
       };
     } else {
       throw new InvalidParametersError(GAME_FULL_MESSAGE);
     }
-    if (this.state.x && this.state.o) {
+    if (this.state.yellow && this.state.red) {
       this.state = {
         ...this.state,
         status: 'IN_PROGRESS',
@@ -196,28 +212,28 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
    * @throws InvalidParametersError if the player is not in the game (PLAYER_NOT_IN_GAME_MESSAGE)
    */
   protected _leave(player: Player): void {
-    if (this.state.x !== player.id && this.state.o !== player.id) {
+    if (this.state.yellow !== player.id && this.state.red !== player.id) {
       throw new InvalidParametersError(PLAYER_NOT_IN_GAME_MESSAGE);
     }
     // Handles case where the game has not started yet
-    if (this.state.o === undefined) {
+    if (this.state.red === undefined) {
       this.state = {
         moves: [],
         status: 'WAITING_TO_START',
       };
       return;
     }
-    if (this.state.x === player.id) {
+    if (this.state.yellow === player.id) {
       this.state = {
         ...this.state,
         status: 'OVER',
-        winner: this.state.o,
+        winner: this.state.red,
       };
     } else {
       this.state = {
         ...this.state,
         status: 'OVER',
-        winner: this.state.x,
+        winner: this.state.yellow,
       };
     }
   }
