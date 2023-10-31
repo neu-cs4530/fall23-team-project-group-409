@@ -1,8 +1,6 @@
 name: ci
 on: # Controls when the action will run.
   # Triggers the workflow on push or pull request events but only for the master branch. If you want to trigger the action on other branches, add here
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -12,6 +10,7 @@ on: # Controls when the action will run.
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-and-test: #
+    name: cicd
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
 
