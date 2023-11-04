@@ -161,9 +161,8 @@ describe('Connect4Game', () => {
               gameID: game.id,
               playerID: player2.id,
               move: {
-                row: 0,
                 col: 0,
-                gamePiece: 'X',
+                gamePiece: 'Red',
               },
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
@@ -172,9 +171,8 @@ describe('Connect4Game', () => {
               gameID: game.id,
               playerID: player1.id,
               move: {
-                row: 0,
                 col: 0,
-                gamePiece: 'O',
+                gamePiece: 'Yellow',
               },
             }),
           ).not.toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
@@ -185,9 +183,8 @@ describe('Connect4Game', () => {
               gameID: game.id,
               playerID: player2.id,
               move: {
-                row: 0,
                 col: 0,
-                gamePiece: 'X',
+                gamePiece: 'Red',
               },
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
@@ -195,9 +192,8 @@ describe('Connect4Game', () => {
             gameID: game.id,
             playerID: player1.id,
             move: {
-              row: 0,
               col: 0,
-              gamePiece: 'X',
+              gamePiece: 'Yellow',
             },
           });
           expect(() =>
@@ -205,9 +201,8 @@ describe('Connect4Game', () => {
               gameID: game.id,
               playerID: player1.id,
               move: {
-                row: 0,
                 col: 1,
-                gamePiece: 'X',
+                gamePiece: 'Yellow',
               },
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
@@ -233,84 +228,96 @@ describe('Connect4Game', () => {
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
         });
-        it('should throw an error if the move is on an occupied space', () => {
-          const row = 0;
-          const col = 0;
+        it('should throw an error if the move is on a full column', () => {
+          // Need to write test where you completely fill up single column
           game.applyMove({
             gameID: game.id,
             playerID: player1.id,
             move: {
-              row,
-              col,
-              gamePiece: 'X',
+              col: 0,
+              gamePiece: 'Yellow',
+            },
+          });
+          game.applyMove({
+            gameID: game.id,
+            playerID: player2.id,
+            move: {
+              col: 0,
+              gamePiece: 'Red',
+            },
+          });
+          game.applyMove({
+            gameID: game.id,
+            playerID: player1.id,
+            move: {
+              col: 0,
+              gamePiece: 'Yellow',
+            },
+          });
+          game.applyMove({
+            gameID: game.id,
+            playerID: player2.id,
+            move: {
+              col: 0,
+              gamePiece: 'Red',
+            },
+          });
+          game.applyMove({
+            gameID: game.id,
+            playerID: player1.id,
+            move: {
+              col: 0,
+              gamePiece: 'Yellow',
+            },
+          });
+          game.applyMove({
+            gameID: game.id,
+            playerID: player2.id,
+            move: {
+              col: 0,
+              gamePiece: 'Red',
             },
           });
           expect(() =>
-            game.applyMove({
-              gameID: game.id,
-              playerID: player2.id,
-              move: {
-                row,
-                col,
-                gamePiece: 'O',
-              },
-            }),
-          ).toThrowError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
+          game.applyMove({
+            gameID: game.id,
+            playerID: player1.id,
+            move: {
+              col: 0,
+              gamePiece: 'Yellow',
+            },
+          }),
+        ).toThrowError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
         });
         it('should not change whose turn it is when an invalid move is made', () => {
           game.applyMove({
             gameID: game.id,
             playerID: player1.id,
             move: {
-              row: 1,
               col: 1,
-              gamePiece: 'X',
+              gamePiece: 'Yellow',
             },
           });
           expect(() => {
             game.applyMove({
               gameID: game.id,
-              playerID: player2.id,
+              playerID: player1.id,
               move: {
-                row: 1,
                 col: 1,
-                gamePiece: 'O',
+                gamePiece: 'Yellow',
               },
             });
-          }).toThrowError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
+          }).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
           expect(game.state.moves).toHaveLength(1);
           game.applyMove({
             gameID: game.id,
             playerID: player2.id,
             move: {
-              row: 1,
               col: 2,
-              gamePiece: 'O',
+              gamePiece: 'Red',
             },
           });
           expect(game.state.moves).toHaveLength(2);
-        });
-        it('should not prevent the reuse of a space after an invalid move on it', () => {
-          expect(() => {
-            game.applyMove({
-              gameID: game.id,
-              playerID: player2.id,
-              move: {
-                row: 1,
-                col: 1,
-                gamePiece: 'O',
-              },
-            });
-          }).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
-          game.applyMove({
-            gameID: game.id,
-            playerID: player1.id,
-            move: {
-              row: 1,
-              col: 1,
-              gamePiece: 'X',
-            },
-          });
         });
       });
     });
