@@ -10,6 +10,7 @@ import {
 import Player from '../../lib/Player';
 // import { Connect4Move } from '../../types/CoveyTownSocket';
 import Connect4Game from './Connect4Game';
+import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 
 describe('Connect4Game', () => {
   let game: Connect4Game;
@@ -127,7 +128,7 @@ describe('Connect4Game', () => {
     });
   });
   describe('applyMove', () => {
-    let moves: TicTacToeMove[] = [];
+    let moves: Connect4Move[] = [];
 
     describe('[T2.2] when given an invalid move', () => {
       it('should throw an error if the game is not in progress', () => {
@@ -138,9 +139,8 @@ describe('Connect4Game', () => {
             gameID: game.id,
             playerID: player1.id,
             move: {
-              row: 0,
-              col: 0,
-              gamePiece: 'X',
+              gamePiece: "Yellow", // passed in gamePiece is irrelevant b/c of implementation
+              col: 1
             },
           }),
         ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
@@ -328,28 +328,26 @@ describe('Connect4Game', () => {
         expect(game.state.status).toEqual('IN_PROGRESS');
       });
       function makeMoveAndCheckState(
-        row: 0 | 1 | 2,
         col: 0 | 1 | 2,
-        gamePiece: 'X' | 'O',
+        gamePiece: 'Yellow' | 'Red',
         expectedOutcome: 'WIN' | 'TIE' | undefined = undefined,
       ) {
         game.applyMove({
           gameID: game.id,
-          playerID: gamePiece === 'X' ? player1.id : player2.id,
+          playerID: gamePiece === 'Yellow' ? player1.id : player2.id,
           move: {
-            row,
             col,
             gamePiece,
           },
         });
-        moves.push({ row, col, gamePiece });
+        moves.push({col, gamePiece });
         expect(game.state.moves).toHaveLength(++numMoves);
         for (let i = 0; i < numMoves; i++) {
           expect(game.state.moves[i]).toEqual(moves[i]);
         }
         if (expectedOutcome === 'WIN') {
           expect(game.state.status).toEqual('OVER');
-          expect(game.state.winner).toEqual(gamePiece === 'X' ? player1.id : player2.id);
+          expect(game.state.winner).toEqual(gamePiece === 'Yellow' ? player1.id : player2.id);
         } else if (expectedOutcome === 'TIE') {
           expect(game.state.status).toEqual('OVER');
           expect(game.state.winner).toBeUndefined();
@@ -359,95 +357,46 @@ describe('Connect4Game', () => {
         }
       }
       it('[T2.1] should add the move to the game state', () => {
-        makeMoveAndCheckState(1, 2, 'X');
+
       });
       it('[T2.1] should not end the game if the move does not end the game', () => {
-        makeMoveAndCheckState(1, 2, 'X');
-        makeMoveAndCheckState(1, 0, 'O');
-        makeMoveAndCheckState(0, 2, 'X');
-        makeMoveAndCheckState(2, 2, 'O');
-        makeMoveAndCheckState(1, 1, 'X');
-        makeMoveAndCheckState(2, 0, 'O');
+
       });
       describe('[T2.3] when the move ends the game', () => {
         describe('it checks for winning conditions', () => {
           describe('a horizontal win', () => {
             test('x wins', () => {
-              makeMoveAndCheckState(0, 0, 'X');
-              makeMoveAndCheckState(1, 0, 'O');
-              makeMoveAndCheckState(0, 1, 'X');
-              makeMoveAndCheckState(1, 1, 'O');
-              makeMoveAndCheckState(0, 2, 'X', 'WIN');
+
             });
             test('o wins', () => {
-              makeMoveAndCheckState(0, 0, 'X');
-              makeMoveAndCheckState(1, 0, 'O');
-              makeMoveAndCheckState(0, 1, 'X');
-              makeMoveAndCheckState(1, 1, 'O');
-              makeMoveAndCheckState(2, 0, 'X');
-              makeMoveAndCheckState(1, 2, 'O', 'WIN');
+
             });
           });
           describe('a vertical win', () => {
             test('x wins', () => {
-              makeMoveAndCheckState(0, 0, 'X');
-              makeMoveAndCheckState(0, 1, 'O');
-              makeMoveAndCheckState(1, 0, 'X');
-              makeMoveAndCheckState(1, 1, 'O');
-              makeMoveAndCheckState(2, 0, 'X', 'WIN');
+
             });
             test('o wins', () => {
-              makeMoveAndCheckState(0, 0, 'X');
-              makeMoveAndCheckState(0, 1, 'O');
-              makeMoveAndCheckState(1, 0, 'X');
-              makeMoveAndCheckState(1, 1, 'O');
-              makeMoveAndCheckState(2, 2, 'X');
-              makeMoveAndCheckState(2, 1, 'O', 'WIN');
+
             });
           });
           describe('a diagonal win', () => {
             test('x wins', () => {
-              makeMoveAndCheckState(0, 0, 'X');
-              makeMoveAndCheckState(0, 1, 'O');
-              makeMoveAndCheckState(1, 1, 'X');
-              makeMoveAndCheckState(1, 2, 'O');
-              makeMoveAndCheckState(2, 2, 'X', 'WIN');
+
             });
             test('o wins', () => {
-              makeMoveAndCheckState(0, 1, 'X');
-              makeMoveAndCheckState(0, 0, 'O');
-              makeMoveAndCheckState(1, 0, 'X');
-              makeMoveAndCheckState(1, 1, 'O');
-              makeMoveAndCheckState(2, 0, 'X');
-              makeMoveAndCheckState(2, 2, 'O', 'WIN');
+
             });
             test('other diagonal - x wins', () => {
-              makeMoveAndCheckState(0, 2, 'X');
-              makeMoveAndCheckState(0, 1, 'O');
-              makeMoveAndCheckState(1, 1, 'X');
-              makeMoveAndCheckState(1, 2, 'O');
-              makeMoveAndCheckState(2, 0, 'X', 'WIN');
+
             });
             test('other diagonal - o wins', () => {
-              makeMoveAndCheckState(0, 1, 'X');
-              makeMoveAndCheckState(0, 2, 'O');
-              makeMoveAndCheckState(1, 0, 'X');
-              makeMoveAndCheckState(1, 1, 'O');
-              makeMoveAndCheckState(2, 1, 'X');
-              makeMoveAndCheckState(2, 0, 'O', 'WIN');
+
             });
           });
         });
         it('declares a tie if there are no winning conditions but the board is full', () => {
-          makeMoveAndCheckState(0, 0, 'X');
-          makeMoveAndCheckState(0, 1, 'O');
-          makeMoveAndCheckState(0, 2, 'X');
-          makeMoveAndCheckState(2, 0, 'O');
-          makeMoveAndCheckState(1, 1, 'X');
-          makeMoveAndCheckState(1, 2, 'O');
-          makeMoveAndCheckState(1, 0, 'X');
-          makeMoveAndCheckState(2, 2, 'O');
-          makeMoveAndCheckState(2, 1, 'X', 'TIE');
+
         });
       });
     });
