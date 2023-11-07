@@ -209,6 +209,8 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
    * Updates the game's state to reflect the new player.
    * If the game is now full (has two players), updates the game's state to set the status to IN_PROGRESS.
    *
+   * When there are no players, the first player to join is yellow
+   * 
    * @param player The player to join the game
    * @throws InvalidParametersError if the player is already in the game (PLAYER_ALREADY_IN_GAME_MESSAGE)
    *  or the game is full (GAME_FULL_MESSAGE)
