@@ -10,7 +10,7 @@ import {
 import Player from '../../lib/Player';
 // import { Connect4Move } from '../../types/CoveyTownSocket';
 import Connect4Game from './Connect4Game';
-import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
+import { Connect4Move } from '../../types/CoveyTownSocket';
 
 describe('Connect4Game', () => {
   let game: Connect4Game;
@@ -139,8 +139,8 @@ describe('Connect4Game', () => {
             gameID: game.id,
             playerID: player1.id,
             move: {
-              gamePiece: "Yellow", // passed in gamePiece is irrelevant b/c of implementation
-              col: 1
+              gamePiece: 'Yellow', // passed in gamePiece is irrelevant b/c of implementation
+              col: 1,
             },
           }),
         ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
@@ -211,9 +211,8 @@ describe('Connect4Game', () => {
             gameID: game.id,
             playerID: player2.id,
             move: {
-              row: 0,
               col: 2,
-              gamePiece: 'O',
+              gamePiece: 'Red',
             },
           });
           expect(() =>
@@ -221,9 +220,8 @@ describe('Connect4Game', () => {
               gameID: game.id,
               playerID: player2.id,
               move: {
-                row: 2,
                 col: 1,
-                gamePiece: 'O',
+                gamePiece: 'Red',
               },
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
@@ -279,15 +277,15 @@ describe('Connect4Game', () => {
             },
           });
           expect(() =>
-          game.applyMove({
-            gameID: game.id,
-            playerID: player1.id,
-            move: {
-              col: 0,
-              gamePiece: 'Yellow',
-            },
-          }),
-        ).toThrowError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
+            game.applyMove({
+              gameID: game.id,
+              playerID: player1.id,
+              move: {
+                col: 0,
+                gamePiece: 'Yellow',
+              },
+            }),
+          ).toThrowError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
         });
         it('should not change whose turn it is when an invalid move is made', () => {
           game.applyMove({
@@ -347,7 +345,7 @@ describe('Connect4Game', () => {
             gamePiece,
           },
         });
-        moves.push({col, gamePiece });
+        moves.push({ col, gamePiece });
         expect(game.state.moves).toHaveLength(++numMoves);
         for (let i = 0; i < numMoves; i++) {
           expect(game.state.moves[i]).toEqual(moves[i]);
@@ -364,157 +362,157 @@ describe('Connect4Game', () => {
         }
       }
       it('[T2.1] should add the move to the game state', () => {
-        makeMoveAndCheckState(0, "Yellow")
+        makeMoveAndCheckState(0, 'Yellow');
       });
       it('[T2.1] should not end the game if the move does not end the game', () => {
-        makeMoveAndCheckState(0, "Yellow")
-        makeMoveAndCheckState(2, "Red")
-        makeMoveAndCheckState(1, "Yellow")
+        makeMoveAndCheckState(0, 'Yellow');
+        makeMoveAndCheckState(2, 'Red');
+        makeMoveAndCheckState(1, 'Yellow');
       });
       describe('[T2.3] when the move ends the game', () => {
         describe('it checks for winning conditions', () => {
           describe('a vertical win', () => {
             test('yellow wins', () => {
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(0, "Yellow", "WIN")
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(0, 'Yellow', 'WIN');
             });
             test('red wins', () => {
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(1, "Red", "WIN")
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(1, 'Red', 'WIN');
             });
           });
           describe('a horizontal win', () => {
             test('yellow wins', () => {
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(6, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(6, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(6, "Red")
-              makeMoveAndCheckState(3, "Yellow", "WIN")
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(6, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(6, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(6, 'Red');
+              makeMoveAndCheckState(3, 'Yellow', 'WIN');
             });
             test('red wins', () => {
-              makeMoveAndCheckState(5, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(6, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(6, "Yellow")
-              makeMoveAndCheckState(2, "Red")
-              makeMoveAndCheckState(6, "Yellow")
-              makeMoveAndCheckState(3, "Red", "WIN")
+              makeMoveAndCheckState(5, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(6, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(6, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(6, 'Yellow');
+              makeMoveAndCheckState(3, 'Red', 'WIN');
             });
           });
           describe('a diagonal win', () => {
             test('yellow wins', () => {
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(2, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(3, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(3, "Red")
-              makeMoveAndCheckState(3, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(3, "Yellow", "WIN")
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(3, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(3, 'Red');
+              makeMoveAndCheckState(3, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(3, 'Yellow', 'WIN');
             });
             test('red wins', () => {
-              makeMoveAndCheckState(5, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(2, "Red")
-              makeMoveAndCheckState(3, "Yellow")
-              makeMoveAndCheckState(2, "Red")
-              makeMoveAndCheckState(3, "Yellow")
-              makeMoveAndCheckState(3, "Red")
-              makeMoveAndCheckState(0, "Yellow")
-              makeMoveAndCheckState(3, "Red", "WIN")
+              makeMoveAndCheckState(5, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(3, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(3, 'Yellow');
+              makeMoveAndCheckState(3, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(3, 'Red', 'WIN');
             });
             test('other diagonal - yellow wins', () => {
-              makeMoveAndCheckState(3, "Yellow")
-              makeMoveAndCheckState(2, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(4, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(0, "Yellow", "WIN")
+              makeMoveAndCheckState(3, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(4, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(0, 'Yellow', 'WIN');
             });
             test('other diagonal - red wins', () => {
-              makeMoveAndCheckState(6, "Red")
-              makeMoveAndCheckState(3, "Yellow")
-              makeMoveAndCheckState(2, "Red")
-              makeMoveAndCheckState(2, "Yellow")
-              makeMoveAndCheckState(1, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(1, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(4, "Yellow")
-              makeMoveAndCheckState(0, "Red")
-              makeMoveAndCheckState(0, "Yellow", "WIN")
+              makeMoveAndCheckState(6, 'Red');
+              makeMoveAndCheckState(3, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(4, 'Yellow');
+              makeMoveAndCheckState(0, 'Red');
+              makeMoveAndCheckState(0, 'Yellow', 'WIN');
             });
           });
         });
         it('declares a tie if there are no winning conditions but the board is full', () => {
-          makeMoveAndCheckState(0, "Yellow")
-          makeMoveAndCheckState(0, "Red")
-          makeMoveAndCheckState(0, "Yellow")
-          makeMoveAndCheckState(0, "Red")
-          makeMoveAndCheckState(0, "Yellow")
-          makeMoveAndCheckState(0, "Red")
-          makeMoveAndCheckState(1, "Yellow")
-          makeMoveAndCheckState(1, "Red")
-          makeMoveAndCheckState(1, "Yellow")
-          makeMoveAndCheckState(1, "Red")
-          makeMoveAndCheckState(1, "Yellow")
-          makeMoveAndCheckState(1, "Red")
-          makeMoveAndCheckState(2, "Yellow")
-          makeMoveAndCheckState(2, "Red")
-          makeMoveAndCheckState(2, "Yellow")
-          makeMoveAndCheckState(2, "Red")
-          makeMoveAndCheckState(2, "Yellow")
-          makeMoveAndCheckState(2, "Red")
-          makeMoveAndCheckState(6, "Yellow")
-          makeMoveAndCheckState(3, "Red")
-          makeMoveAndCheckState(3, "Yellow")
-          makeMoveAndCheckState(3, "Red")
-          makeMoveAndCheckState(3, "Yellow")
-          makeMoveAndCheckState(3, "Red")
-          makeMoveAndCheckState(3, "Yellow")
-          makeMoveAndCheckState(4, "Red")
-          makeMoveAndCheckState(4, "Yellow")
-          makeMoveAndCheckState(4, "Red")
-          makeMoveAndCheckState(4, "Yellow")
-          makeMoveAndCheckState(4, "Red")
-          makeMoveAndCheckState(4, "Yellow")
-          makeMoveAndCheckState(5, "Red")
-          makeMoveAndCheckState(5, "Yellow")
-          makeMoveAndCheckState(5, "Red")
-          makeMoveAndCheckState(5, "Yellow")
-          makeMoveAndCheckState(5, "Red")
-          makeMoveAndCheckState(5, "Yellow")
-          makeMoveAndCheckState(6, "Red")
-          makeMoveAndCheckState(6, "Yellow")
-          makeMoveAndCheckState(6, "Red")
-          makeMoveAndCheckState(6, "Yellow")
-          makeMoveAndCheckState(6, "Red", "TIE")
+          makeMoveAndCheckState(0, 'Yellow');
+          makeMoveAndCheckState(0, 'Red');
+          makeMoveAndCheckState(0, 'Yellow');
+          makeMoveAndCheckState(0, 'Red');
+          makeMoveAndCheckState(0, 'Yellow');
+          makeMoveAndCheckState(0, 'Red');
+          makeMoveAndCheckState(1, 'Yellow');
+          makeMoveAndCheckState(1, 'Red');
+          makeMoveAndCheckState(1, 'Yellow');
+          makeMoveAndCheckState(1, 'Red');
+          makeMoveAndCheckState(1, 'Yellow');
+          makeMoveAndCheckState(1, 'Red');
+          makeMoveAndCheckState(2, 'Yellow');
+          makeMoveAndCheckState(2, 'Red');
+          makeMoveAndCheckState(2, 'Yellow');
+          makeMoveAndCheckState(2, 'Red');
+          makeMoveAndCheckState(2, 'Yellow');
+          makeMoveAndCheckState(2, 'Red');
+          makeMoveAndCheckState(6, 'Yellow');
+          makeMoveAndCheckState(3, 'Red');
+          makeMoveAndCheckState(3, 'Yellow');
+          makeMoveAndCheckState(3, 'Red');
+          makeMoveAndCheckState(3, 'Yellow');
+          makeMoveAndCheckState(3, 'Red');
+          makeMoveAndCheckState(3, 'Yellow');
+          makeMoveAndCheckState(4, 'Red');
+          makeMoveAndCheckState(4, 'Yellow');
+          makeMoveAndCheckState(4, 'Red');
+          makeMoveAndCheckState(4, 'Yellow');
+          makeMoveAndCheckState(4, 'Red');
+          makeMoveAndCheckState(4, 'Yellow');
+          makeMoveAndCheckState(5, 'Red');
+          makeMoveAndCheckState(5, 'Yellow');
+          makeMoveAndCheckState(5, 'Red');
+          makeMoveAndCheckState(5, 'Yellow');
+          makeMoveAndCheckState(5, 'Red');
+          makeMoveAndCheckState(5, 'Yellow');
+          makeMoveAndCheckState(6, 'Red');
+          makeMoveAndCheckState(6, 'Yellow');
+          makeMoveAndCheckState(6, 'Red');
+          makeMoveAndCheckState(6, 'Yellow');
+          makeMoveAndCheckState(6, 'Red', 'TIE');
         });
       });
     });
