@@ -111,7 +111,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
         // if at least one is true, update the winner and return
         let isWinner = false;
         checkMat[i][j].forEach(fun => {
-          isWinner = isWinner || fun(i, j);
+          isWinner = isWinner || (fun(i, j) && board[i][j] !== '');
         });
         if (isWinner) {
           this.state = {

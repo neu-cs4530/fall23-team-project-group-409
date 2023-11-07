@@ -455,18 +455,18 @@ describe('Connect4Game', () => {
               makeMoveAndCheckState(0, 'Yellow', 'WIN');
             });
             test('other diagonal - red wins', () => {
-              makeMoveAndCheckState(6, 'Red');
-              makeMoveAndCheckState(3, 'Yellow');
-              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(6, 'Yellow');
+              makeMoveAndCheckState(3, 'Red');
               makeMoveAndCheckState(2, 'Yellow');
+              makeMoveAndCheckState(2, 'Red');
+              makeMoveAndCheckState(1, 'Yellow');
               makeMoveAndCheckState(1, 'Red');
-              makeMoveAndCheckState(1, 'Yellow');
-              makeMoveAndCheckState(0, 'Red');
-              makeMoveAndCheckState(1, 'Yellow');
-              makeMoveAndCheckState(0, 'Red');
-              makeMoveAndCheckState(4, 'Yellow');
-              makeMoveAndCheckState(0, 'Red');
-              makeMoveAndCheckState(0, 'Yellow', 'WIN');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(1, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(4, 'Red');
+              makeMoveAndCheckState(0, 'Yellow');
+              makeMoveAndCheckState(0, 'Red', 'WIN');
             });
           });
         });
