@@ -119,6 +119,31 @@ export interface TicTacToeGameState extends WinnableGameState {
   o?: PlayerID;
 }
 
+/**
+ * Type to represent the possible move indices in Connect 4.
+ * Connect 4 is a 6x7 grid, with moves only being made on the columns.
+ */
+export type Connect4GridPosition = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+/**
+ * Type for a move in Connect 4
+ */
+export interface Connect4Move {
+  gamePiece: 'Yellow' | 'Red';
+  col: Connect4GridPosition;
+}
+
+/**
+ * Type for the state of a Connect 4 game
+ * The state of the game is represented as a list of moves, and the playerIDs of the players (x and o)
+ * The first player to join the game is x, the second is o
+ */
+export interface Connect4GameState extends WinnableGameState {
+  moves: ReadonlyArray<Connect4Move>;
+  yellow?: PlayerID;
+  red?: PlayerID;
+}
+
 export type InteractableID = string;
 export type GameInstanceID = string;
 
