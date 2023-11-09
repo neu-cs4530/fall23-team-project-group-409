@@ -1,18 +1,18 @@
 import { Button, chakra, Container, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import TicTacToeAreaController, {
-  TicTacToeCell,
-} from '../../../../classes/interactable/TicTacToeAreaController';
-import { TicTacToeGridPosition } from '../../../../types/CoveyTownSocket';
+import Connect4AreaController, {
+  Connect4Cell,
+} from '../../../../classes/interactable/Connect4AreaController';
+import { Connect4GridPosition } from '../../../../types/CoveyTownSocket';
 
-export type TicTacToeGameProps = {
-  gameAreaController: TicTacToeAreaController;
+export type Connect4GameProps = {
+  gameAreaController: Connect4AreaController;
 };
 
 /**
- * A component that will render a single cell in the TicTacToe board, styled
+ * A component that will render a single cell in the Connect4 board, styled
  */
-const StyledTicTacToeSquare = chakra(Button, {
+const StyledConnect4Square = chakra(Button, {
   baseStyle: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -26,9 +26,9 @@ const StyledTicTacToeSquare = chakra(Button, {
   },
 });
 /**
- * A component that will render the TicTacToe board, styled
+ * A component that will render the Connect4 board, styled
  */
-const StyledTicTacToeBoard = chakra(Container, {
+const StyledConnect4Board = chakra(Container, {
   baseStyle: {
     display: 'flex',
     width: '400px',
@@ -39,25 +39,25 @@ const StyledTicTacToeBoard = chakra(Container, {
 });
 
 /**
- * A component that renders the TicTacToe board
+ * A component that renders the Connect4 board
  *
- * Renders the TicTacToe board as a "StyledTicTacToeBoard", which consists of 9 "StyledTicTacToeSquare"s
+ * Renders the Connect4 board as a "StyledConnect4Board", which consists of 9 "StyledConnect4Square"s
  * (one for each cell in the board, starting from the top left and going left to right, top to bottom).
- * Each StyledTicTacToeSquare has an aria-label property that describes the cell's position in the board,
+ * Each StyledConnect4Square has an aria-label property that describes the cell's position in the board,
  * formatted as `Cell ${rowIndex},${colIndex}`.
  *
  * The board is re-rendered whenever the board changes, and each cell is re-rendered whenever the value
  * of that cell changes.
  *
- * If the current player is in the game, then each StyledTicTacToeSquare is clickable, and clicking
+ * If the current player is in the game, then each StyledConnect4Square is clickable, and clicking
  * on it will make a move in that cell. If there is an error making the move, then a toast will be
  * displayed with the error message as the description of the toast. If it is not the current player's
- * turn, then the StyledTicTacToeSquare will be disabled.
+ * turn, then the StyledConnect4Square will be disabled.
  *
- * @param gameAreaController the controller for the TicTacToe game
+ * @param gameAreaController the controller for the Connect4 game
  */
-export default function TicTacToeBoard({ gameAreaController }: TicTacToeGameProps): JSX.Element {
-  const [board, setBoard] = useState<TicTacToeCell[][]>(gameAreaController.board);
+export default function Connect4Board({ gameAreaController }: Connect4GameProps): JSX.Element {
+  const [board, setBoard] = useState<Connect4Cell[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
   const toast = useToast();
   useEffect(() => {
@@ -69,18 +69,15 @@ export default function TicTacToeBoard({ gameAreaController }: TicTacToeGameProp
     };
   }, [gameAreaController]);
   return (
-    <StyledTicTacToeBoard aria-label='Tic-Tac-Toe Board'>
+    <StyledConnect4Board aria-label='Connect-4 Board'>
       {board.map((row, rowIndex) => {
         return row.map((cell, colIndex) => {
           return (
-            <StyledTicTacToeSquare
+            <StyledConnect4Square
               key={`${rowIndex}.${colIndex}`}
               onClick={async () => {
                 try {
-                  await gameAreaController.makeMove(
-                    rowIndex as TicTacToeGridPosition,
-                    colIndex as TicTacToeGridPosition,
-                  );
+                  await gameAreaController.makeMove(colIndex as Connect4GridPosition);
                 } catch (e) {
                   toast({
                     title: 'Error making move',
@@ -92,10 +89,10 @@ export default function TicTacToeBoard({ gameAreaController }: TicTacToeGameProp
               disabled={!isOurTurn}
               aria-label={`Cell ${rowIndex},${colIndex}`}>
               {cell}
-            </StyledTicTacToeSquare>
+            </StyledConnect4Square>
           );
         });
       })}
-    </StyledTicTacToeBoard>
+    </StyledConnect4Board>
   );
 }

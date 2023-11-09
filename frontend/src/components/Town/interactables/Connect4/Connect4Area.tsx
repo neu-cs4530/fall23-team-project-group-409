@@ -18,22 +18,22 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import TicTacToeAreaController from '../../../../classes/interactable/TicTacToeAreaController';
+import Connect4AreaController from '../../../../classes/interactable/Connect4AreaController';
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
 import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
-import TicTacToeLeaderboard from '../Leaderboard';
-import TicTacToeBoard from './Connect4Board';
+import Connect4Leaderboard from '../Leaderboard';
+import Connect4Board from './Connect4Board';
 
 /**
- * The TicTacToeArea component renders the TicTacToe game area.
+ * The Connect4Area component renders the Connect4 game area.
  * It renders the current state of the area, optionally allowing the player to join the game.
  *
  * It uses Chakra-UI components (does not use other GUI widgets)
  *
- * It uses the TicTacToeAreaController to get the current state of the game.
+ * It uses the Connect4AreaController to get the current state of the game.
  * It listens for the 'gameUpdated' and 'gameEnd' events on the controller, and re-renders accordingly.
  * It subscribes to these events when the component mounts, and unsubscribes when the component unmounts. It also unsubscribes when the gameAreaController changes.
  *
@@ -51,7 +51,7 @@ import TicTacToeBoard from './Connect4Board';
  *    - Before calling joinGame method, the button is disabled and has the property isLoading set to true, and is re-enabled when the method call completes
  *    - If the method call fails, a toast is displayed with the error message as the description of the toast (and status 'error')
  *    - Once the player joins the game, the button dissapears
- * - The TicTacToeBoard component, which is passed the current gameAreaController as a prop (@see TicTacToeBoard.tsx)
+ * - The Connect4Board component, which is passed the current gameAreaController as a prop (@see Connect4Board.tsx)
  *
  * - When the game ends, a toast is displayed with the result of the game:
  *    - Tie: description 'Game ended in a tie'
@@ -59,8 +59,8 @@ import TicTacToeBoard from './Connect4Board';
  *    - Our player lost: description 'You lost :('
  *
  */
-function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
-  const gameAreaController = useInteractableAreaController<TicTacToeAreaController>(interactableID);
+function Connect4Area({ interactableID }: { interactableID: InteractableID }): JSX.Element {
+  const gameAreaController = useInteractableAreaController<Connect4AreaController>(interactableID);
   const townController = useTownController();
 
   const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
@@ -169,7 +169,7 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
             </AccordionButton>
           </Heading>
           <AccordionPanel>
-            <TicTacToeLeaderboard results={history} />
+            <Connect4Leaderboard results={history} />
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem>
@@ -192,21 +192,21 @@ function TicTacToeArea({ interactableID }: { interactableID: InteractableID }): 
       </Accordion>
       {gameStatusText}
       <List aria-label='list of players in the game'>
-        <ListItem>X: {x?.userName || '(No player yet!)'}</ListItem>
-        <ListItem>O: {o?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>Yellow: {x?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>Red: {o?.userName || '(No player yet!)'}</ListItem>
       </List>
-      <TicTacToeBoard gameAreaController={gameAreaController} />
+      <Connect4Board gameAreaController={gameAreaController} />
     </Container>
   );
 }
 
 /**
- * A wrapper component for the TicTacToeArea component.
+ * A wrapper component for the Connect4Area component.
  * Determines if the player is currently in a tic tac toe area on the map, and if so,
- * renders the TicTacToeArea component in a modal.
+ * renders the Connect4Area component in a modal.
  *
  */
-export default function TicTacToeAreaWrapper(): JSX.Element {
+export default function Connect4AreaWrapper(): JSX.Element {
   const gameArea = useInteractable<GameAreaInteractable>('gameArea');
   const townController = useTownController();
   const closeModal = useCallback(() => {
@@ -217,14 +217,14 @@ export default function TicTacToeAreaWrapper(): JSX.Element {
     }
   }, [townController, gameArea]);
 
-  if (gameArea && gameArea.getData('type') === 'TicTacToe') {
+  if (gameArea && gameArea.getData('type') === 'Connect4') {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{gameArea.name}</ModalHeader>
           <ModalCloseButton />
-          <TicTacToeArea interactableID={gameArea.name} />;
+          <Connect4Area interactableID={gameArea.name} />;
         </ModalContent>
       </Modal>
     );
