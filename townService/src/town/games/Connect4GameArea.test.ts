@@ -118,12 +118,10 @@ describe('Connect4GameArea', () => {
       });
     });
     describe('[T3.2] when given a GameMove command', () => {
+      const mymove: Connect4Move = { col: 0, gamePiece: 'Yellow' };
       it('should throw an error when there is no game in progress', () => {
         expect(() =>
-          gameArea.handleCommand(
-            { type: 'GameMove', move: { col: 0, gamePiece: 'Yellow' }, gameID: nanoid() },
-            player1,
-          ),
+          gameArea.handleCommand({ type: 'GameMove', move: mymove, gameID: nanoid() }, player1),
         ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
       });
       describe('when there is a game in progress', () => {
@@ -135,10 +133,7 @@ describe('Connect4GameArea', () => {
         });
         it('should throw an error when the game ID does not match', () => {
           expect(() =>
-            gameArea.handleCommand(
-              { type: 'GameMove', move: { col: 0, gamePiece: 'Yellow' }, gameID: nanoid() },
-              player1,
-            ),
+            gameArea.handleCommand({ type: 'GameMove', move: mymove, gameID: nanoid() }, player1),
           ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
         });
         it('should throw an error when a TicTacToe move is passed', () => {
