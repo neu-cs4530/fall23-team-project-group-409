@@ -17,8 +17,8 @@ import Connect4Game from './Connect4Game';
 import GameArea from './GameArea';
 
 /**
- * A TicTacToeGameArea is a GameArea that hosts a TicTacToeGame.
- * @see TicTacToeGame
+ * A Connect4GameArea is a GameArea that hosts a Connect4Game.
+ * @see Connect4Game
  * @see GameArea
  */
 export default class Connect4GameArea extends GameArea<Connect4Game> {
@@ -33,14 +33,15 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
       if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
         const { yellow, red } = updatedState.state;
         if (yellow && red) {
-          const xName =
+          const yellowName =
             this._occupants.find(eachPlayer => eachPlayer.id === yellow)?.userName || yellow;
-          const oName = this._occupants.find(eachPlayer => eachPlayer.id === red)?.userName || red;
+          const redName =
+            this._occupants.find(eachPlayer => eachPlayer.id === red)?.userName || red;
           this._history.push({
             gameID,
             scores: {
-              [xName]: updatedState.state.winner === yellow ? 1 : 0,
-              [oName]: updatedState.state.winner === red ? 1 : 0,
+              [yellowName]: updatedState.state.winner === yellow ? 1 : 0,
+              [redName]: updatedState.state.winner === red ? 1 : 0,
             },
           });
         }
@@ -75,6 +76,7 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
     command: CommandType,
     player: Player,
   ): InteractableCommandReturnType<CommandType> {
+    // define a type guarding function to make sure moves passed aren't tictactoe moves
     const isConnect4Move = (m: TicTacToeMove | Connect4Move): m is Connect4Move =>
       m.gamePiece === 'Yellow' || m.gamePiece === 'Red';
     if (command.type === 'GameMove' && isConnect4Move(command.move)) {

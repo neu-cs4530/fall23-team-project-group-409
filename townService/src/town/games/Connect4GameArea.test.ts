@@ -13,7 +13,7 @@ import {
   GameInstanceID,
   TownEmitter,
 } from '../../types/CoveyTownSocket';
-import * as TicTacToeGameModule from './TicTacToeGame';
+import * as Connect4GameModule from './Connect4Game';
 import Game from './Game';
 import Connect4GameArea from './Connect4GameArea';
 
@@ -53,7 +53,7 @@ describe('Connect4GameArea', () => {
   let interactableUpdateSpy: jest.SpyInstance;
   let game: TestingGame;
   beforeEach(() => {
-    const gameConstructorSpy = jest.spyOn(TicTacToeGameModule, 'default');
+    const gameConstructorSpy = jest.spyOn(Connect4GameModule, 'default');
     game = new TestingGame();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore (Testing without using the real game class)
@@ -121,7 +121,7 @@ describe('Connect4GameArea', () => {
       it('should throw an error when there is no game in progress', () => {
         expect(() =>
           gameArea.handleCommand(
-            { type: 'GameMove', move: { col: 0, row: 0, gamePiece: 'X' }, gameID: nanoid() },
+            { type: 'GameMove', move: { col: 0, gamePiece: 'Yellow' }, gameID: nanoid() },
             player1,
           ),
         ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
@@ -136,13 +136,21 @@ describe('Connect4GameArea', () => {
         it('should throw an error when the game ID does not match', () => {
           expect(() =>
             gameArea.handleCommand(
-              { type: 'GameMove', move: { col: 0, row: 0, gamePiece: 'X' }, gameID: nanoid() },
+              { type: 'GameMove', move: { col: 0, gamePiece: 'Yellow' }, gameID: nanoid() },
               player1,
             ),
           ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
         });
+        it('should throw an error when a TicTacToe move is passed', () => {
+          expect(() =>
+            gameArea.handleCommand(
+              { type: 'GameMove', move: { col: 0, row: 0, gamePiece: 'X' }, gameID: nanoid() },
+              player1,
+            ),
+          ).toThrowError(INVALID_COMMAND_MESSAGE);
+        });
         it('should dispatch the move to the game and call _emitAreaChanged', () => {
-          const move: TicTacToeMove = { col: 0, row: 0, gamePiece: 'X' };
+          const move: Connect4Move = { col: 0, gamePiece: 'Yellow' };
           const applyMoveSpy = jest.spyOn(game, 'applyMove');
           gameArea.handleCommand({ type: 'GameMove', move, gameID }, player1);
           expect(applyMoveSpy).toHaveBeenCalledWith({
@@ -150,13 +158,13 @@ describe('Connect4GameArea', () => {
             playerID: player1.id,
             move: {
               ...move,
-              gamePiece: 'X',
+              gamePiece: 'Yellow',
             },
           });
           expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
         });
         it('should not call _emitAreaChanged if the game throws an error', () => {
-          const move: TicTacToeMove = { col: 0, row: 0, gamePiece: 'X' };
+          const move: Connect4Move = { col: 0, gamePiece: 'Yellow' };
           const applyMoveSpy = jest.spyOn(game, 'applyMove').mockImplementationOnce(() => {
             throw new Error('Test Error');
           });
@@ -168,14 +176,14 @@ describe('Connect4GameArea', () => {
             playerID: player1.id,
             move: {
               ...move,
-              gamePiece: 'X',
+              gamePiece: 'Yellow',
             },
           });
           expect(interactableUpdateSpy).not.toHaveBeenCalled();
         });
         describe('when the game is over, it records a new row in the history and calls _emitAreaChanged', () => {
           test('when X wins', () => {
-            const move: TicTacToeMove = { col: 0, row: 0, gamePiece: 'X' };
+            const move: Connect4Move = { col: 0, gamePiece: 'Yellow' };
             jest.spyOn(game, 'applyMove').mockImplementationOnce(() => {
               game.endGame(player1.id);
             });
@@ -192,7 +200,7 @@ describe('Connect4GameArea', () => {
             expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
           });
           test('when O wins', () => {
-            const move: TicTacToeMove = { col: 0, row: 0, gamePiece: 'O' };
+            const move: Connect4Move = { col: 0, gamePiece: 'Red' };
             jest.spyOn(game, 'applyMove').mockImplementationOnce(() => {
               game.endGame(player2.id);
             });
@@ -209,7 +217,7 @@ describe('Connect4GameArea', () => {
             expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
           });
           test('when there is a tie', () => {
-            const move: TicTacToeMove = { col: 0, row: 0, gamePiece: 'X' };
+            const move: Connect4Move = { col: 0, gamePiece: 'Yellow' };
             jest.spyOn(game, 'applyMove').mockImplementationOnce(() => {
               game.endGame();
             });
