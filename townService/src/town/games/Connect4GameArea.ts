@@ -5,41 +5,43 @@ import InvalidParametersError, {
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import {
+  Connect4GameState,
   Connect4Move,
   GameInstance,
   InteractableCommand,
   InteractableCommandReturnType,
   InteractableType,
-  TicTacToeGameState,
   TicTacToeMove,
 } from '../../types/CoveyTownSocket';
+import Connect4Game from './Connect4Game';
 import GameArea from './GameArea';
-import TicTacToeGame from './TicTacToeGame';
 
 /**
- * A TicTacToeGameArea is a GameArea that hosts a TicTacToeGame.
- * @see TicTacToeGame
+ * A Connect4GameArea is a GameArea that hosts a Connect4Game.
+ * @see Connect4Game
  * @see GameArea
  */
-export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
+export default class Connect4GameArea extends GameArea<Connect4Game> {
   protected getType(): InteractableType {
-    return 'TicTacToeArea';
+    return 'Connect4Area';
   }
 
-  private _stateUpdated(updatedState: GameInstance<TicTacToeGameState>) {
+  private _stateUpdated(updatedState: GameInstance<Connect4GameState>) {
     if (updatedState.state.status === 'OVER') {
       // If we haven't yet recorded the outcome, do so now.
       const gameID = this._game?.id;
       if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
-        const { x, o } = updatedState.state;
-        if (x && o) {
-          const xName = this._occupants.find(eachPlayer => eachPlayer.id === x)?.userName || x;
-          const oName = this._occupants.find(eachPlayer => eachPlayer.id === o)?.userName || o;
+        const { yellow, red } = updatedState.state;
+        if (yellow && red) {
+          const yellowName =
+            this._occupants.find(eachPlayer => eachPlayer.id === yellow)?.userName || yellow;
+          const redName =
+            this._occupants.find(eachPlayer => eachPlayer.id === red)?.userName || red;
           this._history.push({
             gameID,
             scores: {
-              [xName]: updatedState.state.winner === x ? 1 : 0,
-              [oName]: updatedState.state.winner === o ? 1 : 0,
+              [yellowName]: updatedState.state.winner === yellow ? 1 : 0,
+              [redName]: updatedState.state.winner === red ? 1 : 0,
             },
           });
         }
@@ -74,9 +76,10 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
     command: CommandType,
     player: Player,
   ): InteractableCommandReturnType<CommandType> {
-    const isTicTacToeMove = (m: TicTacToeMove | Connect4Move): m is TicTacToeMove =>
-      m.gamePiece === 'X' || m.gamePiece === 'O';
-    if (command.type === 'GameMove' && isTicTacToeMove(command.move)) {
+    // define a type guarding function to make sure moves passed aren't tictactoe moves
+    const isConnect4Move = (m: TicTacToeMove | Connect4Move): m is Connect4Move =>
+      m.gamePiece === 'Yellow' || m.gamePiece === 'Red';
+    if (command.type === 'GameMove' && isConnect4Move(command.move)) {
       const game = this._game;
       if (!game) {
         throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
@@ -96,7 +99,7 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new TicTacToeGame();
+        game = new Connect4Game();
         this._game = game;
       }
       game.join(player);
