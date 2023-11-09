@@ -26,15 +26,18 @@ export default class Connect4AreaController extends GameAreaController<
   Connect4Events
 > {
   protected _board: Connect4Cell[][] = [
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
   ];
 
   /**
    * Returns the current state of the board.
    *
-   * The board is a 3x3 array of Connect4Cell, which is either 'X', 'O', or undefined.
+   * The board is a 3x3 array of Connect4Cell, which is either 'Yellow', 'Red', or undefined.
    *
    * The 2-dimensional array is indexed by row and then column, so board[0][0] is the top-left cell,
    * and board[2][2] is the bottom-right cell
@@ -44,23 +47,23 @@ export default class Connect4AreaController extends GameAreaController<
   }
 
   /**
-   * Returns the player with the 'X' game piece, if there is one, or undefined otherwise
+   * Returns the player with the 'Yellow' game piece, if there is one, or undefined otherwise
    */
-  get x(): PlayerController | undefined {
-    const x = this._model.game?.state.x;
-    if (x) {
-      return this.occupants.find(eachOccupant => eachOccupant.id === x);
+  get yellow(): PlayerController | undefined {
+    const yellow = this._model.game?.state.yellow;
+    if (yellow) {
+      return this.occupants.find(eachOccupant => eachOccupant.id === yellow);
     }
     return undefined;
   }
 
   /**
-   * Returns the player with the 'O' game piece, if there is one, or undefined otherwise
+   * Returns the player with the 'Red' game piece, if there is one, or undefined otherwise
    */
-  get o(): PlayerController | undefined {
-    const o = this._model.game?.state.o;
-    if (o) {
-      return this.occupants.find(eachOccupant => eachOccupant.id === o);
+  get red(): PlayerController | undefined {
+    const red = this._model.game?.state.red;
+    if (red) {
+      return this.occupants.find(eachOccupant => eachOccupant.id === red);
     }
     return undefined;
   }
@@ -88,15 +91,15 @@ export default class Connect4AreaController extends GameAreaController<
    * Returns undefined if the game is not in progress
    */
   get whoseTurn(): PlayerController | undefined {
-    const x = this.x;
-    const o = this.o;
-    if (!x || !o || this._model.game?.state.status !== 'IN_PROGRESS') {
+    const yellow = this.yellow;
+    const red = this.red;
+    if (!yellow || !red || this._model.game?.state.status !== 'IN_PROGRESS') {
       return undefined;
     }
     if (this.moveCount % 2 === 0) {
-      return x;
+      return yellow;
     } else if (this.moveCount % 2 === 1) {
-      return o;
+      return red;
     } else {
       throw new Error('Invalid move count');
     }
@@ -118,11 +121,11 @@ export default class Connect4AreaController extends GameAreaController<
    *
    * Throws an error PLAYER_NOT_IN_GAME_ERROR if the current player is not a player in this game
    */
-  get gamePiece(): 'X' | 'O' {
-    if (this.x?.id === this._townController.ourPlayer.id) {
-      return 'X';
-    } else if (this.o?.id === this._townController.ourPlayer.id) {
-      return 'O';
+  get gamePiece(): 'Yellow' | 'Red' {
+    if (this.yellow?.id === this._townController.ourPlayer.id) {
+      return 'Yellow';
+    } else if (this.red?.id === this._townController.ourPlayer.id) {
+      return 'Red';
     }
     throw new Error(PLAYER_NOT_IN_GAME_ERROR);
   }
@@ -164,13 +167,23 @@ export default class Connect4AreaController extends GameAreaController<
     const newState = newModel.game;
     if (newState) {
       const newBoard: Connect4Cell[][] = [
-        [undefined, undefined, undefined],
-        [undefined, undefined, undefined],
-        [undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
       ];
+      // Added logic for moving pieces to the bottom of the boards availability for the column specified
       newState.state.moves.forEach(move => {
-        newBoard[move.row][move.col] = move.gamePiece;
+        for (let x = 5; x >= 0; x--) {
+          if (newBoard[x][move.col] === undefined) {
+            newBoard[x][move.col] = move.gamePiece;
+            break;
+          }
+        }
       });
+
       if (!_.isEqual(newBoard, this._board)) {
         this._board = newBoard;
         this.emit('boardChanged', this._board);
@@ -185,7 +198,6 @@ export default class Connect4AreaController extends GameAreaController<
    *
    * If the game is not in progress, throws an error NO_GAME_IN_PROGRESS_ERROR
    *
-   * @param row Row of the move
    * @param col Column of the move
    */
   public async makeMove(col: Connect4GridPosition) {

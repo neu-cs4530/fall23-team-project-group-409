@@ -2,19 +2,20 @@ import assert from 'assert';
 import { mock } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import {
+  Connect4GameState,
+  Connect4GridPosition,
+  Connect4Move,
   GameArea,
   GameResult,
   GameStatus,
-  TicTacToeGameState,
-  TicTacToeGridPosition,
-  TicTacToeMove,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
 import GameAreaController from './GameAreaController';
-import TicTacToeAreaController, { NO_GAME_IN_PROGRESS_ERROR } from './TicTacToeAreaController';
+import Connect4AreaController, { NO_GAME_IN_PROGRESS_ERROR } from './Connect4AreaController';
+//import TicTacToeAreaController, { NO_GAME_IN_PROGRESS_ERROR } from './TicTacToeAreaController';
 
-describe('[T1] TicTacToeAreaController', () => {
+describe('[T1] Connect4AreaController', () => {
   const ourPlayer = new PlayerController(nanoid(), nanoid(), {
     x: 0,
     y: 0,
@@ -39,7 +40,7 @@ describe('[T1] TicTacToeAreaController', () => {
     return p;
   });
 
-  function ticTacToeAreaControllerWithProp({
+  /*function ticTacToeAreaControllerWithProp({
     _id,
     history,
     x,
@@ -91,17 +92,71 @@ describe('[T1] TicTacToeAreaController', () => {
         .filter(eachPlayer => eachPlayer) as PlayerController[];
     }
     return ret;
+  }*/
+  function connect4AreaControllerWithProp({
+    _id,
+    history,
+    yellow,
+    red,
+    undefinedGame,
+    status,
+    moves,
+    winner,
+  }: {
+    _id?: string;
+    history?: GameResult[];
+    yellow?: string;
+    red?: string;
+    undefinedGame?: boolean;
+    status?: GameStatus;
+    moves?: Connect4Move[];
+    winner?: string;
+  }) {
+    const id = _id || nanoid();
+    const players = [];
+    if (yellow) players.push(yellow);
+    if (red) players.push(red);
+    const ret = new Connect4AreaController(
+      id,
+      {
+        id,
+        occupants: players,
+        history: history || [],
+        type: 'Connect4Area',
+        game: undefinedGame
+          ? undefined
+          : {
+              id,
+              players: players,
+              state: {
+                status: status || 'IN_PROGRESS',
+                yellow: yellow,
+                red: red,
+                moves: moves || [],
+                winner: winner,
+              },
+            },
+      },
+      mockTownController,
+    );
+    if (players) {
+      ret.occupants = players
+        .map(eachID => mockTownController.players.find(eachPlayer => eachPlayer.id === eachID))
+        .filter(eachPlayer => eachPlayer) as PlayerController[];
+    }
+    return ret;
   }
+
   describe('[T1.1]', () => {
     describe('isActive', () => {
       it('should return true if the game is in progress', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
         });
         expect(controller.isActive()).toBe(true);
       });
       it('should return false if the game is not in progress', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'OVER',
         });
         expect(controller.isActive()).toBe(false);
@@ -109,54 +164,54 @@ describe('[T1] TicTacToeAreaController', () => {
     });
     describe('isPlayer', () => {
       it('should return true if the current player is a player in this game', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
+          yellow: ourPlayer.id,
         });
         expect(controller.isPlayer).toBe(true);
       });
       it('should return false if the current player is not a player in this game', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: otherPlayers[0].id,
-          o: otherPlayers[1].id,
+          yellow: otherPlayers[0].id,
+          red: otherPlayers[1].id,
         });
         expect(controller.isPlayer).toBe(false);
       });
     });
     describe('gamePiece', () => {
       it('should return the game piece of the current player if the current player is a player in this game', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
+          yellow: ourPlayer.id,
         });
-        expect(controller.gamePiece).toBe('X');
+        expect(controller.gamePiece).toBe('Yellow');
 
-        //check O
-        const controller2 = ticTacToeAreaControllerWithProp({
+        //check Red
+        const controller2 = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          o: ourPlayer.id,
+          red: ourPlayer.id,
         });
-        expect(controller2.gamePiece).toBe('O');
+        expect(controller2.gamePiece).toBe('Red');
       });
       it('should throw an error if the current player is not a player in this game', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: otherPlayers[0].id,
-          o: otherPlayers[1].id,
+          yellow: otherPlayers[0].id,
+          red: otherPlayers[1].id,
         });
         expect(() => controller.gamePiece).toThrowError();
       });
     });
     describe('status', () => {
       it('should return the status of the game', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
         });
         expect(controller.status).toBe('IN_PROGRESS');
       });
       it('should return WAITING_TO_START if the game is not defined', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           undefinedGame: true,
         });
         expect(controller.status).toBe('WAITING_TO_START');
@@ -164,22 +219,21 @@ describe('[T1] TicTacToeAreaController', () => {
     });
     describe('whoseTurn', () => {
       it('should return the player whose turn it is initially', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
         expect(controller.whoseTurn).toBe(ourPlayer);
       });
       it('should return the player whose turn it is after a move', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
           moves: [
             {
-              gamePiece: 'X',
-              row: 0,
+              gamePiece: 'Yellow',
               col: 0,
             },
           ],
@@ -187,42 +241,41 @@ describe('[T1] TicTacToeAreaController', () => {
         expect(controller.whoseTurn).toBe(otherPlayers[0]);
       });
       it('should return undefined if the game is not in progress', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'OVER',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
         expect(controller.whoseTurn).toBe(undefined);
       });
     });
     describe('isOurTurn', () => {
       it('should return true if it is our turn', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
         expect(controller.isOurTurn).toBe(true);
       });
       it('should return false if it is not our turn', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: otherPlayers[0].id,
-          o: ourPlayer.id,
+          yellow: otherPlayers[0].id,
+          red: ourPlayer.id,
         });
         expect(controller.isOurTurn).toBe(false);
       });
     });
     describe('moveCount', () => {
       it('should return the number of moves that have been made', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
           moves: [
             {
-              gamePiece: 'X',
-              row: 0,
+              gamePiece: 'Yellow',
               col: 0,
             },
           ],
@@ -232,95 +285,98 @@ describe('[T1] TicTacToeAreaController', () => {
     });
     describe('board', () => {
       it('should return an empty board by default', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
         expect(controller.board).toEqual([
-          [undefined, undefined, undefined],
-          [undefined, undefined, undefined],
-          [undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
         ]);
       });
     });
-    describe('x', () => {
-      it('should return the x player if there is one', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+    describe('yellow', () => {
+      it('should return the yellow player if there is one', () => {
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
-        expect(controller.x).toBe(ourPlayer);
+        expect(controller.yellow).toBe(ourPlayer);
       });
-      it('should return undefined if there is no x player and the game is waiting to start', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+      it('should return undefined if there is no yellow player and the game is waiting to start', () => {
+        const controller = connect4AreaControllerWithProp({
           status: 'WAITING_TO_START',
         });
-        expect(controller.x).toBe(undefined);
+        expect(controller.yellow).toBe(undefined);
       });
-      it('should return undefined if there is no x player', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+      it('should return undefined if there is no yellow player', () => {
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          o: otherPlayers[0].id,
+          red: otherPlayers[0].id,
         });
-        expect(controller.x).toBe(undefined);
+        expect(controller.yellow).toBe(undefined);
       });
     });
-    describe('o', () => {
-      it('should return the o player if there is one', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+    describe('red', () => {
+      it('should return the red player if there is one', () => {
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: otherPlayers[0].id,
-          o: ourPlayer.id,
+          yellow: otherPlayers[0].id,
+          red: ourPlayer.id,
         });
-        expect(controller.o).toBe(ourPlayer);
+        expect(controller.red).toBe(ourPlayer);
       });
-      it('should return undefined if there is no o player and the game is waiting to start', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+      it('should return undefined if there is no red player and the game is waiting to start', () => {
+        const controller = connect4AreaControllerWithProp({
           status: 'WAITING_TO_START',
         });
-        expect(controller.o).toBe(undefined);
+        expect(controller.red).toBe(undefined);
       });
       it('should return undefined if there is no o player', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: otherPlayers[0].id,
+          yellow: otherPlayers[0].id,
         });
-        expect(controller.o).toBe(undefined);
+        expect(controller.red).toBe(undefined);
       });
     });
     describe('winner', () => {
       it('should return the winner if there is one', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'OVER',
-          x: otherPlayers[0].id,
-          o: ourPlayer.id,
+          yellow: otherPlayers[0].id,
+          red: ourPlayer.id,
           winner: ourPlayer.id,
         });
         expect(controller.winner).toBe(ourPlayer);
       });
       it('should return undefined if there is no winner', () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'OVER',
-          x: otherPlayers[0].id,
-          o: ourPlayer.id,
+          yellow: otherPlayers[0].id,
+          red: ourPlayer.id,
         });
         expect(controller.winner).toBe(undefined);
       });
     });
     describe('makeMove', () => {
       it('should throw an error if the game is not in progress', async () => {
-        const controller = ticTacToeAreaControllerWithProp({});
-        await expect(async () => controller.makeMove(0, 0)).rejects.toEqual(
+        const controller = connect4AreaControllerWithProp({});
+        await expect(async () => controller.makeMove(0)).rejects.toEqual(
           new Error(NO_GAME_IN_PROGRESS_ERROR),
         );
       });
       it('Should call townController.sendInteractableCommand', async () => {
-        const controller = ticTacToeAreaControllerWithProp({
+        const controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
         // Simulate joining the game for real
         const instanceID = nanoid();
@@ -329,14 +385,13 @@ describe('[T1] TicTacToeAreaController', () => {
         });
         await controller.joinGame();
         mockTownController.sendInteractableCommand.mockReset();
-        await controller.makeMove(2, 1);
+        await controller.makeMove(1);
         expect(mockTownController.sendInteractableCommand).toHaveBeenCalledWith(controller.id, {
           type: 'GameMove',
           gameID: instanceID,
           move: {
-            row: 2,
             col: 1,
-            gamePiece: 'X',
+            gamePiece: 'Yellow',
           },
         });
       });
@@ -344,30 +399,28 @@ describe('[T1] TicTacToeAreaController', () => {
   });
   describe('[T1.2] _updateFrom', () => {
     describe('if the game is in progress', () => {
-      let controller: TicTacToeAreaController;
+      let controller: Connect4AreaController;
       beforeEach(() => {
-        controller = ticTacToeAreaControllerWithProp({
+        controller = connect4AreaControllerWithProp({
           status: 'IN_PROGRESS',
-          x: ourPlayer.id,
-          o: otherPlayers[0].id,
+          yellow: ourPlayer.id,
+          red: otherPlayers[0].id,
         });
       });
       it('should emit a boardChanged event with the new board', () => {
         const model = controller.toInteractableAreaModel();
-        const newMoves: ReadonlyArray<TicTacToeMove> = [
+        const newMoves: ReadonlyArray<Connect4Move> = [
           {
-            gamePiece: 'X',
-            row: 0 as TicTacToeGridPosition,
-            col: 0 as TicTacToeGridPosition,
+            gamePiece: 'Yellow',
+            col: 0 as Connect4GridPosition,
           },
           {
-            gamePiece: 'O',
-            row: 1 as TicTacToeGridPosition,
-            col: 1 as TicTacToeGridPosition,
+            gamePiece: 'Red',
+            col: 1 as Connect4GridPosition,
           },
         ];
         assert(model.game);
-        const newModel: GameArea<TicTacToeGameState> = {
+        const newModel: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -383,27 +436,28 @@ describe('[T1] TicTacToeAreaController', () => {
         expect(boardChangedCall).toBeDefined();
         if (boardChangedCall)
           expect(boardChangedCall[1]).toEqual([
-            ['X', undefined, undefined],
-            [undefined, 'O', undefined],
-            [undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+            [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+            ['Yellow', 'Red', undefined, undefined, undefined, undefined, undefined],
           ]);
       });
       it('should emit a turnChanged event with true if it is our turn', () => {
         const model = controller.toInteractableAreaModel();
-        const newMoves: ReadonlyArray<TicTacToeMove> = [
+        const newMoves: ReadonlyArray<Connect4Move> = [
           {
-            gamePiece: 'X',
-            row: 0 as TicTacToeGridPosition,
-            col: 0 as TicTacToeGridPosition,
+            gamePiece: 'Yellow',
+            col: 0 as Connect4GridPosition,
           },
           {
-            gamePiece: 'O',
-            row: 1 as TicTacToeGridPosition,
-            col: 1 as TicTacToeGridPosition,
+            gamePiece: 'Red',
+            col: 1 as Connect4GridPosition,
           },
         ];
         assert(model.game);
-        const newModel: GameArea<TicTacToeGameState> = {
+        const newModel: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -414,7 +468,7 @@ describe('[T1] TicTacToeAreaController', () => {
           },
         };
         controller.updateFrom(newModel, otherPlayers.concat(ourPlayer));
-        const testModel: GameArea<TicTacToeGameState> = {
+        const testModel: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -432,16 +486,15 @@ describe('[T1] TicTacToeAreaController', () => {
       });
       it('should emit a turnChanged event with false if it is not our turn', () => {
         const model = controller.toInteractableAreaModel();
-        const newMoves: ReadonlyArray<TicTacToeMove> = [
+        const newMoves: ReadonlyArray<Connect4Move> = [
           {
-            gamePiece: 'X',
-            row: 0 as TicTacToeGridPosition,
-            col: 0 as TicTacToeGridPosition,
+            gamePiece: 'Yellow',
+            col: 0 as Connect4GridPosition,
           },
         ];
         expect(controller.isOurTurn).toBe(true);
         assert(model.game);
-        const newModel: GameArea<TicTacToeGameState> = {
+        const newModel: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -470,19 +523,17 @@ describe('[T1] TicTacToeAreaController', () => {
         const model = controller.toInteractableAreaModel();
         assert(model.game);
 
-        const newMoves: ReadonlyArray<TicTacToeMove> = [
+        const newMoves: ReadonlyArray<Connect4Move> = [
           {
-            gamePiece: 'X',
-            row: 0 as TicTacToeGridPosition,
-            col: 0 as TicTacToeGridPosition,
+            gamePiece: 'Yellow',
+            col: 0 as Connect4GridPosition,
           },
           {
-            gamePiece: 'O',
-            row: 1 as TicTacToeGridPosition,
-            col: 1 as TicTacToeGridPosition,
+            gamePiece: 'Red',
+            col: 1 as Connect4GridPosition,
           },
         ];
-        const newModel: GameArea<TicTacToeGameState> = {
+        const newModel: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -494,20 +545,18 @@ describe('[T1] TicTacToeAreaController', () => {
         };
         controller.updateFrom(newModel, otherPlayers.concat(ourPlayer));
 
-        const newMovesWithShuffle: ReadonlyArray<TicTacToeMove> = [
+        const newMovesWithShuffle: ReadonlyArray<Connect4Move> = [
           {
-            gamePiece: 'O',
-            row: 1 as TicTacToeGridPosition,
-            col: 1 as TicTacToeGridPosition,
+            gamePiece: 'Yellow',
+            col: 1 as Connect4GridPosition,
           },
           {
-            gamePiece: 'X',
-            row: 0 as TicTacToeGridPosition,
-            col: 0 as TicTacToeGridPosition,
+            gamePiece: 'Red',
+            col: 0 as Connect4GridPosition,
           },
         ];
 
-        const newModelWithSuffle: GameArea<TicTacToeGameState> = {
+        const newModelWithSuffle: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -524,20 +573,18 @@ describe('[T1] TicTacToeAreaController', () => {
       });
       it('should update the board returned by the board property', () => {
         const model = controller.toInteractableAreaModel();
-        const newMoves: ReadonlyArray<TicTacToeMove> = [
+        const newMoves: ReadonlyArray<Connect4Move> = [
           {
-            gamePiece: 'X',
-            row: 0 as TicTacToeGridPosition,
-            col: 0 as TicTacToeGridPosition,
+            gamePiece: 'Yellow',
+            col: 0 as Connect4GridPosition,
           },
           {
-            gamePiece: 'O',
-            row: 1 as TicTacToeGridPosition,
-            col: 1 as TicTacToeGridPosition,
+            gamePiece: 'Red',
+            col: 1 as Connect4GridPosition,
           },
         ];
         assert(model.game);
-        const newModel: GameArea<TicTacToeGameState> = {
+        const newModel: GameArea<Connect4GameState> = {
           ...model,
           game: {
             ...model.game,
@@ -549,9 +596,12 @@ describe('[T1] TicTacToeAreaController', () => {
         };
         controller.updateFrom(newModel, otherPlayers.concat(ourPlayer));
         expect(controller.board).toEqual([
-          ['X', undefined, undefined],
-          [undefined, 'O', undefined],
-          [undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          ['Yellow', 'Red', undefined, undefined, undefined, undefined, undefined],
         ]);
       });
     });
@@ -559,7 +609,7 @@ describe('[T1] TicTacToeAreaController', () => {
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore - we are testing spying on a private method
       const spy = jest.spyOn(GameAreaController.prototype, '_updateFrom');
-      const controller = ticTacToeAreaControllerWithProp({});
+      const controller = connect4AreaControllerWithProp({});
       const model = controller.toInteractableAreaModel();
       controller.updateFrom(model, otherPlayers.concat(ourPlayer));
       expect(spy).toHaveBeenCalled();
