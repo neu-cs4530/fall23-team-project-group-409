@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'Connect4Area';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -199,7 +199,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | GameMoveCommand<Connect4Move>;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -221,6 +221,7 @@ export type InteractableCommandReturnType<CommandType extends InteractableComman
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
+  CommandType extends GameMoveCommand<Connect4Move> ? undefined :
   never;
 
 export type InteractableCommandResponse<MessageType> = {
