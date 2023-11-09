@@ -2,8 +2,8 @@ import _ from 'lodash';
 import {
   GameArea,
   GameStatus,
-  TicTacToeGameState,
-  TicTacToeGridPosition,
+  Connect4GameState,
+  Connect4GridPosition,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
@@ -12,20 +12,20 @@ export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 
-export type TicTacToeCell = 'X' | 'O' | undefined;
-export type TicTacToeEvents = GameEventTypes & {
-  boardChanged: (board: TicTacToeCell[][]) => void;
+export type Connect4Cell = 'Yellow' | 'Red' | undefined;
+export type Connect4Events = GameEventTypes & {
+  boardChanged: (board: Connect4Cell[][]) => void;
   turnChanged: (isOurTurn: boolean) => void;
 };
 
 /**
- * This class is responsible for managing the state of the Tic Tac Toe game, and for sending commands to the server
+ * This class is responsible for managing the state of the Connect 4 game, and for sending commands to the server
  */
-export default class TicTacToeAreaController extends GameAreaController<
-  TicTacToeGameState,
-  TicTacToeEvents
+export default class Connect4AreaController extends GameAreaController<
+  Connect4GameState,
+  Connect4Events
 > {
-  protected _board: TicTacToeCell[][] = [
+  protected _board: Connect4Cell[][] = [
     [undefined, undefined, undefined],
     [undefined, undefined, undefined],
     [undefined, undefined, undefined],
@@ -34,12 +34,12 @@ export default class TicTacToeAreaController extends GameAreaController<
   /**
    * Returns the current state of the board.
    *
-   * The board is a 3x3 array of TicTacToeCell, which is either 'X', 'O', or undefined.
+   * The board is a 3x3 array of Connect4Cell, which is either 'X', 'O', or undefined.
    *
    * The 2-dimensional array is indexed by row and then column, so board[0][0] is the top-left cell,
    * and board[2][2] is the bottom-right cell
    */
-  get board(): TicTacToeCell[][] {
+  get board(): Connect4Cell[][] {
     return this._board;
   }
 
@@ -147,7 +147,7 @@ export default class TicTacToeAreaController extends GameAreaController<
   }
 
   /**
-   * Updates the internal state of this TicTacToeAreaController to match the new model.
+   * Updates the internal state of this Connect4AreaController to match the new model.
    *
    * Calls super._updateFrom, which updates the occupants of this game area and
    * other common properties (including this._model).
@@ -158,12 +158,12 @@ export default class TicTacToeAreaController extends GameAreaController<
    * If the turn has changed, emits a 'turnChanged' event with true if it is our turn, and false otherwise.
    * If the turn has not changed, does not emit the event.
    */
-  protected _updateFrom(newModel: GameArea<TicTacToeGameState>): void {
+  protected _updateFrom(newModel: GameArea<Connect4GameState>): void {
     const wasOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     super._updateFrom(newModel);
     const newState = newModel.game;
     if (newState) {
-      const newBoard: TicTacToeCell[][] = [
+      const newBoard: Connect4Cell[][] = [
         [undefined, undefined, undefined],
         [undefined, undefined, undefined],
         [undefined, undefined, undefined],
@@ -188,7 +188,7 @@ export default class TicTacToeAreaController extends GameAreaController<
    * @param row Row of the move
    * @param col Column of the move
    */
-  public async makeMove(row: TicTacToeGridPosition, col: TicTacToeGridPosition) {
+  public async makeMove(col: Connect4GridPosition) {
     const instanceID = this._instanceID;
     if (!instanceID || this._model.game?.state.status !== 'IN_PROGRESS') {
       throw new Error(NO_GAME_IN_PROGRESS_ERROR);
@@ -197,7 +197,6 @@ export default class TicTacToeAreaController extends GameAreaController<
       type: 'GameMove',
       gameID: instanceID,
       move: {
-        row,
         col,
         gamePiece: this.gamePiece,
       },
