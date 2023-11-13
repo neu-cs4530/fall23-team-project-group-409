@@ -68,8 +68,8 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
   const [joiningGame, setJoiningGame] = useState(false);
-  const [x, setX] = useState<PlayerController | undefined>(gameAreaController.x);
-  const [o, setO] = useState<PlayerController | undefined>(gameAreaController.o);
+  const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
+  const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
   const toast = useToast();
 
   useEffect(() => {
@@ -78,8 +78,8 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
       setGameStatus(gameAreaController.status || 'WAITING_TO_START');
       setMoveCount(gameAreaController.moveCount || 0);
       setObservers(gameAreaController.observers);
-      setX(gameAreaController.x);
-      setO(gameAreaController.o);
+      setY(gameAreaController.yellow);
+      setR(gameAreaController.red);
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
@@ -192,8 +192,8 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
       </Accordion>
       {gameStatusText}
       <List aria-label='list of players in the game'>
-        <ListItem>Yellow: {x?.userName || '(No player yet!)'}</ListItem>
-        <ListItem>Red: {o?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>Yellow: {y?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>Red: {r?.userName || '(No player yet!)'}</ListItem>
       </List>
       <Connect4Board gameAreaController={gameAreaController} />
     </Container>

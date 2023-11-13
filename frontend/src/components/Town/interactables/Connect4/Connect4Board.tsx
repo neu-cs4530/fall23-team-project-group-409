@@ -16,10 +16,10 @@ const StyledConnect4Square = chakra(Button, {
   baseStyle: {
     justifyContent: 'center',
     alignItems: 'center',
-    flexBasis: '33%',
-    border: '1px solid black',
-    height: '33%',
-    fontSize: '50px',
+    flexBasis: '14%',
+    border: '4px solid black',
+    height: '17%',
+    fontSize: '25px',
     _disabled: {
       opacity: '100%',
     },
@@ -32,7 +32,7 @@ const StyledConnect4Board = chakra(Container, {
   baseStyle: {
     display: 'flex',
     width: '400px',
-    height: '400px',
+    height: '345px',
     padding: '5px',
     flexWrap: 'wrap',
   },
@@ -87,8 +87,9 @@ export default function Connect4Board({ gameAreaController }: Connect4GameProps)
                 }
               }}
               disabled={!isOurTurn}
-              aria-label={`Cell ${rowIndex},${colIndex}`}>
-              {cell}
+              aria-label={`Cell ${rowIndex},${colIndex}`}
+              colorScheme={cell?.toLowerCase()}>
+              {}
             </StyledConnect4Square>
           );
         });
