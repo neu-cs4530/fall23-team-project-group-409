@@ -20,7 +20,7 @@ import {
 import PhaserGameArea from '../GameArea';
 import * as Leaderboard from '../Leaderboard';
 import TicTacToeAreaWrapper from './Connect4Area';
-import * as TicTacToeBoard from './Connect4Board';
+import * as TicTacToeBoard from './TicTacToeBoard';
 
 const mockToast = jest.fn();
 jest.mock('@chakra-ui/react', () => {
