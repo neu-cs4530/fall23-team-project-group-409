@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import TicTacToeBoard from './Connect4Board';
-import TicTacToeAreaController, {
-  TicTacToeCell,
-} from '../../../../classes/interactable/TicTacToeAreaController';
+import Connect4Board from './Connect4Board';
+import Connect4AreaController, {
+  Connect4Cell,
+} from '../../../../classes/interactable/Connect4AreaController';
 import { mock } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import { GameArea, GameStatus, TicTacToeGameState } from '../../../../types/CoveyTownSocket';
+import { Connect4GameState, GameArea, GameStatus } from '../../../../types/CoveyTownSocket';
 import TownController from '../../../../classes/TownController';
 import PlayerController from '../../../../classes/PlayerController';
 import { act } from 'react-dom/test-utils';
@@ -21,13 +21,16 @@ jest.mock('@chakra-ui/react', () => {
   };
 });
 
-class MockTicTacToeAreaController extends TicTacToeAreaController {
+class MockConnect4AreaController extends Connect4AreaController {
   makeMove = jest.fn();
 
-  mockBoard: TicTacToeCell[][] = [
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
+  mockBoard: Connect4Cell[][] = [
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
   ];
 
   mockIsPlayer = false;
@@ -35,7 +38,7 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
   mockIsOurTurn = false;
 
   public constructor() {
-    super(nanoid(), mock<GameArea<TicTacToeGameState>>(), mock<TownController>());
+    super(nanoid(), mock<GameArea<Connect4GameState>>(), mock<TownController>());
   }
 
   /*
@@ -46,7 +49,7 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
     */
   get board() {
     const copy = this.mockBoard.concat([]);
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       copy[i] = copy[i].concat([]);
     }
     return copy;
@@ -56,11 +59,11 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
     return this.mockIsOurTurn;
   }
 
-  get x(): PlayerController | undefined {
+  get yellow(): PlayerController | undefined {
     throw new Error('Method should not be called within this component.');
   }
 
-  get o(): PlayerController | undefined {
+  get red(): PlayerController | undefined {
     throw new Error('Method should not be called within this component.');
   }
 
@@ -88,7 +91,7 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
     return this.mockIsPlayer;
   }
 
-  get gamePiece(): 'X' | 'O' {
+  get gamePiece(): 'Yellow' | 'Red' {
     throw new Error('Method should not be called within this component.');
   }
 
@@ -97,15 +100,15 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
   }
 
   public mockReset() {
-    this.mockBoard = [
-      ['X', 'O', undefined],
-      [undefined, 'X', undefined],
-      [undefined, undefined, 'O'],
-    ];
+    // this.mockBoard = [
+    //   ['X', 'O', undefined],
+    //   [undefined, 'X', undefined],
+    //   [undefined, undefined, 'O'],
+    // ];
     this.makeMove.mockReset();
   }
 }
-describe('TicTacToeBoard', () => {
+describe('Connect4Board', () => {
   // Spy on console.error and intercept react key warnings to fail test
   let consoleErrorSpy: jest.SpyInstance<void, [message?: any, ...optionalParms: any[]]>;
   beforeAll(() => {
@@ -126,7 +129,7 @@ describe('TicTacToeBoard', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  const gameAreaController = new MockTicTacToeAreaController();
+  const gameAreaController = new MockConnect4AreaController();
   beforeEach(() => {
     gameAreaController.mockReset();
     mockToast.mockReset();
@@ -142,26 +145,26 @@ describe('TicTacToeBoard', () => {
   }) {
     const cells = screen.getAllByRole('button');
     // There should be exactly 9 buttons: one per-cell (and no other buttons in this component)
-    expect(cells).toHaveLength(9);
+    expect(cells).toHaveLength(42);
     // Each cell should have the correct aria-label
-    for (let i = 0; i < 9; i++) {
-      expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 3)},${i % 3}`);
+    for (let i = 0; i < 42; i++) {
+      expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 7)},${i % 7}`);
     }
     // Each cell should have the correct text content
-    for (let i = 0; i < 9; i++) {
-      const cell = gameAreaController.board[Math.floor(i / 3)][i % 3];
+    for (let i = 0; i < 42; i++) {
+      const cell = gameAreaController.board[Math.floor(i / 7)][i % 7];
       expect(cells[i]).toHaveTextContent(cell ? cell : '');
     }
     if (clickable) {
       // Each cell should be clickable if it is the player's turn
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 42; i++) {
         expect(cells[i]).toBeEnabled();
         gameAreaController.makeMove.mockReset();
         mockToast.mockClear();
 
         fireEvent.click(cells[i]);
         if (checkMakeMove) {
-          expect(gameAreaController.makeMove).toBeCalledWith(Math.floor(i / 3), i % 3);
+          expect(gameAreaController.makeMove).toBeCalledWith(Math.floor(i / 7), i % 7);
           if (checkToast) {
             gameAreaController.makeMove.mockClear();
             expect(mockToast).not.toBeCalled();
@@ -182,23 +185,23 @@ describe('TicTacToeBoard', () => {
       }
     } else {
       // Each cell should be disabled if it is not the player's turn
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 42; i++) {
         expect(cells[i]).toBeDisabled();
       }
     }
   }
-  describe('[T3.1] When observing the game', () => {
+  describe('When observing the game', () => {
     beforeEach(() => {
       gameAreaController.mockIsPlayer = false;
     });
     it('renders the board with the correct number of cells', async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       const cells = screen.getAllByRole('button');
       // There should be exactly 9 buttons: one per-cell (and no other buttons in this component)
-      expect(cells).toHaveLength(9);
+      expect(cells).toHaveLength(42);
       // Each cell should have the correct aria-label
-      for (let i = 0; i < 9; i++) {
-        expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 3)},${i % 3}`);
+      for (let i = 0; i < 42; i++) {
+        expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 7)},${i % 7}`);
       }
       // Each cell should have the correct text content
       expect(cells[0]).toHaveTextContent('X');
@@ -212,7 +215,7 @@ describe('TicTacToeBoard', () => {
       expect(cells[8]).toHaveTextContent('O');
     });
     it('does not make a move when a cell is clicked, and cell is disabled', async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       const cells = screen.getAllByRole('button');
       for (let i = 0; i < 9; i++) {
         expect(cells[i]).toBeDisabled();
@@ -222,7 +225,7 @@ describe('TicTacToeBoard', () => {
       }
     });
     it('updates the board displayed in response to boardChanged events', async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       gameAreaController.mockBoard = [
         ['O', 'X', 'O'],
         ['X', 'O', 'X'],
