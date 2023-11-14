@@ -548,11 +548,11 @@ describe('[T1] Connect4AreaController', () => {
         const newMovesWithShuffle: ReadonlyArray<Connect4Move> = [
           {
             gamePiece: 'Yellow',
-            col: 1 as Connect4GridPosition,
+            col: 0 as Connect4GridPosition,
           },
           {
             gamePiece: 'Red',
-            col: 0 as Connect4GridPosition,
+            col: 1 as Connect4GridPosition,
           },
         ];
 
