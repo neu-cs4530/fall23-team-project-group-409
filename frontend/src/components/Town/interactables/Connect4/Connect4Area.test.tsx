@@ -4,9 +4,9 @@ import { mock, mockReset } from 'jest-mock-extended';
 import React from 'react';
 import { nanoid } from 'nanoid';
 import { act } from 'react-dom/test-utils';
-import TicTacToeAreaController, {
-  TicTacToeCell,
-} from '../../../../classes/interactable/TicTacToeAreaController';
+import Connect4AreaController, {
+  Connect4Cell,
+} from '../../../../classes/interactable/Connect4AreaController';
 import PlayerController from '../../../../classes/PlayerController';
 import TownController, * as TownControllerHooks from '../../../../classes/TownController';
 import TownControllerContext from '../../../../contexts/TownControllerContext';
@@ -15,12 +15,12 @@ import {
   GameResult,
   GameStatus,
   PlayerLocation,
-  TicTacToeGameState,
+  Connect4GameState,
 } from '../../../../types/CoveyTownSocket';
 import PhaserGameArea from '../GameArea';
 import * as Leaderboard from '../Leaderboard';
-import TicTacToeAreaWrapper from './Connect4Area';
-import * as TicTacToeBoard from '../TicTacToe/TicTacToeBoard';
+import Connect4AreaWrapper from './Connect4Area';
+import * as Connect4Board from '../Connect4/Connect4Board';
 
 const mockToast = jest.fn();
 jest.mock('@chakra-ui/react', () => {
