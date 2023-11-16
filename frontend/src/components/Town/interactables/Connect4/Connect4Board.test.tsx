@@ -144,13 +144,13 @@ describe('Connect4Board', () => {
     checkToast?: boolean;
   }) {
     const cells = screen.getAllByRole('button');
-    // There should be exactly 9 buttons: one per-cell (and no other buttons in this component)
+    // 42 buttons for each square of connect 4 board
     expect(cells).toHaveLength(42);
     // Each cell should have the correct aria-label
     for (let i = 0; i < 42; i++) {
       expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 7)},${i % 7}`);
     }
-    // Each cell should have the correct text content
+    // Each cell should have no texte content
     for (let i = 0; i < 42; i++) {
       const cell = gameAreaController.board[Math.floor(i / 7)][i % 7];
       expect(cells[i]).toHaveTextContent(cell ? cell : '');
@@ -204,20 +204,53 @@ describe('Connect4Board', () => {
         expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 7)},${i % 7}`);
       }
       // Each cell should have the correct text content
-      expect(cells[0]).toHaveTextContent('X');
-      expect(cells[1]).toHaveTextContent('O');
+      expect(cells[0]).toHaveTextContent('');
+      expect(cells[1]).toHaveTextContent('');
       expect(cells[2]).toHaveTextContent('');
       expect(cells[3]).toHaveTextContent('');
-      expect(cells[4]).toHaveTextContent('X');
+      expect(cells[4]).toHaveTextContent('');
       expect(cells[5]).toHaveTextContent('');
       expect(cells[6]).toHaveTextContent('');
       expect(cells[7]).toHaveTextContent('');
-      expect(cells[8]).toHaveTextContent('O');
+      expect(cells[8]).toHaveTextContent('');
+      expect(cells[9]).toHaveTextContent('');
+      expect(cells[10]).toHaveTextContent('');
+      expect(cells[11]).toHaveTextContent('');
+      expect(cells[12]).toHaveTextContent('');
+      expect(cells[13]).toHaveTextContent('');
+      expect(cells[14]).toHaveTextContent('');
+      expect(cells[15]).toHaveTextContent('');
+      expect(cells[16]).toHaveTextContent('');
+      expect(cells[17]).toHaveTextContent('');
+      expect(cells[18]).toHaveTextContent('');
+      expect(cells[19]).toHaveTextContent('');
+      expect(cells[20]).toHaveTextContent('');
+      expect(cells[21]).toHaveTextContent('');
+      expect(cells[22]).toHaveTextContent('');
+      expect(cells[23]).toHaveTextContent('');
+      expect(cells[24]).toHaveTextContent('');
+      expect(cells[25]).toHaveTextContent('');
+      expect(cells[26]).toHaveTextContent('');
+      expect(cells[27]).toHaveTextContent('');
+      expect(cells[28]).toHaveTextContent('');
+      expect(cells[29]).toHaveTextContent('');
+      expect(cells[30]).toHaveTextContent('');
+      expect(cells[31]).toHaveTextContent('');
+      expect(cells[32]).toHaveTextContent('');
+      expect(cells[33]).toHaveTextContent('');
+      expect(cells[34]).toHaveTextContent('');
+      expect(cells[35]).toHaveTextContent('');
+      expect(cells[36]).toHaveTextContent('');
+      expect(cells[37]).toHaveTextContent('');
+      expect(cells[38]).toHaveTextContent('');
+      expect(cells[39]).toHaveTextContent('');
+      expect(cells[40]).toHaveTextContent('');
+      expect(cells[41]).toHaveTextContent('');
     });
     it('does not make a move when a cell is clicked, and cell is disabled', async () => {
       render(<Connect4Board gameAreaController={gameAreaController} />);
       const cells = screen.getAllByRole('button');
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 42; i++) {
         expect(cells[i]).toBeDisabled();
         fireEvent.click(cells[i]);
         expect(gameAreaController.makeMove).not.toHaveBeenCalled();
@@ -227,18 +260,24 @@ describe('Connect4Board', () => {
     it('updates the board displayed in response to boardChanged events', async () => {
       render(<Connect4Board gameAreaController={gameAreaController} />);
       gameAreaController.mockBoard = [
-        ['O', 'X', 'O'],
-        ['X', 'O', 'X'],
-        ['O', 'X', 'O'],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, 'Red', undefined, undefined, undefined, undefined],
+        ['Yellow', 'Red', 'Yellow', 'Red', 'Yellow', undefined, undefined],
       ];
       act(() => {
         gameAreaController.emit('boardChanged', gameAreaController.mockBoard);
       });
       await checkBoard({});
       gameAreaController.mockBoard = [
-        ['X', 'O', 'X'],
-        [undefined, undefined, 'X'],
-        ['O', 'X', undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        ['Yellow', 'Red', 'Yellow', 'Red', 'Yellow', undefined, undefined],
       ];
       act(() => {
         gameAreaController.emit('boardChanged', gameAreaController.mockBoard);
@@ -246,13 +285,14 @@ describe('Connect4Board', () => {
       await checkBoard({});
     });
   });
+  // START WRITING HERE
   describe('[T3.2] When playing the game', () => {
     beforeEach(() => {
       gameAreaController.mockIsPlayer = true;
       gameAreaController.mockIsOurTurn = true;
     });
     it("enables cells when it is the player's turn", async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       await checkBoard({ clickable: true });
       gameAreaController.mockIsOurTurn = false;
       act(() => {
@@ -261,20 +301,23 @@ describe('Connect4Board', () => {
       await checkBoard({ clickable: false });
     });
     it('makes a move when a cell is clicked', async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       await checkBoard({ clickable: true, checkMakeMove: true });
     });
     it('displays an error toast when an invalid move is made', async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       await checkBoard({ clickable: true, checkMakeMove: true, checkToast: true });
     });
     it('updates the board in response to boardChanged events', async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       await checkBoard({ clickable: true });
       gameAreaController.mockBoard = [
-        ['O', 'X', 'O'],
-        ['X', 'O', 'X'],
-        ['O', 'X', 'O'],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, 'Red', undefined, undefined, undefined, undefined],
+        ['Yellow', 'Red', 'Yellow', 'Red', 'Yellow', undefined, undefined],
       ];
       act(() => {
         gameAreaController.emit('boardChanged', gameAreaController.mockBoard);
@@ -282,7 +325,7 @@ describe('Connect4Board', () => {
       await checkBoard({ clickable: true });
     });
     it("disables cells when it is not the player's turn", async () => {
-      render(<TicTacToeBoard gameAreaController={gameAreaController} />);
+      render(<Connect4Board gameAreaController={gameAreaController} />);
       await checkBoard({ clickable: true });
       gameAreaController.mockIsOurTurn = false;
       act(() => {
