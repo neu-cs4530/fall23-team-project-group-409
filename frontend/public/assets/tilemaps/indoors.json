@@ -562,12 +562,12 @@
                 {
                  "height":83.8442547785938,
                  "id":43,
-                 "name":"Tic Tac Toe 1",
+                 "name":"Connect 4 1",
                  "properties":[
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"TicTacToe"
+                         "value":"Connect4"
                         }],
                  "rotation":0,
                  "type":"GameArea",
