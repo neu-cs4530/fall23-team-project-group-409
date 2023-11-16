@@ -359,7 +359,11 @@ describe('[T2] Connect4Area', () => {
     });
     it('Is not shown if the game is in progress', () => {
       gameAreaController.mockStatus = 'IN_PROGRESS';
-      gameAreaController.mockYellow = new PlayerController('player X', 'player X', randomLocation());
+      gameAreaController.mockYellow = new PlayerController(
+        'player X',
+        'player X',
+        randomLocation(),
+      );
       gameAreaController.mockRed = new PlayerController('player O', 'player O', randomLocation());
       gameAreaController.mockIsPlayer = false;
       renderConnect4Area();
@@ -424,7 +428,11 @@ describe('[T2] Connect4Area', () => {
     it('Adds the display of the button when a game becomes possible to join', () => {
       gameAreaController.mockStatus = 'IN_PROGRESS';
       gameAreaController.mockIsPlayer = false;
-      gameAreaController.mockYellow = new PlayerController('player X', 'player X', randomLocation());
+      gameAreaController.mockYellow = new PlayerController(
+        'player X',
+        'player X',
+        randomLocation(),
+      );
       gameAreaController.mockRed = new PlayerController('player O', 'player O', randomLocation());
       renderConnect4Area();
       expect(screen.queryByText('Join New Game')).not.toBeInTheDocument();
@@ -443,7 +451,11 @@ describe('[T2] Connect4Area', () => {
       expect(screen.queryByText('Join New Game')).toBeInTheDocument();
       act(() => {
         gameAreaController.mockStatus = 'IN_PROGRESS';
-        gameAreaController.mockYellow = new PlayerController('player X', 'player X', randomLocation());
+        gameAreaController.mockYellow = new PlayerController(
+          'player X',
+          'player X',
+          randomLocation(),
+        );
         gameAreaController.emit('gameUpdated');
       });
       expect(screen.queryByText('Join New Game')).not.toBeInTheDocument();
@@ -458,7 +470,11 @@ describe('[T2] Connect4Area', () => {
       ];
       gameAreaController.mockStatus = 'IN_PROGRESS';
       gameAreaController.mockIsPlayer = false;
-      gameAreaController.mockYellow = new PlayerController('player X', 'player X', randomLocation());
+      gameAreaController.mockYellow = new PlayerController(
+        'player X',
+        'player X',
+        randomLocation(),
+      );
       gameAreaController.mockRed = new PlayerController('player O', 'player O', randomLocation());
     });
     it('Displays the correct observers when the component is mounted', () => {
@@ -489,7 +505,7 @@ describe('[T2] Connect4Area', () => {
       }
     });
   });
-  describe('[T2.5] Players in the game text', () => {
+  describe('Players in the game text', () => {
     it('Displays the username of the X player if the X player is in the game', () => {
       gameAreaController.mockStatus = 'IN_PROGRESS';
       gameAreaController.mockIsPlayer = false;
@@ -497,7 +513,7 @@ describe('[T2] Connect4Area', () => {
       renderConnect4Area();
       const listOfPlayers = screen.getByLabelText('list of players in the game');
       expect(
-        within(listOfPlayers).getByText(`X: ${gameAreaController.mockYellow?.userName}`),
+        within(listOfPlayers).getByText(`Yellow: ${gameAreaController.mockYellow?.userName}`),
       ).toBeInTheDocument();
     });
     it('Displays the username of the O player if the O player is in the game', () => {
@@ -507,7 +523,7 @@ describe('[T2] Connect4Area', () => {
       renderConnect4Area();
       const listOfPlayers = screen.getByLabelText('list of players in the game');
       expect(
-        within(listOfPlayers).getByText(`O: ${gameAreaController.mockRed?.userName}`),
+        within(listOfPlayers).getByText(`Red: ${gameAreaController.mockRed?.userName}`),
       ).toBeInTheDocument();
     });
     it('Displays "X: (No player yet!)" if the X player is not in the game', () => {
@@ -516,7 +532,7 @@ describe('[T2] Connect4Area', () => {
       gameAreaController.mockYellow = undefined;
       renderConnect4Area();
       const listOfPlayers = screen.getByLabelText('list of players in the game');
-      expect(within(listOfPlayers).getByText(`X: (No player yet!)`)).toBeInTheDocument();
+      expect(within(listOfPlayers).getByText(`Yellow: (No player yet!)`)).toBeInTheDocument();
     });
     it('Displays "O: (No player yet!)" if the O player is not in the game', () => {
       gameAreaController.mockStatus = 'IN_PROGRESS';
@@ -524,20 +540,20 @@ describe('[T2] Connect4Area', () => {
       gameAreaController.mockRed = undefined;
       renderConnect4Area();
       const listOfPlayers = screen.getByLabelText('list of players in the game');
-      expect(within(listOfPlayers).getByText(`O: (No player yet!)`)).toBeInTheDocument();
+      expect(within(listOfPlayers).getByText(`Red: (No player yet!)`)).toBeInTheDocument();
     });
     it('Updates the X player when the game is updated', () => {
       gameAreaController.mockStatus = 'IN_PROGRESS';
       gameAreaController.mockIsPlayer = false;
       renderConnect4Area();
       const listOfPlayers = screen.getByLabelText('list of players in the game');
-      expect(within(listOfPlayers).getByText(`X: (No player yet!)`)).toBeInTheDocument();
+      expect(within(listOfPlayers).getByText(`Yellow: (No player yet!)`)).toBeInTheDocument();
       act(() => {
         gameAreaController.mockYellow = new PlayerController(nanoid(), nanoid(), randomLocation());
         gameAreaController.emit('gameUpdated');
       });
       expect(
-        within(listOfPlayers).getByText(`X: ${gameAreaController.mockYellow?.userName}`),
+        within(listOfPlayers).getByText(`Yellow: ${gameAreaController.mockYellow?.userName}`),
       ).toBeInTheDocument();
     });
     it('Updates the O player when the game is updated', () => {
@@ -545,13 +561,13 @@ describe('[T2] Connect4Area', () => {
       gameAreaController.mockIsPlayer = false;
       renderConnect4Area();
       const listOfPlayers = screen.getByLabelText('list of players in the game');
-      expect(within(listOfPlayers).getByText(`O: (No player yet!)`)).toBeInTheDocument();
+      expect(within(listOfPlayers).getByText(`Red: (No player yet!)`)).toBeInTheDocument();
       act(() => {
         gameAreaController.mockRed = new PlayerController(nanoid(), nanoid(), randomLocation());
         gameAreaController.emit('gameUpdated');
       });
       expect(
-        within(listOfPlayers).getByText(`O: ${gameAreaController.mockRed?.userName}`),
+        within(listOfPlayers).getByText(`Red: ${gameAreaController.mockRed?.userName}`),
       ).toBeInTheDocument();
     });
   });
