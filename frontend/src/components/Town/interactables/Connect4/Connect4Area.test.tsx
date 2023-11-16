@@ -32,7 +32,7 @@ jest.mock('@chakra-ui/react', () => {
   };
 });
 const mockGameArea = mock<PhaserGameArea>();
-mockGameArea.getData.mockReturnValue('TicTacToe');
+mockGameArea.getData.mockReturnValue('Connect4');
 jest.spyOn(TownControllerHooks, 'useInteractable').mockReturnValue(mockGameArea);
 const useInteractableAreaControllerSpy = jest.spyOn(
   TownControllerHooks,
@@ -42,7 +42,7 @@ const useInteractableAreaControllerSpy = jest.spyOn(
 const leaderboardComponentSpy = jest.spyOn(Leaderboard, 'default');
 leaderboardComponentSpy.mockReturnValue(<div data-testid='leaderboard' />);
 
-const boardComponentSpy = jest.spyOn(TicTacToeBoard, 'default');
+const boardComponentSpy = jest.spyOn(Connect4Board, 'default');
 boardComponentSpy.mockReturnValue(<div data-testid='board' />);
 
 const randomLocation = (): PlayerLocation => ({
@@ -52,15 +52,18 @@ const randomLocation = (): PlayerLocation => ({
   y: Math.random() * 1000,
 });
 
-class MockTicTacToeAreaController extends TicTacToeAreaController {
+class MockConnect4AreaController extends Connect4AreaController {
   makeMove = jest.fn();
 
   joinGame = jest.fn();
 
-  mockBoard: TicTacToeCell[][] = [
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
-    [undefined, undefined, undefined],
+  mockBoard: Connect4Cell[][] = [
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
   ];
 
   mockIsPlayer = false;
@@ -81,19 +84,19 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
 
   mockO: PlayerController | undefined = undefined;
 
-  mockCurrentGame: GameArea<TicTacToeGameState> | undefined = undefined;
+  mockCurrentGame: GameArea<Connect4GameState> | undefined = undefined;
 
-  mockGamePiece: 'X' | 'O' = 'X';
+  mockGamePiece: 'Red' | 'Yellow' = 'Yellow';
 
   mockIsActive = false;
 
   mockHistory: GameResult[] = [];
 
   public constructor() {
-    super(nanoid(), mock<GameArea<TicTacToeGameState>>(), mock<TownController>());
+    super(nanoid(), mock<GameArea<Connect4GameState>>(), mock<TownController>());
   }
 
-  get board(): TicTacToeCell[][] {
+  get board(): Connect4Cell[][] {
     throw new Error('Method should not be called within this component.');
   }
 
@@ -137,7 +140,7 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
     return this.mockIsPlayer;
   }
 
-  get gamePiece(): 'X' | 'O' {
+  get gamePiece(): 'Red' | 'Yellow' {
     return this.mockGamePiece;
   }
 
@@ -147,14 +150,17 @@ class MockTicTacToeAreaController extends TicTacToeAreaController {
 
   public mockReset() {
     this.mockBoard = [
-      ['X', 'O', undefined],
-      [undefined, 'X', undefined],
-      [undefined, undefined, 'O'],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, 'Red', undefined, undefined, undefined, undefined],
+      ['Yellow', 'Red', 'Yellow', 'Red', 'Yellow', undefined, undefined],
     ];
     this.makeMove.mockReset();
   }
 }
-describe('[T2] TicTacToeArea', () => {
+describe('[T2] Connect4Area', () => {
   // Spy on console.error and intercept react key warnings to fail test
   let consoleErrorSpy: jest.SpyInstance<void, [message?: any, ...optionalParms: any[]]>;
   beforeAll(() => {
@@ -178,21 +184,21 @@ describe('[T2] TicTacToeArea', () => {
   let ourPlayer: PlayerController;
   const townController = mock<TownController>();
   Object.defineProperty(townController, 'ourPlayer', { get: () => ourPlayer });
-  let gameAreaController = new MockTicTacToeAreaController();
+  let gameAreaController = new MockConnect4AreaController();
   let joinGameResolve: () => void;
   let joinGameReject: (err: Error) => void;
 
-  function renderTicTacToeArea() {
+  function renderConnect4Area() {
     return render(
       <ChakraProvider>
         <TownControllerContext.Provider value={townController}>
-          <TicTacToeAreaWrapper />
+          <Connect4AreaWrapper />
         </TownControllerContext.Provider>
       </ChakraProvider>,
     );
   }
   beforeEach(() => {
-    ourPlayer = new PlayerController('player x', 'player x', randomLocation());
+    ourPlayer = new PlayerController('player yellow', 'player yellow', randomLocation());
     mockGameArea.name = nanoid();
     mockReset(townController);
     gameAreaController.mockReset();
