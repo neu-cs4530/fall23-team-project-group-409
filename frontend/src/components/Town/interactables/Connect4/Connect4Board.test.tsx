@@ -150,10 +150,9 @@ describe('Connect4Board', () => {
     for (let i = 0; i < 42; i++) {
       expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 7)},${i % 7}`);
     }
-    // Each cell should have no texte content
+    // Each cell should have no text content
     for (let i = 0; i < 42; i++) {
-      const cell = gameAreaController.board[Math.floor(i / 7)][i % 7];
-      expect(cells[i]).toHaveTextContent(cell ? cell : '');
+      expect(cells[i]).toHaveTextContent('');
     }
     if (clickable) {
       // Each cell should be clickable if it is the player's turn
@@ -164,7 +163,7 @@ describe('Connect4Board', () => {
 
         fireEvent.click(cells[i]);
         if (checkMakeMove) {
-          expect(gameAreaController.makeMove).toBeCalledWith(Math.floor(i / 7), i % 7);
+          expect(gameAreaController.makeMove).toBeCalledWith(i % 7);
           if (checkToast) {
             gameAreaController.makeMove.mockClear();
             expect(mockToast).not.toBeCalled();
@@ -199,53 +198,11 @@ describe('Connect4Board', () => {
       const cells = screen.getAllByRole('button');
       // There should be exactly 9 buttons: one per-cell (and no other buttons in this component)
       expect(cells).toHaveLength(42);
-      // Each cell should have the correct aria-label
+      // Each cell should have the correct aria-label and TextContent
       for (let i = 0; i < 42; i++) {
         expect(cells[i]).toHaveAttribute('aria-label', `Cell ${Math.floor(i / 7)},${i % 7}`);
+        expect(cells[i]).toHaveTextContent('');
       }
-      // Each cell should have the correct text content
-      expect(cells[0]).toHaveTextContent('');
-      expect(cells[1]).toHaveTextContent('');
-      expect(cells[2]).toHaveTextContent('');
-      expect(cells[3]).toHaveTextContent('');
-      expect(cells[4]).toHaveTextContent('');
-      expect(cells[5]).toHaveTextContent('');
-      expect(cells[6]).toHaveTextContent('');
-      expect(cells[7]).toHaveTextContent('');
-      expect(cells[8]).toHaveTextContent('');
-      expect(cells[9]).toHaveTextContent('');
-      expect(cells[10]).toHaveTextContent('');
-      expect(cells[11]).toHaveTextContent('');
-      expect(cells[12]).toHaveTextContent('');
-      expect(cells[13]).toHaveTextContent('');
-      expect(cells[14]).toHaveTextContent('');
-      expect(cells[15]).toHaveTextContent('');
-      expect(cells[16]).toHaveTextContent('');
-      expect(cells[17]).toHaveTextContent('');
-      expect(cells[18]).toHaveTextContent('');
-      expect(cells[19]).toHaveTextContent('');
-      expect(cells[20]).toHaveTextContent('');
-      expect(cells[21]).toHaveTextContent('');
-      expect(cells[22]).toHaveTextContent('');
-      expect(cells[23]).toHaveTextContent('');
-      expect(cells[24]).toHaveTextContent('');
-      expect(cells[25]).toHaveTextContent('');
-      expect(cells[26]).toHaveTextContent('');
-      expect(cells[27]).toHaveTextContent('');
-      expect(cells[28]).toHaveTextContent('');
-      expect(cells[29]).toHaveTextContent('');
-      expect(cells[30]).toHaveTextContent('');
-      expect(cells[31]).toHaveTextContent('');
-      expect(cells[32]).toHaveTextContent('');
-      expect(cells[33]).toHaveTextContent('');
-      expect(cells[34]).toHaveTextContent('');
-      expect(cells[35]).toHaveTextContent('');
-      expect(cells[36]).toHaveTextContent('');
-      expect(cells[37]).toHaveTextContent('');
-      expect(cells[38]).toHaveTextContent('');
-      expect(cells[39]).toHaveTextContent('');
-      expect(cells[40]).toHaveTextContent('');
-      expect(cells[41]).toHaveTextContent('');
     });
     it('does not make a move when a cell is clicked, and cell is disabled', async () => {
       render(<Connect4Board gameAreaController={gameAreaController} />);
@@ -285,8 +242,7 @@ describe('Connect4Board', () => {
       await checkBoard({});
     });
   });
-  // START WRITING HERE
-  describe('[T3.2] When playing the game', () => {
+  describe('When playing the game', () => {
     beforeEach(() => {
       gameAreaController.mockIsPlayer = true;
       gameAreaController.mockIsOurTurn = true;
