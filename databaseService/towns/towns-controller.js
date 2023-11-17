@@ -4,8 +4,6 @@ const TownsController = (app) => {
     app.get('/api/towns', findAllTowns)
     app.get('/api/towns/:townId', findTownByTownId);
     app.post('/api/towns', createTown);
-    // app.delete('/api/videos/:id', deleteVid);
-    // app.put('/api/videos/:id', updateVid);
 }
 
 const findAllTowns = async (req, res) => {
