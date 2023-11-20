@@ -52,7 +52,6 @@ export default function TownMap(): JSX.Element {
       <NewConversationModal />
       <TicTacToeAreaWrapper />
       <Connect4AreaWrapper />
-      <Connect4AreaWrapper />
 
       <div id='map-container' />
       <div id='social-container'>
