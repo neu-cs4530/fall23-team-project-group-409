@@ -545,7 +545,7 @@
                 {
                  "height":92.2796984663374,
                  "id":39,
-                 "name":"Tic Tac Toe 2",
+                 "name":"Tic Tac Toe",
                  "properties":[
                         {
                          "name":"type",
@@ -562,7 +562,7 @@
                 {
                  "height":83.8442547785938,
                  "id":43,
-                 "name":"Connect 4 1",
+                 "name":"Connect 4",
                  "properties":[
                         {
                          "name":"type",

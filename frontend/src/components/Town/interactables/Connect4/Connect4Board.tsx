@@ -1,4 +1,4 @@
-import { Button, chakra, Container, useToast } from '@chakra-ui/react';
+import { IconButton, chakra, Container, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Connect4AreaController, {
   Connect4Cell,
@@ -12,7 +12,7 @@ export type Connect4GameProps = {
 /**
  * A component that will render a single cell in the Connect4 board, styled
  */
-const StyledConnect4Square = chakra(Button, {
+const StyledConnect4Square = chakra(IconButton, {
   baseStyle: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -75,6 +75,7 @@ export default function Connect4Board({ gameAreaController }: Connect4GameProps)
           return (
             <StyledConnect4Square
               key={`${rowIndex}.${colIndex}`}
+              isRound={true}
               onClick={async () => {
                 try {
                   await gameAreaController.makeMove(colIndex as Connect4GridPosition);
