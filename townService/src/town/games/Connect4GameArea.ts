@@ -22,7 +22,7 @@ import GameArea from './GameArea';
  * @see Connect4Game
  * @see GameArea
  */
-export default class Connect4GameArea extends GameArea<Connect4BotGame> {
+export default class Connect4GameArea extends GameArea<Connect4Game> {
   protected getType(): InteractableType {
     return 'Connect4Area';
   }
@@ -100,7 +100,7 @@ export default class Connect4GameArea extends GameArea<Connect4BotGame> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new Connect4BotGame();
+        game = new Connect4Game();
         this._game = game;
       }
       game.join(player);
