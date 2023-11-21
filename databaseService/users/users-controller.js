@@ -1,11 +1,12 @@
 import * as usersDao from "./users-dao.js"
+import usersModel from "./users-model.js";
 
 const UsersController = (app) => {
     app.get('/api/users', findAllUsers);
     app.get('/api/users/:id', findUserById);
     app.get('/api/users/usernametown', findUserByUsernameAndTown);
+    app.get('/api/users/bytown/:id', findUsersByTown);
     app.post('/api/users', createUser);
-    // app.delete('/api/videos/:id', deleteVid);
     app.put('/api/users/elo/:id', updateELO);
 }
 
@@ -51,6 +52,12 @@ const updateELO = async (req, res) => {
 
     const updatedUser = await user.save();
     res.json(updatedUser);
+}
+
+const findUsersByTown = async (req, res) => {
+    const townId = req.params.id;
+    const users = await usersModel.find({whatTown : townId})
+    res.json(users)
 }
 
 /*

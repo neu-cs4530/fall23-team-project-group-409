@@ -5,7 +5,6 @@ const GamesController = (app) => {
     app.get('/api/games/:id', findGameById);
     app.get('/api/games/player/:id', findGamesByPlayerId);
     app.post('/api/games', createGame);
-    // app.delete('/api/games/:id', deleteGame);
     app.put('/api/games/:id', updateGame);
 }
 
