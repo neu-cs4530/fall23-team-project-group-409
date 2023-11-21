@@ -6,6 +6,7 @@ import InvalidParametersError, {
 import Player from '../../lib/Player';
 import {
   Connect4GameState,
+  Connect4GridPosition,
   Connect4Move,
   GameInstance,
   InteractableCommand,
@@ -96,8 +97,17 @@ export default class Connect4BotGameArea extends GameArea<Connect4Game> {
       });
       this._stateUpdated(game.toModel());
 
-      if (game.state.status !== 'OVER') {
-        // do something
+      if (game.state.status !== 'OVER' && this._bot !== undefined) {
+        const bestBotMove = this._getBotMove();
+        // create and apply the move
+        game.applyMove({
+          gameID: command.gameID,
+          playerID: this._bot?.id,
+          move: {
+            gamePiece: 'Red',
+            col: bestBotMove,
+          },
+        });
       }
 
       return undefined as InteractableCommandReturnType<CommandType>;
@@ -133,10 +143,16 @@ export default class Connect4BotGameArea extends GameArea<Connect4Game> {
       // leave the bot Player (if it exists)
       if (this._bot !== undefined) {
         game.leave(this._bot);
+        this._bot = undefined;
         this._stateUpdated(game.toModel());
       }
       return undefined as InteractableCommandReturnType<CommandType>;
     }
     throw new InvalidParametersError(INVALID_COMMAND_MESSAGE);
+  }
+
+  private _getBotMove(): Connect4GridPosition {
+    const game = this._game;
+    return 0;
   }
 }

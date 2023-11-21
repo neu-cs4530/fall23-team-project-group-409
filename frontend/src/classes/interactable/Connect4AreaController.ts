@@ -93,7 +93,7 @@ export default class Connect4AreaController extends GameAreaController<
   get whoseTurn(): PlayerController | undefined {
     const yellow = this.yellow;
     const red = this.red;
-    if (!yellow || !red || this._model.game?.state.status !== 'IN_PROGRESS') {
+    if (!yellow || this._model.game?.state.status !== 'IN_PROGRESS') {
       return undefined;
     }
     if (this.moveCount % 2 === 0) {

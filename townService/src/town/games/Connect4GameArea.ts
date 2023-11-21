@@ -13,6 +13,7 @@ import {
   InteractableType,
   TicTacToeMove,
 } from '../../types/CoveyTownSocket';
+import Connect4BotGame from './Connect4BotGame';
 import Connect4Game from './Connect4Game';
 import GameArea from './GameArea';
 
@@ -21,7 +22,7 @@ import GameArea from './GameArea';
  * @see Connect4Game
  * @see GameArea
  */
-export default class Connect4GameArea extends GameArea<Connect4Game> {
+export default class Connect4GameArea extends GameArea<Connect4BotGame> {
   protected getType(): InteractableType {
     return 'Connect4Area';
   }
@@ -99,7 +100,7 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new Connect4Game();
+        game = new Connect4BotGame();
         this._game = game;
       }
       game.join(player);
