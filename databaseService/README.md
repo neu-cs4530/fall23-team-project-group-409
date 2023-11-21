@@ -87,3 +87,31 @@ Here are the API calls:
 THERE ARE TWO WAYS YOU CAN DEAL WITH SAVING GAMES:
 1. Create the entire game entry at the end of the game. This might be weird to trace back your steps.
 2. Create a game at the start of a game, and then update game each move with updateGame. 
+
+## Other
+
+Here are some example axios calls:
+```
+export const findUserComments = async (id) => {
+    const response = await axios.get(`${AUTHOR_COMMENTS}/${id}`);
+    return response.data;
+}
+
+export const findVideoComments = async (id) => {
+    const response = await axios.get(`${VIDEO_COMMENTS}/${id}`);
+    return response.data;
+}
+
+export const deleteComment = async (commentId) => {
+    const response = await axios.delete(`${COMMENTS_URL}/${commentId}`);
+    return response.data;
+}
+
+export const loginUser = async (username, password) => {
+  const response = await axios.post(LOGIN_API, { username, password });
+  const user = response.data;
+  return user;
+}
+```
+
+Look at how loginUser has both a field for link and body. Calls can have both.
