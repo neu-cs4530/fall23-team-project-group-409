@@ -1,4 +1,4 @@
-import * as townsDao from "./games-dao.js"
+import * as townsDao from "./towns-dao.js"
 
 const TownsController = (app) => {
     app.get('/api/towns', findAllTowns)

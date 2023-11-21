@@ -1,4 +1,4 @@
-import gamesModel from "./games-model";
+import gamesModel from "./games-model.js";
 
 export const findAllGames = () =>
     gamesModel.find();

@@ -1,4 +1,4 @@
-import townsModel from "./towns-model";
+import townsModel from "./towns-model.js";
 
 export const findAllTowns = () =>
     townsModel.find();

@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import TownsController from './towns/towns-controller';
-import GamesController from './games/games-controller';
-import UsersController from './users/users-controller';
+import TownsController from './towns/towns-controller.js';
+import GamesController from './games/games-controller.js';
+import UsersController from './users/users-controller.js';
 import session from "express-session";
 import "dotenv/config";
 import mongoose from "mongoose";
@@ -19,6 +19,15 @@ const app = express();
 
 // Logging CORS
 console.log('CORS is set for:', process.env.FRONTEND_URL);
+
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     allowedHeaders: "Content-Type,Authorization"
+//   })
+// );
 
 app.use(
   cors({

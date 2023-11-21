@@ -1,4 +1,4 @@
-import * as usersDao from "./users-dao"
+import * as usersDao from "./users-dao.js"
 
 const UsersController = (app) => {
     app.get('/api/users', findAllUsers);
