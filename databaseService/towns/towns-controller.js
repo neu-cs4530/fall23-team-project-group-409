@@ -2,7 +2,7 @@ import * as townsDao from "./towns-dao.js"
 
 const TownsController = (app) => {
     app.get('/api/towns', findAllTowns)
-    app.get('/api/towns/:townId', findTownByTownId);
+    app.get('/api/townsId/:townId', findTownByTownId);
     app.post('/api/towns', createTown);
 }
 

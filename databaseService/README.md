@@ -19,18 +19,14 @@ At the time of writing, there are 5 available API calls
 
     app.get('/api/users', findAllUsers);
     app.get('/api/users/:id', findUserById);
-    app.get('/api/users/usernametown', findUserByUsernameAndTown);
-    app.get('/api/users/bytown/:id', findUsersByTown);
+    app.get('/api/usernametown/:usertown', findUserByUsernameAndTown);
+    app.get('/api/bytown/:id', findUsersByTown);
     app.post('/api/users', createUser);
-    app.put('/api/users/elo/:id', updateELO);
+    app.put('/api/userselo/:id', updateELO);
     
 - findAllUsers : returns list of all users across all towns
 - findUserById : returns user with matching ID, requires only parameter
-- findUserByUsernameAndTown: find user with matching username and town, requires body with the following fields:
-{
-    username : string
-    townId : string
-}
+- findUserByUsernameAndTown: find user with matching username and town, requires param to be formatted like so: username:townid
 - findUsersByTown: find users with matching townId, requires only parameter (useful for leaderboard)
 - createUser : create a new user, requires body with fields as defined within users-schema (only fields marked as required are needed to make a new user) (useful for everything, remember to check if a user already exists with a call to findAllUsers or findUsersByTown)
 - updateELO : update ELO! need a parameter and body with: { elo : number } (userful for leaderboard and elo)
@@ -40,7 +36,7 @@ At the time of writing, there are 5 available API calls
 Simplest one. Avaiable calls:
 
     app.get('/api/towns', findAllTowns)
-    app.get('/api/towns/:townId', findTownByTownId);
+    app.get('/api/townsId/:townId', findTownByTownId);
     app.post('/api/towns', createTown);
 
 - findAllTowns : returns all towns
@@ -74,7 +70,7 @@ Here are the API calls:
 
     app.get('/api/games', findGames)
     app.get('/api/games/:id', findGameById);
-    app.get('/api/games/player/:id', findGamesByPlayerId);
+    app.get('/api/gamesplayer/:id', findGamesByPlayerId);
     app.post('/api/games', createGame);
     app.put('/api/games/:id', updateGame);
 

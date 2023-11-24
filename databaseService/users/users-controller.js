@@ -4,10 +4,10 @@ import usersModel from "./users-model.js";
 const UsersController = (app) => {
     app.get('/api/users', findAllUsers);
     app.get('/api/users/:id', findUserById);
-    app.get('/api/users/usernametown', findUserByUsernameAndTown);
-    app.get('/api/users/bytown/:id', findUsersByTown);
+    app.get('/api/usernametown/:usertown', findUserByUsernameAndTown);
+    app.get('/api/bytown/:id', findUsersByTown);
     app.post('/api/users', createUser);
-    app.put('/api/users/elo/:id', updateELO);
+    app.put('/api/userselo/:id', updateELO);
 }
 
 export default UsersController
@@ -25,17 +25,18 @@ const findUserById = async (req, res) => {
 
 /*
 
-{
-    username : string
-    townId : string
-}
+For this method, pass in username=townId in :usernameTown of request.
 
+Example: /api/usernametown/hello=townGang will return user with matching username hello and townid townGang
 */
 const findUserByUsernameAndTown = async (req, res) => {
-    const username = req.body.id;
-    const townId = req.body.townId;
+    const usernameAndTown = req.params.usertown;
+    const usernameAndTownPair = usernameAndTown.split("=");
+    const username = usernameAndTownPair[0];
+    const townId = usernameAndTownPair[1];
 
     const user = await usersModel.findOne({username: username, whatTown: townId});
+
     res.json(user)
 }
 

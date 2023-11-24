@@ -3,7 +3,7 @@ import * as gamesDao from "./games-dao.js"
 const GamesController = (app) => {
     app.get('/api/games', findGames)
     app.get('/api/games/:id', findGameById);
-    app.get('/api/games/player/:id', findGamesByPlayerId);
+    app.get('/api/gamesplayer/:id', findGamesByPlayerId);
     app.post('/api/games', createGame);
     app.put('/api/games/:id', updateGame);
 }
