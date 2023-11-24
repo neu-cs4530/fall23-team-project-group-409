@@ -9,6 +9,7 @@ import InvalidParametersError, {
 import Player from '../../lib/Player';
 import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 import Game from './Game';
+import { writeGame } from '../Database';
 
 /**
  * A Connect4Game is a Game that implements the rules of Connect 4.
@@ -45,7 +46,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     return board;
   }
 
-  private _checkForGameEnding() {
+  private async _checkForGameEnding() {
     const board = this._board;
     // A game ends when there are 4 in a row, column, or diagonal
 
@@ -119,6 +120,23 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
             status: 'OVER',
             winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
           };
+          // ADD GAME TO DATABASE
+          const redMoves: number[] = this.state.moves
+            .filter(move => move.gamePiece === 'Red')
+            .map(move => move.col);
+          const yellowMoves: number[] = this.state.moves
+            .filter(move => move.gamePiece === 'Yellow')
+            .map(move => move.col);
+
+          // eslint-disable-next-line no-await-in-loop
+          await writeGame({
+            gameId: this.id,
+            redPlayer: this.state.red,
+            yellowPlayer: this.state.yellow,
+            winner: this.state.winner,
+            redMoves,
+            yellowMoves,
+          });
           return;
         }
       }
