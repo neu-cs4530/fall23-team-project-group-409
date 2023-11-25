@@ -32,5 +32,3 @@ export function calculateEloRating(
 }
 
 export default calculateEloRating;
-
-calculateEloRating(1000, 1000, 10, 'win');

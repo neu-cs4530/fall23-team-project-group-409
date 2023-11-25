@@ -17,6 +17,22 @@ import * as Connect4GameModule from './Connect4Game';
 import Game from './Game';
 import Connect4GameArea from './Connect4GameArea';
 
+jest.mock('../Database', () => ({
+  addPlayer: jest.fn().mockResolvedValue(undefined),
+  editPlayerElo: jest.fn().mockResolvedValue(undefined),
+  getAllPlayersFromTown: jest.fn().mockResolvedValue([]),
+  getPlayerElo: jest.fn().mockResolvedValue({ elo: 1000 }),
+  writeGame: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../Elo', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    newRedRating: 1000,
+    newYellowRating: 1000,
+  }),
+}));
+
 class TestingGame extends Game<Connect4GameState, Connect4Move> {
   public constructor() {
     super(
