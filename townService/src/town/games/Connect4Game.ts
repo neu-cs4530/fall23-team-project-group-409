@@ -264,7 +264,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
    * @throws InvalidParametersError if the player is already in the game (PLAYER_ALREADY_IN_GAME_MESSAGE)
    *  or the game is full (GAME_FULL_MESSAGE)
    */
-  protected async _join(player: Player): Promise<void> {
+  protected _join(player: Player): void {
     if (this.state.yellow === player.id || this.state.red === player.id) {
       throw new InvalidParametersError(PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
@@ -288,12 +288,15 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
       };
     }
     // If the player is not in the database, add player
+    this._addPlayerToDatabase(player);
+  }
+
+  private async _addPlayerToDatabase(player: Player): Promise<void> {
     const allPlayersInTown = await getAllPlayersFromTown(this._townID);
     const allPlayersInTownList: string[] = allPlayersInTown.map(
       (user: { playerId: string }) => user.playerId,
     );
     if (!allPlayersInTownList.includes(player.id)) {
-      // Create New Player in Database
       await addPlayer({
         username: player.userName,
         elo: 1000,

@@ -19,13 +19,13 @@ describe('Connect4Game', () => {
   });
 
   describe('[T1.1] _join', () => {
-    it('should throw an error if the player is already in the game', () => {
+    it('should throw an error if the player is already in the game', async () => {
       const player = createPlayerForTesting();
-      game.join(player);
+      await game.join(player);
       expect(() => game.join(player)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
       const player2 = createPlayerForTesting();
       // TODO weaker test suite doesn't add this
-      game.join(player2);
+      await game.join(player2);
       expect(() => game.join(player2)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
     });
     it('should throw an error if the game is full', () => {
