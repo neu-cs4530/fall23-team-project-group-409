@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as http from 'https';
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
@@ -14,6 +15,7 @@ import {
   Connect4Move,
   Connect4GridPosition,
 } from '../../types/CoveyTownSocket';
+import { getMoveScores, ScoreList } from './Connect4BotSearch';
 import Game from './Game';
 
 /**
@@ -54,46 +56,23 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
   private _getBestBotMove(): Connect4GridPosition {
     const board = this._board;
 
-    // get the string for the API call
-    // empty=0, yellow=1, red=2
-    let boardData = '0000000';
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[0].length; j++) {
-        if (board[i][j] === '') {
-          boardData += '0';
-        } else if (board[i][j] === 'Yellow') {
-          boardData += '1';
-        } else if (board[i][j] === 'Red') {
-          boardData += '2';
-        }
-      }
+    const scores: ScoreList = getMoveScores(board, 'Red');
+    const values = Object.keys(scores).map(k => scores[Number(k)]);
+    const keys = Object.keys(scores);
+    keys.sort((a, b) => values[keys.indexOf(b)] - values[keys.indexOf(a)]);
+
+    // randomly choose between the highest scores
+    const highScores = [Number(keys[0])];
+    for (let i = 1; i < keys.length && values[Number(keys[i])] === values[Number(keys[0])]; i++) {
+      highScores.push(Number(keys[i]));
     }
-
-    // make the API call
-    let scores: number;
-    const url = `https://kevinalbs.com/connect4/back-end/index.php/getMoves?board_data=${boardData}&player=2`;
-    const resultCol: Connect4GridPosition = 0;
-    const response = http.get(url, res => {
-      // do something
-      const { statusCode } = res;
-      console.log(statusCode);
-      if (statusCode !== 200) {
-        throw new Error('Unable to fetch bot move.');
-      }
-
-      res.setEncoding('utf8');
-      let rawData = '';
-      res.on('data', chunk => {
-        rawData += chunk;
-      });
-      res.on('end', () => {
-        const parsedData = JSON.parse(rawData);
-        // get the list from the data
-        console.log(parsedData);
-      });
-    });
-
-    return resultCol;
+    const col: number = highScores[Math.floor(Math.random() * highScores.length)];
+    const numberToGridPos = (n: number | Connect4GridPosition): n is Connect4GridPosition =>
+      n >= 0 && n <= 6;
+    if (numberToGridPos(col)) {
+      return col;
+    }
+    return 0;
   }
 
   private _checkForGameEnding() {
@@ -241,6 +220,9 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
    */
   public applyMove(move: GameMove<Connect4Move>): void {
     // DONE
+    if (this.state.status !== 'IN_PROGRESS') {
+      throw new Error(GAME_NOT_IN_PROGRESS_MESSAGE);
+    }
     let gamePiece: 'Yellow' | 'Red';
     if (move.playerID === this.state.yellow) {
       gamePiece = 'Yellow';
@@ -254,7 +236,7 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
     this._validateMove(cleanMove);
     this._applyMove(cleanMove);
 
-    if (this.state.status !== 'OVER') {
+    if (this.state.status === 'IN_PROGRESS') {
       const moveCol = this._getBestBotMove();
       gamePiece = 'Red';
       const myMove = {
