@@ -13,9 +13,8 @@ import PlayerController from '../PlayerController';
 import TownController from '../TownController';
 import GameAreaController from './GameAreaController';
 import Connect4AreaController, { NO_GAME_IN_PROGRESS_ERROR } from './Connect4AreaController';
-//import TicTacToeAreaController, { NO_GAME_IN_PROGRESS_ERROR } from './TicTacToeAreaController';
 
-describe('[T1] Connect4AreaController', () => {
+describe('Connect4AreaController', () => {
   const ourPlayer = new PlayerController(nanoid(), nanoid(), {
     x: 0,
     y: 0,
@@ -40,59 +39,6 @@ describe('[T1] Connect4AreaController', () => {
     return p;
   });
 
-  /*function ticTacToeAreaControllerWithProp({
-    _id,
-    history,
-    x,
-    o,
-    undefinedGame,
-    status,
-    moves,
-    winner,
-  }: {
-    _id?: string;
-    history?: GameResult[];
-    x?: string;
-    o?: string;
-    undefinedGame?: boolean;
-    status?: GameStatus;
-    moves?: TicTacToeMove[];
-    winner?: string;
-  }) {
-    const id = _id || nanoid();
-    const players = [];
-    if (x) players.push(x);
-    if (o) players.push(o);
-    const ret = new TicTacToeAreaController(
-      id,
-      {
-        id,
-        occupants: players,
-        history: history || [],
-        type: 'TicTacToeArea',
-        game: undefinedGame
-          ? undefined
-          : {
-              id,
-              players: players,
-              state: {
-                status: status || 'IN_PROGRESS',
-                x: x,
-                o: o,
-                moves: moves || [],
-                winner: winner,
-              },
-            },
-      },
-      mockTownController,
-    );
-    if (players) {
-      ret.occupants = players
-        .map(eachID => mockTownController.players.find(eachPlayer => eachPlayer.id === eachID))
-        .filter(eachPlayer => eachPlayer) as PlayerController[];
-    }
-    return ret;
-  }*/
   function connect4AreaControllerWithProp({
     _id,
     history,
@@ -147,7 +93,7 @@ describe('[T1] Connect4AreaController', () => {
     return ret;
   }
 
-  describe('[T1.1]', () => {
+  describe('Helper Function', () => {
     describe('isActive', () => {
       it('should return true if the game is in progress', () => {
         const controller = connect4AreaControllerWithProp({
@@ -397,7 +343,7 @@ describe('[T1] Connect4AreaController', () => {
       });
     });
   });
-  describe('[T1.2] _updateFrom', () => {
+  describe('_updateFrom', () => {
     describe('if the game is in progress', () => {
       let controller: Connect4AreaController;
       beforeEach(() => {
