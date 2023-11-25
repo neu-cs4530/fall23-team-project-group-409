@@ -9,18 +9,21 @@ import InvalidParametersError, {
 import Player from '../../lib/Player';
 import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 import Game from './Game';
-import { writeGame } from '../Database';
+import { addPlayer, getAllPlayersFromTown, writeGame } from '../Database';
 
 /**
  * A Connect4Game is a Game that implements the rules of Connect 4.
  * @see https://en.wikipedia.org/wiki/connect-4
  */
 export default class Connect4Game extends Game<Connect4GameState, Connect4Move> {
-  public constructor() {
-    super({
-      moves: [],
-      status: 'WAITING_TO_START',
-    });
+  public constructor(townID: string) {
+    super(
+      {
+        moves: [],
+        status: 'WAITING_TO_START',
+      },
+      townID,
+    );
   }
 
   // DONE
@@ -120,7 +123,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
             status: 'OVER',
             winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
           };
-          // ADD GAME TO DATABASE
+          // ADD GAME TO DATABASE //
           const redMoves: number[] = this.state.moves
             .filter(move => move.gamePiece === 'Red')
             .map(move => move.col);
@@ -131,6 +134,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
           // eslint-disable-next-line no-await-in-loop
           await writeGame({
             gameId: this.id,
+            townId: this._townID,
             redPlayer: this.state.red,
             yellowPlayer: this.state.yellow,
             winner: this.state.winner,
@@ -233,7 +237,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
    * @throws InvalidParametersError if the player is already in the game (PLAYER_ALREADY_IN_GAME_MESSAGE)
    *  or the game is full (GAME_FULL_MESSAGE)
    */
-  protected _join(player: Player): void {
+  protected async _join(player: Player): Promise<void> {
     if (this.state.yellow === player.id || this.state.red === player.id) {
       throw new InvalidParametersError(PLAYER_ALREADY_IN_GAME_MESSAGE);
     }
@@ -255,6 +259,20 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
         ...this.state,
         status: 'IN_PROGRESS',
       };
+    }
+    // If the player is not in the database, add player
+    const allPlayersInTown = await getAllPlayersFromTown(this._townID);
+    const allPlayersInTownList = allPlayersInTown.map(
+      (user: { playerID: string }) => user.playerID,
+    );
+    if (!allPlayersInTownList.includes(player.id)) {
+      // Create New Player in Database
+      await addPlayer({
+        username: player.userName,
+        elo: 1000,
+        whatTown: this._townID,
+        playerId: player.id,
+      });
     }
   }
 

@@ -96,7 +96,7 @@ export default class TicTacToeGameArea extends GameArea<TicTacToeGame> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new TicTacToeGame();
+        game = new TicTacToeGame(this.townID);
         this._game = game;
       }
       game.join(player);

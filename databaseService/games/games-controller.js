@@ -25,6 +25,18 @@ const findGamesByPlayerId = async (req, res) => {
     res.json(games);
 }
 
+/*
+Body formatting should be like so:
+{ All Player ID's (redPlayer, yellowPlayer, winner)
+    gameId: string,
+    townId: string,
+    redPlayer: string,
+    yellowPlayer: string,
+    winner: string,
+    redMoves: list[numbers]
+    yellowMoves: list[numbers]
+}
+*/
 const createGame = async (req, res) => {
     const newGame = await gamesDao.createGame(req.body);
     res.json(newGame);
@@ -32,15 +44,12 @@ const createGame = async (req, res) => {
 
 
 /*
-
 Body formatting should be like so:
-
 {
     playerId: string,
     move: number,
     winner: string (playerId)
 }
-
 */
 const updateGame = async (req, res) => {
     const updateFields = req.body;
@@ -61,6 +70,5 @@ const updateGame = async (req, res) => {
     const updatedGame = await game.save();
     res.json(updatedGame);
 }
-
 
 export default GamesController

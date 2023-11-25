@@ -15,11 +15,14 @@ import Game from './Game';
  * @see https://en.wikipedia.org/wiki/Tic-tac-toe
  */
 export default class TicTacToeGame extends Game<TicTacToeGameState, TicTacToeMove> {
-  public constructor() {
-    super({
-      moves: [],
-      status: 'WAITING_TO_START',
-    });
+  public constructor(townID: string) {
+    super(
+      {
+        moves: [],
+        status: 'WAITING_TO_START',
+      },
+      townID,
+    );
   }
 
   private get _board() {

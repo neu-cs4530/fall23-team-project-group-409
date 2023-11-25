@@ -40,6 +40,17 @@ const findUserByUsernameAndTown = async (req, res) => {
     res.json(user)
 }
 
+/*
+Body Format for createUser
+
+{
+    username: string,
+    elo: number,
+    whatTown: string (townID),
+    playerID: string (playerID)
+}
+
+*/
 const createUser = async (req, res) => {
     const user = await usersDao.createUser(req.body);
     res.json(user)

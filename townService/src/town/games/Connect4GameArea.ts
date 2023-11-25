@@ -99,7 +99,7 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new Connect4Game();
+        game = new Connect4Game(this.townID);
         this._game = game;
       }
       game.join(player);
