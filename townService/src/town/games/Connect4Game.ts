@@ -160,9 +160,14 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
           } else {
             result = 'draw';
           }
-          const ratingChanges = calculateEloRating(playerRedElo, playerYellowElo, 10, result);
-          // await editPlayerElo(this.state.red, ratingChanges.newRedRating);
-          // await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
+          const ratingChanges = calculateEloRating(
+            playerRedElo.elo,
+            playerYellowElo.elo,
+            10,
+            result,
+          );
+          await editPlayerElo(this.state.red, ratingChanges.newRedRating);
+          await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
 
           return;
         }

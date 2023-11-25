@@ -62,7 +62,7 @@ const createUser = async (req, res) => {
 const updateELO = async (req, res) => {
     const id = req.params.id;
     const newELO = req.body.elo;
-    const user = await usersModel.updateOne({_id : id}, {$set: {elo : newELO}});
+    const user = await usersModel.updateOne({playerId : id}, {$set: {elo : newELO}});
 
     res.json(user);
 }

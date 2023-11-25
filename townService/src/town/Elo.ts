@@ -1,5 +1,10 @@
 // Function to calculate new Elo ratings
-export function calculateEloRating(redPlayer, yellowPlayer, kFactor, result) {
+export function calculateEloRating(
+  redPlayer: number,
+  yellowPlayer: number,
+  kFactor: number,
+  result: string,
+) {
   const expectedOutcomeWinner = 1 / (1 + 10 ** ((yellowPlayer - redPlayer) / 400));
   const expectedOutcomeLoser = 1 / (1 + 10 ** ((redPlayer - yellowPlayer) / 400));
 
@@ -27,3 +32,5 @@ export function calculateEloRating(redPlayer, yellowPlayer, kFactor, result) {
 }
 
 export default calculateEloRating;
+
+calculateEloRating(1000, 1000, 10, 'win');

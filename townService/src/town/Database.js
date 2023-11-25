@@ -8,7 +8,7 @@ export const writeGame = async data => {
 
 export const getPlayerElo = async userID => {
   const response = await axios.get(`http://localhost:4000/api/users/${userID}`);
-  const user = response.data;
+  const user = response.data[0];
   return user;
 };
 
@@ -29,7 +29,3 @@ export const getAllPlayersFromTown = async data => {
   const output = response.data;
   return output;
 };
-
-// getPlayerElo({ username: 'andrew', townId: 'townGang' });
-// addPlayer({ username: 'andrew', password: 'testPassword', elo: 1000, whatTown: 'townGang' });
-// editPlayerElo('andrew', 1500);
