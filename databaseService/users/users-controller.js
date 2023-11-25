@@ -17,6 +17,9 @@ const findAllUsers = async (req, res) => {
     res.json(users);
 }
 
+/*
+    Search by PlayerID
+*/
 const findUserById = async (req, res) => {
     const id = req.params.id;
     const user = await usersDao.findUserById(id);
@@ -59,8 +62,9 @@ const createUser = async (req, res) => {
 const updateELO = async (req, res) => {
     const id = req.params.id;
     const newELO = req.body.elo;
+
     const user = await usersDao.findUserById(id);
-    user.elo = newELO;
+    user.elo.push(newELO);
 
     const updatedUser = await user.save();
     res.json(updatedUser);

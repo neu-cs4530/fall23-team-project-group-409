@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
@@ -9,7 +10,15 @@ import InvalidParametersError, {
 import Player from '../../lib/Player';
 import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 import Game from './Game';
-import { addPlayer, getAllPlayersFromTown, writeGame } from '../Database';
+import {
+  addPlayer,
+  editPlayerElo,
+  getAllPlayersFromTown,
+  getPlayerElo,
+  writeGame,
+} from '../Database';
+// eslint-disable-next-line import/no-named-as-default
+import calculateEloRating from '../Elo';
 
 /**
  * A Connect4Game is a Game that implements the rules of Connect 4.
@@ -131,7 +140,6 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
             .filter(move => move.gamePiece === 'Yellow')
             .map(move => move.col);
 
-          // eslint-disable-next-line no-await-in-loop
           await writeGame({
             gameId: this.id,
             townId: this._townID,
@@ -141,6 +149,21 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
             redMoves,
             yellowMoves,
           });
+          // ADJUST ELO //
+          const playerYellowElo = await getPlayerElo(this.state.yellow);
+          const playerRedElo = await getPlayerElo(this.state.red);
+          let result = '';
+          if (this.state.winner === this.state.red) {
+            result = 'win';
+          } else if (this.state.winner === this.state.yellow) {
+            result = 'loss';
+          } else {
+            result = 'draw';
+          }
+          const ratingChanges = calculateEloRating(playerRedElo, playerYellowElo, 10, result);
+          await editPlayerElo(this.state.red, ratingChanges.newRedRating);
+          await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
+
           return;
         }
       }
@@ -156,7 +179,6 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
   }
 
-  // IMPLEMENT
   private _validateMove(move: Connect4Move) {
     // A move is valid if the space is empty
     let count = 0;
