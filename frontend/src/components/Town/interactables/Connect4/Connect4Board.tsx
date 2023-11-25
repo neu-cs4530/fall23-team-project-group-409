@@ -70,8 +70,7 @@ export default function Connect4Board({ gameAreaController }: Connect4GameProps)
     };
   }, [gameAreaController]);
   return (
-    <StyledConnect4Board aria-label='Connect-4 Board'
-    colorScheme='blue'>
+    <StyledConnect4Board aria-label='Connect-4 Board' colorScheme='blue'>
       {board.map((row, rowIndex) => {
         return row.map((cell, colIndex) => {
           return (

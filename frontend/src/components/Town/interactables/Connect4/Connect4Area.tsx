@@ -15,7 +15,6 @@ import {
   Modal,
   ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   useToast,
 } from '@chakra-ui/react';
