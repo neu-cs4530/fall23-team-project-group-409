@@ -8,7 +8,6 @@ import {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
-// import { Connect4Move } from '../../types/CoveyTownSocket';
 import Connect4Game from './Connect4Game';
 import { Connect4Move } from '../../types/CoveyTownSocket';
 
@@ -16,7 +15,7 @@ describe('Connect4Game', () => {
   let game: Connect4Game;
 
   beforeEach(() => {
-    game = new Connect4Game();
+    game = new Connect4Game('FFFFF');
   });
 
   describe('[T1.1] _join', () => {
