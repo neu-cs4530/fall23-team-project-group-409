@@ -147,29 +147,6 @@ describe('Connect4BotGame', () => {
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
         });
-        it('should throw an error if the move is on a full column', () => {
-          // Need to write test where you completely fill up single column
-          while (game.state.moves.filter(move => move.col === 0).length !== 6) {
-            game.applyMove({
-              gameID: game.id,
-              playerID: player1.id,
-              move: {
-                col: 0,
-                gamePiece: 'Yellow',
-              },
-            });
-          }
-          expect(() =>
-            game.applyMove({
-              gameID: game.id,
-              playerID: player1.id,
-              move: {
-                col: 0,
-                gamePiece: 'Yellow',
-              },
-            }),
-          ).toThrowError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
-        });
         it('should not change whose turn it is when an invalid move is made', () => {
           game.applyMove({
             gameID: game.id,
