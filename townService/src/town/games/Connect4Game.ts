@@ -161,8 +161,8 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
             result = 'draw';
           }
           const ratingChanges = calculateEloRating(playerRedElo, playerYellowElo, 10, result);
-          await editPlayerElo(this.state.red, ratingChanges.newRedRating);
-          await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
+          // await editPlayerElo(this.state.red, ratingChanges.newRedRating);
+          // await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
 
           return;
         }
@@ -284,8 +284,8 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
     // If the player is not in the database, add player
     const allPlayersInTown = await getAllPlayersFromTown(this._townID);
-    const allPlayersInTownList = allPlayersInTown.map(
-      (user: { playerID: string }) => user.playerID,
+    const allPlayersInTownList: string[] = allPlayersInTown.map(
+      (user: { playerId: string }) => user.playerId,
     );
     if (!allPlayersInTownList.includes(player.id)) {
       // Create New Player in Database
