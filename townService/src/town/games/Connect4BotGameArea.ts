@@ -6,7 +6,6 @@ import InvalidParametersError, {
 import Player from '../../lib/Player';
 import {
   Connect4GameState,
-  Connect4GridPosition,
   Connect4Move,
   GameInstance,
   InteractableCommand,
@@ -14,20 +13,18 @@ import {
   InteractableType,
   TicTacToeMove,
 } from '../../types/CoveyTownSocket';
-import Connect4Game from './Connect4Game';
+import Connect4BotGame from './Connect4BotGame';
 import GameArea from './GameArea';
 
 /**
- * A Connect4BotGameArea is a GameArea that hosts a Connect4Game with a bot.
+ * A Connect4GameArea is a GameArea that hosts a Connect4Game.
  * @see Connect4Game
  * @see GameArea
  */
-export default class Connect4BotGameArea extends GameArea<Connect4Game> {
+export default class Connect4BotGameArea extends GameArea<Connect4BotGame> {
   protected getType(): InteractableType {
-    return 'Connect4Area';
+    return 'Connect4BotArea';
   }
-
-  private _bot: Player | undefined;
 
   private _stateUpdated(updatedState: GameInstance<Connect4GameState>) {
     if (updatedState.state.status === 'OVER') {
@@ -96,37 +93,17 @@ export default class Connect4BotGameArea extends GameArea<Connect4Game> {
         move: command.move,
       });
       this._stateUpdated(game.toModel());
-
-      if (game.state.status !== 'OVER' && this._bot !== undefined) {
-        const bestBotMove = this._getBotMove();
-        // create and apply the move
-        game.applyMove({
-          gameID: command.gameID,
-          playerID: this._bot?.id,
-          move: {
-            gamePiece: 'Red',
-            col: bestBotMove,
-          },
-        });
-      }
-
       return undefined as InteractableCommandReturnType<CommandType>;
     }
     if (command.type === 'JoinGame') {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new Connect4Game();
+        game = new Connect4BotGame();
         this._game = game;
       }
       game.join(player);
       this._stateUpdated(game.toModel());
-
-      // join a bot Player with a dummy town emitter
-      this._bot = new Player('Bot', player.townEmitter);
-      game.join(this._bot);
-      this._stateUpdated(game.toModel());
-
       return { gameID: game.id } as InteractableCommandReturnType<CommandType>;
     }
     if (command.type === 'LeaveGame') {
@@ -139,19 +116,8 @@ export default class Connect4BotGameArea extends GameArea<Connect4Game> {
       }
       game.leave(player);
       this._stateUpdated(game.toModel());
-
-      // leave the bot Player (if it exists)
-      if (this._bot !== undefined) {
-        game.leave(this._bot);
-        this._bot = undefined;
-        this._stateUpdated(game.toModel());
-      }
       return undefined as InteractableCommandReturnType<CommandType>;
     }
     throw new InvalidParametersError(INVALID_COMMAND_MESSAGE);
-  }
-
-  private _getBotMove(): Connect4GridPosition {
-    return 0;
   }
 }
