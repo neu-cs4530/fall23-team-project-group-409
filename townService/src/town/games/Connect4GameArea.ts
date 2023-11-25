@@ -13,7 +13,6 @@ import {
   InteractableType,
   TicTacToeMove,
 } from '../../types/CoveyTownSocket';
-import Connect4BotGame from './Connect4BotGame';
 import Connect4Game from './Connect4Game';
 import GameArea from './GameArea';
 

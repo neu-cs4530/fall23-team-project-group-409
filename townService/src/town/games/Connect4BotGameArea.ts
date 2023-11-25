@@ -152,7 +152,6 @@ export default class Connect4BotGameArea extends GameArea<Connect4Game> {
   }
 
   private _getBotMove(): Connect4GridPosition {
-    const game = this._game;
     return 0;
   }
 }

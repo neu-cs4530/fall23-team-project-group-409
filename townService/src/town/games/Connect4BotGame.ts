@@ -1,5 +1,3 @@
-import axios from 'axios';
-import * as http from 'https';
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
