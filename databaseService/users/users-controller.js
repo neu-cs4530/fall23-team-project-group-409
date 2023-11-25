@@ -62,12 +62,9 @@ const createUser = async (req, res) => {
 const updateELO = async (req, res) => {
     const id = req.params.id;
     const newELO = req.body.elo;
+    const user = await usersModel.updateOne({_id : id}, {$set: {elo : newELO}});
 
-    const user = await usersDao.findUserById(id);
-    user.elo.push(newELO);
-
-    const updatedUser = await user.save();
-    res.json(updatedUser);
+    res.json(user);
 }
 
 const findUsersByTown = async (req, res) => {
