@@ -11,6 +11,22 @@ import Player from '../../lib/Player';
 import Connect4Game from './Connect4Game';
 import { Connect4Move } from '../../types/CoveyTownSocket';
 
+jest.mock('../Database', () => ({
+  addPlayer: jest.fn().mockResolvedValue(undefined),
+  editPlayerElo: jest.fn().mockResolvedValue(undefined),
+  getAllPlayersFromTown: jest.fn().mockResolvedValue([]),
+  getPlayerElo: jest.fn().mockResolvedValue({ elo: 1000 }), // Adjust the value accordingly
+  writeGame: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../Elo', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    newRedRating: 1100,
+    newYellowRating: 900,
+  }),
+}));
+
 describe('Connect4Game', () => {
   let game: Connect4Game;
 
