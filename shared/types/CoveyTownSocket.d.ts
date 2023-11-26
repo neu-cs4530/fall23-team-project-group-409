@@ -175,6 +175,14 @@ export interface GameInstance<T extends GameState> {
 export interface GameArea<T extends GameState> extends Interactable {
   game: GameInstance<T> | undefined;
   history: GameResult[];
+  gameReplays: GameReplay[];
+}
+
+interface GameReplay {
+  gameID: GameInstanceID;
+  playerYellow: PlayerID;
+  playerRed: PlayerID;
+  moves: ReadonlyArray<Connect4Move>;
 }
 
 export type CommandID = string;
