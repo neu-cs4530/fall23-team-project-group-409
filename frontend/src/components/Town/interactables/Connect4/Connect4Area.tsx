@@ -6,14 +6,15 @@ import {
   AccordionPanel,
   Box,
   Button,
+  Center,
   Container,
   Heading,
+  Image,
   List,
   ListItem,
   Modal,
   ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   useToast,
 } from '@chakra-ui/react';
@@ -225,7 +226,9 @@ export default function Connect4AreaWrapper(): JSX.Element {
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{gameArea.name}</ModalHeader>
+          <Center>
+            <Image src='/assets/connect-four.png' width='50%'></Image>
+          </Center>
           <ModalCloseButton />
           <Connect4Area interactableID={gameArea.name} />;
         </ModalContent>
