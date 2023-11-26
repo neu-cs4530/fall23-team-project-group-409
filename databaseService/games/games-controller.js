@@ -1,9 +1,11 @@
 import * as gamesDao from "./games-dao.js"
+import gamesModel from "./games-model.js";
 
 const GamesController = (app) => {
     app.get('/api/games', findGames)
-    app.get('/api/games/:id', findGameById);
+    app.get('/api/games/:id', findGameByGameId);
     app.get('/api/gamesplayer/:id', findGamesByPlayerId);
+    app.get('/api/gamesbytown/:id', findGamesByTownId);
     app.post('/api/games', createGame);
     app.put('/api/games/:id', updateGame);
 }
@@ -13,7 +15,12 @@ const findGames = async (req, res) => {
     res.json(games);
 }
 
-const findGameById = async (req, res) => {
+const findGamesByTownId = async (req, res) => {
+    const townId = req.params.id;
+    const games = await gamesModel.find({townId: townId});
+}
+
+const findGameByGameId = async (req, res) => {
     const id = req.params.id;
     const game = await gamesDao.findGameById({gameId: id});
     res.json(game);
