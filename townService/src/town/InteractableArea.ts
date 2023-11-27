@@ -34,6 +34,9 @@ export default abstract class InteractableArea {
   /* An emitter that can be used to broadcast messages to all players in this town */
   private _townEmitter: TownEmitter;
 
+  /* The Town ID that created this Area */
+  private _townID: string;
+
   public get id() {
     return this._id;
   }
@@ -54,19 +57,29 @@ export default abstract class InteractableArea {
     return { x: this._x, y: this._y, width: this._width, height: this._height };
   }
 
+  public get townID() {
+    return this._townID;
+  }
+
   /**
    * Constructs a new InteractableArea
    * @param id Unique ID for this area
    * @param boundingBox The rectangular coordinates that define this InteractableArea, where (x,y) specify the top-left corner
    * @param townEmitter An emitter that can be used to broadcast events to players in this town
    */
-  public constructor(id: string, { x, y, width, height }: BoundingBox, townEmitter: TownEmitter) {
+  public constructor(
+    id: string,
+    { x, y, width, height }: BoundingBox,
+    townEmitter: TownEmitter,
+    townID: string,
+  ) {
     this._id = id;
     this._x = x;
     this._y = y;
     this._width = width;
     this._height = height;
     this._townEmitter = townEmitter;
+    this._townID = townID;
   }
 
   /**

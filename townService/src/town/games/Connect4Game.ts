@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
@@ -9,17 +10,29 @@ import InvalidParametersError, {
 import Player from '../../lib/Player';
 import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 import Game from './Game';
+import {
+  addPlayer,
+  editPlayerElo,
+  getAllPlayersFromTown,
+  getPlayerElo,
+  writeGame,
+} from '../Database';
+// eslint-disable-next-line import/no-named-as-default
+import calculateEloRating from '../Elo';
 
 /**
  * A Connect4Game is a Game that implements the rules of Connect 4.
  * @see https://en.wikipedia.org/wiki/connect-4
  */
 export default class Connect4Game extends Game<Connect4GameState, Connect4Move> {
-  public constructor() {
-    super({
-      moves: [],
-      status: 'WAITING_TO_START',
-    });
+  public constructor(townID: string) {
+    super(
+      {
+        moves: [],
+        status: 'WAITING_TO_START',
+      },
+      townID,
+    );
   }
 
   // DONE
@@ -45,7 +58,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     return board;
   }
 
-  private _checkForGameEnding() {
+  private async _checkForGameEnding() {
     const board = this._board;
     // A game ends when there are 4 in a row, column, or diagonal
 
@@ -119,6 +132,8 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
             status: 'OVER',
             winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
           };
+          // ADD GAME TO DATABASE //
+          this._updateDatabaseGame();
           return;
         }
       }
@@ -134,7 +149,6 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
   }
 
-  // IMPLEMENT
   private _validateMove(move: Connect4Move) {
     // A move is valid if the space is empty
     let count = 0;
@@ -238,6 +252,56 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
         status: 'IN_PROGRESS',
       };
     }
+    // If the player is not in the database, add player
+    this._addPlayerToDatabase(player);
+  }
+
+  private async _addPlayerToDatabase(player: Player): Promise<void> {
+    const allPlayersInTown = await getAllPlayersFromTown(this._townID);
+    const allPlayersInTownList: string[] = allPlayersInTown.map(
+      (user: { playerId: string }) => user.playerId,
+    );
+    if (!allPlayersInTownList.includes(player.id)) {
+      await addPlayer({
+        username: player.userName,
+        elo: 1000,
+        whatTown: this._townID,
+        playerId: player.id,
+      });
+    }
+  }
+
+  private async _updateDatabaseGame(): Promise<void> {
+    const redMoves: number[] = this.state.moves
+      .filter(move => move.gamePiece === 'Red')
+      .map(move => move.col);
+    const yellowMoves: number[] = this.state.moves
+      .filter(move => move.gamePiece === 'Yellow')
+      .map(move => move.col);
+
+    await writeGame({
+      gameId: this.id,
+      townId: this._townID,
+      redPlayer: this.state.red,
+      yellowPlayer: this.state.yellow,
+      winner: this.state.winner,
+      redMoves,
+      yellowMoves,
+    });
+    // ADJUST ELO //
+    const playerYellowElo = await getPlayerElo(this.state.yellow);
+    const playerRedElo = await getPlayerElo(this.state.red);
+    let result = '';
+    if (this.state.winner === this.state.red) {
+      result = 'win';
+    } else if (this.state.winner === this.state.yellow) {
+      result = 'loss';
+    } else {
+      result = 'draw';
+    }
+    const ratingChanges = calculateEloRating(playerRedElo.elo, playerYellowElo.elo, 10, result);
+    await editPlayerElo(this.state.red, ratingChanges.newRedRating);
+    await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
   }
 
   /**

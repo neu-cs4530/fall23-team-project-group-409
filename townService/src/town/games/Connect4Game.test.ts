@@ -8,25 +8,40 @@ import {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
-// import { Connect4Move } from '../../types/CoveyTownSocket';
 import Connect4Game from './Connect4Game';
 import { Connect4Move } from '../../types/CoveyTownSocket';
+
+jest.mock('../Database', () => ({
+  addPlayer: jest.fn().mockResolvedValue(undefined),
+  editPlayerElo: jest.fn().mockResolvedValue(undefined),
+  getAllPlayersFromTown: jest.fn().mockResolvedValue([]),
+  getPlayerElo: jest.fn().mockResolvedValue({ elo: 1000 }),
+  writeGame: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../Elo', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    newRedRating: 1000,
+    newYellowRating: 1000,
+  }),
+}));
 
 describe('Connect4Game', () => {
   let game: Connect4Game;
 
   beforeEach(() => {
-    game = new Connect4Game();
+    game = new Connect4Game('FFFFF');
   });
 
   describe('[T1.1] _join', () => {
-    it('should throw an error if the player is already in the game', () => {
+    it('should throw an error if the player is already in the game', async () => {
       const player = createPlayerForTesting();
-      game.join(player);
+      await game.join(player);
       expect(() => game.join(player)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
       const player2 = createPlayerForTesting();
       // TODO weaker test suite doesn't add this
-      game.join(player2);
+      await game.join(player2);
       expect(() => game.join(player2)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
     });
     it('should throw an error if the game is full', () => {

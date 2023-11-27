@@ -15,7 +15,12 @@ describe('ConversationArea', () => {
 
   beforeEach(() => {
     mockClear(townEmitter);
-    testArea = new ConversationArea({ topic, id, occupants: [] }, testAreaBox, townEmitter);
+    testArea = new ConversationArea(
+      { topic, id, occupants: [] },
+      testAreaBox,
+      townEmitter,
+      'FFFFF',
+    );
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
     testArea.add(newPlayer);
   });
@@ -87,6 +92,7 @@ describe('ConversationArea', () => {
         ConversationArea.fromMapObject(
           { id: 1, name: nanoid(), visible: true, x: 0, y: 0 },
           townEmitter,
+          'FFFFF',
         ),
       ).toThrowError();
     });
@@ -99,6 +105,7 @@ describe('ConversationArea', () => {
       const val = ConversationArea.fromMapObject(
         { x, y, width, height, name, id: 10, visible: true },
         townEmitter,
+        'FFFFF',
       );
       expect(val.boundingBox).toEqual({ x, y, width, height });
       expect(val.id).toEqual(name);

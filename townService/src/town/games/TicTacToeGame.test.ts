@@ -15,7 +15,7 @@ describe('TicTacToeGame', () => {
   let game: TicTacToeGame;
 
   beforeEach(() => {
-    game = new TicTacToeGame();
+    game = new TicTacToeGame('FFFFF');
   });
 
   describe('[T1.1] _join', () => {

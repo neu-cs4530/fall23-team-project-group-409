@@ -42,8 +42,9 @@ export default class ViewingArea extends InteractableArea {
     { id, isPlaying, elapsedTimeSec: progress, video }: Omit<ViewingAreaModel, 'type'>,
     coordinates: BoundingBox,
     townEmitter: TownEmitter,
+    townID: string,
   ) {
-    super(id, coordinates, townEmitter);
+    super(id, coordinates, townEmitter, townID);
     this._video = video;
     this._elapsedTimeSec = progress;
     this._isPlaying = isPlaying;
@@ -97,7 +98,11 @@ export default class ViewingArea extends InteractableArea {
    * @param townEmitter An emitter that can be used by this viewing area to broadcast updates to players in the town
    * @returns
    */
-  public static fromMapObject(mapObject: ITiledMapObject, townEmitter: TownEmitter): ViewingArea {
+  public static fromMapObject(
+    mapObject: ITiledMapObject,
+    townEmitter: TownEmitter,
+    townID: string,
+  ): ViewingArea {
     const { name, width, height } = mapObject;
     if (!width || !height) {
       throw new Error(`Malformed viewing area ${name}`);
@@ -107,6 +112,7 @@ export default class ViewingArea extends InteractableArea {
       { isPlaying: false, id: name as InteractableID, elapsedTimeSec: 0, occupants: [] },
       rect,
       townEmitter,
+      townID,
     );
   }
 
