@@ -178,6 +178,9 @@ export interface GameArea<T extends GameState> extends Interactable {
   gameReplays: GameReplay[];
 }
 
+/*
+  * Type for a Replay of a Connect 4 Game played with the players and moves
+  */
 interface GameReplay {
   gameID: GameInstanceID;
   playerYellow: PlayerID;
