@@ -20,15 +20,6 @@ const app = express();
 // Logging CORS
 console.log('CORS is set for:', process.env.FRONTEND_URL);
 
-// app.use(
-//   cors({
-//     origin: process.env.FRONTEND_URL,
-//     credentials: true,
-//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//     allowedHeaders: "Content-Type,Authorization"
-//   })
-// );
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
