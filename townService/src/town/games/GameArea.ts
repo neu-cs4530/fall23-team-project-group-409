@@ -1,6 +1,7 @@
 import Player from '../../lib/Player';
 import {
   GameArea as GameAreaModel,
+  GameReplay,
   GameResult,
   GameState,
   InteractableType,
@@ -19,6 +20,8 @@ export default abstract class GameArea<
 
   protected _history: GameResult[] = [];
 
+  protected _gameReplays: GameReplay[] = [];
+
   public get game(): GameType | undefined {
     return this._game;
   }
@@ -27,11 +30,16 @@ export default abstract class GameArea<
     return this._history;
   }
 
+  public get gameReplays(): GameReplay[] {
+    return this._gameReplays;
+  }
+
   public toModel(): GameAreaModel<GameType['state']> {
     return {
       id: this.id,
       game: this._game?.toModel(),
       history: this._history,
+      gameReplays: this._gameReplays,
       occupants: this.occupantsByID,
       type: this.getType(),
     };
