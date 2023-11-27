@@ -22,6 +22,7 @@ describe('ViewingArea', () => {
       { id, isPlaying, elapsedTimeSec, video, occupants },
       testAreaBox,
       townEmitter,
+      'FFFFF',
     );
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
     testArea.add(newPlayer);
@@ -107,6 +108,7 @@ describe('ViewingArea', () => {
         ViewingArea.fromMapObject(
           { id: 1, name: nanoid(), visible: true, x: 0, y: 0 },
           townEmitter,
+          'FFFFF',
         ),
       ).toThrowError();
     });
@@ -119,6 +121,7 @@ describe('ViewingArea', () => {
       const val = ViewingArea.fromMapObject(
         { x, y, width, height, name, id: 10, visible: true },
         townEmitter,
+        'FFFFF',
       );
       expect(val.boundingBox).toEqual({ x, y, width, height });
       expect(val.id).toEqual(name);

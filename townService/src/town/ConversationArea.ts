@@ -30,8 +30,9 @@ export default class ConversationArea extends InteractableArea {
     { topic, id }: Omit<ConversationAreaModel, 'type'>,
     coordinates: BoundingBox,
     townEmitter: TownEmitter,
+    townID: string,
   ) {
-    super(id, coordinates, townEmitter);
+    super(id, coordinates, townEmitter, townID);
     this.topic = topic;
   }
 
@@ -73,13 +74,14 @@ export default class ConversationArea extends InteractableArea {
   public static fromMapObject(
     mapObject: ITiledMapObject,
     broadcastEmitter: TownEmitter,
+    townID: string,
   ): ConversationArea {
     const { name, width, height } = mapObject;
     if (!width || !height) {
       throw new Error(`Malformed viewing area ${name}`);
     }
     const rect: BoundingBox = { x: mapObject.x, y: mapObject.y, width, height };
-    return new ConversationArea({ id: name, occupants: [] }, rect, broadcastEmitter);
+    return new ConversationArea({ id: name, occupants: [] }, rect, broadcastEmitter, townID);
   }
 
   public handleCommand<

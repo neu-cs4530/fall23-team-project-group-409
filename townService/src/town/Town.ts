@@ -391,18 +391,20 @@ export default class Town {
     const viewingAreas = objectLayer.objects
       .filter(eachObject => eachObject.type === 'ViewingArea')
       .map(eachViewingAreaObject =>
-        ViewingArea.fromMapObject(eachViewingAreaObject, this._broadcastEmitter),
+        ViewingArea.fromMapObject(eachViewingAreaObject, this._broadcastEmitter, this.townID),
       );
 
     const conversationAreas = objectLayer.objects
       .filter(eachObject => eachObject.type === 'ConversationArea')
       .map(eachConvAreaObj =>
-        ConversationArea.fromMapObject(eachConvAreaObj, this._broadcastEmitter),
+        ConversationArea.fromMapObject(eachConvAreaObj, this._broadcastEmitter, this.townID),
       );
 
     const gameAreas = objectLayer.objects
       .filter(eachObject => eachObject.type === 'GameArea')
-      .map(eachGameAreaObj => GameAreaFactory(eachGameAreaObj, this._broadcastEmitter));
+      .map(eachGameAreaObj =>
+        GameAreaFactory(eachGameAreaObj, this._broadcastEmitter, this.townID),
+      );
 
     this._interactables = this._interactables
       .concat(viewingAreas)
