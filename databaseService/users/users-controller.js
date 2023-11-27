@@ -72,15 +72,3 @@ const findUsersByTown = async (req, res) => {
     const users = await usersModel.find({whatTown : townId})
     res.json(users)
 }
-
-/*
-TODO:
-
-method that returns _id by username and whatTown
-    this _id is what is going to be assigned to 
-
-method that returns user by id
-
-method that creates user
-
-*/
