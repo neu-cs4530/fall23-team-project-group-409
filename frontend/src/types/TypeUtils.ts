@@ -32,3 +32,9 @@ export function isConnect4Area(
 ): interactable is GameArea<Connect4GameState> {
   return interactable.type === 'Connect4Area';
 }
+
+export function isConnect4BotArea(
+  interactable: Interactable,
+): interactable is GameArea<Connect4GameState> {
+  return interactable.type === 'Connect4BotArea';
+}
