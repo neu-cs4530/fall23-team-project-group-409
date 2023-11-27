@@ -30,7 +30,7 @@ export default function GameAreaFactory(
     return new Connect4GameArea(name, rect, broadcastEmitter, townID);
   }
   if (gameType === 'Connect4Bot') {
-    return new Connect4BotGameArea(name, rect, broadcastEmitter);
+    return new Connect4BotGameArea(name, rect, broadcastEmitter, townID);
   }
   throw new Error(`Unknown game area type ${mapObject.class}`);
 }

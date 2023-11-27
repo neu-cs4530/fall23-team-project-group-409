@@ -21,11 +21,14 @@ import Game from './Game';
  * @see https://en.wikipedia.org/wiki/connect-4
  */
 export default class Connect4BotGame extends Game<Connect4GameState, Connect4Move> {
-  public constructor() {
-    super({
-      moves: [],
-      status: 'WAITING_TO_START',
-    });
+  public constructor(townID: string) {
+    super(
+      {
+        moves: [],
+        status: 'WAITING_TO_START',
+      },
+      townID,
+    );
   }
 
   // DONE
