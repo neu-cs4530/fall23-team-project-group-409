@@ -24,10 +24,10 @@ import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
 import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
-import { getAllPlayersInTown, getAllPlayersInTownNotAsync } from '../Database';
+import { getAllPlayersInTown } from '../Database';
 import GameAreaInteractable from '../GameArea';
-import Connect4Leaderboard from '../Leaderboard';
 import Connect4Board from './Connect4Board';
+import Connect4Leaderboard from '../Connect4Leaderboard';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -75,7 +75,7 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
   const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
   const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
   const toast = useToast();
-  const [players, setPlayers] = useState<Promise<[]>>(getAllPlayersInTown(props.townId));
+  const [players, setPlayers] = useState<[]>([]);
 
   useEffect(() => {
     const updateGameState = () => {
@@ -85,7 +85,16 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
       setObservers(gameAreaController.observers);
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
-      setPlayers(getAllPlayersInTownNotAsync(props.townId));
+      //setPlayers(getAllPlayersInTownCaller(props.townId, players));
+      // getAllPlayersInTown(props.townId).then(users => setPlayers(users));
+      const fetchData = async () => {
+        try {
+          getAllPlayersInTown(props.townId).then(users => setPlayers(users));
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+      fetchData();
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
@@ -115,7 +124,7 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
       gameAreaController.removeListener('gameEnd', onGameEnd);
       gameAreaController.removeListener('gameUpdated', updateGameState);
     };
-  }, [townController, gameAreaController, toast, props.townId]);
+  }, [townController, gameAreaController, toast, props.townId, players]);
 
   let gameStatusText = <></>;
   if (gameStatus === 'IN_PROGRESS') {

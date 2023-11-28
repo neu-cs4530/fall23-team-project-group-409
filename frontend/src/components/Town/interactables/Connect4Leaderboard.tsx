@@ -1,6 +1,6 @@
 import { Table, Tbody, Td, Thead, Tr } from '@chakra-ui/react';
 import React from 'react';
-import { GameResult } from '../../../types/CoveyTownSocket';
+import { PlayerDatabase } from '../../../types/CoveyTownSocket';
 
 // FIX THIS COMMENT
 /**
@@ -16,60 +16,12 @@ import { GameResult } from '../../../types/CoveyTownSocket';
  *
  * @returns
  */
-export default function Connect4Leaderboard({ results }: { results: GameResult[] }): JSX.Element {
-  //   const winsLossesTiesByPlayer: Record<
-  //     string,
-  //     { player: string; wins: number; losses: number; ties: number }
-  //   > = {};
-  //   results.forEach(result => {
-  //     const players = Object.keys(result.scores);
-  //     const p1 = players[0];
-  //     const p2 = players[1];
-  //     const winner =
-  //       result.scores[p1] > result.scores[p2]
-  //         ? p1
-  //         : result.scores[p2] > result.scores[p1]
-  //         ? p2
-  //         : undefined;
-  //     const loser =
-  //       result.scores[p1] < result.scores[p2]
-  //         ? p1
-  //         : result.scores[p2] < result.scores[p1]
-  //         ? p2
-  //         : undefined;
-  //     if (winner) {
-  //       winsLossesTiesByPlayer[winner] = {
-  //         player: winner,
-  //         wins: (winsLossesTiesByPlayer[winner]?.wins || 0) + 1,
-  //         losses: winsLossesTiesByPlayer[winner]?.losses || 0,
-  //         ties: winsLossesTiesByPlayer[winner]?.ties || 0,
-  //       };
-  //     }
-  //     if (loser) {
-  //       winsLossesTiesByPlayer[loser] = {
-  //         player: loser,
-  //         wins: winsLossesTiesByPlayer[loser]?.wins || 0,
-  //         losses: (winsLossesTiesByPlayer[loser]?.losses || 0) + 1,
-  //         ties: winsLossesTiesByPlayer[loser]?.ties || 0,
-  //       };
-  //     }
-  //     if (!winner && !loser) {
-  //       winsLossesTiesByPlayer[p1] = {
-  //         player: p1,
-  //         wins: winsLossesTiesByPlayer[p1]?.wins || 0,
-  //         losses: winsLossesTiesByPlayer[p1]?.losses || 0,
-  //         ties: (winsLossesTiesByPlayer[p1]?.ties || 0) + 1,
-  //       };
-  //       winsLossesTiesByPlayer[p2] = {
-  //         player: p2,
-  //         wins: winsLossesTiesByPlayer[p2]?.wins || 0,
-  //         losses: winsLossesTiesByPlayer[p2]?.losses || 0,
-  //         ties: (winsLossesTiesByPlayer[p2]?.ties || 0) + 1,
-  //       };
-  //     }
-  //   });
-  //   const rows = Object.keys(winsLossesTiesByPlayer).map(player => winsLossesTiesByPlayer[player]);
-  //   rows.sort((a, b) => b.wins - a.wins);
+export default function Connect4Leaderboard({
+  results,
+}: {
+  results: PlayerDatabase[];
+}): JSX.Element {
+  results.sort((a, b) => b.elo - a.elo);
 
   return (
     <Table>
@@ -80,11 +32,11 @@ export default function Connect4Leaderboard({ results }: { results: GameResult[]
         </Tr>
       </Thead>
       <Tbody>
-        {rows.map(record => {
+        {results.map(record => {
           return (
-            <Tr key={record.player}>
-              <Td>{record.player}</Td>
-              <Td>{record.wins}</Td>
+            <Tr key={record.playerId}>
+              <Td>{record.username}</Td>
+              <Td>{record.elo}</Td>
             </Tr>
           );
         })}
