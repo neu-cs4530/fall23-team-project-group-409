@@ -42,6 +42,7 @@ import TicTacToeAreaController from './interactable/TicTacToeAreaController';
 import Connect4AreaController from './interactable/Connect4AreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import PlayerController from './PlayerController';
+import Connect4ReplayAreaController from './interactable/Connect4ReplayAreaController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY_MS = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
@@ -618,7 +619,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             );
           } else if (isConnect4ReplayArea(eachInteractable)) {
             this._interactableControllers.push(
-              new Connect4AreaController(eachInteractable.id, eachInteractable, this),
+              new Connect4ReplayAreaController(eachInteractable.id, eachInteractable, this),
             );
           }
         });
