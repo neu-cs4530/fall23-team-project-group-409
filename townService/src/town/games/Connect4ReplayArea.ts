@@ -21,7 +21,7 @@ import GameArea from './GameArea';
  * @see Connect4Game
  * @see GameArea
  */
-export default class Connect4ReplayArea extends GameArea<Connect4Replay> {
+export default class Connect4ReplayArea extends GameArea<Connect4Game> {
   protected getType(): InteractableType {
     return 'Connect4ReplayArea';
   }
