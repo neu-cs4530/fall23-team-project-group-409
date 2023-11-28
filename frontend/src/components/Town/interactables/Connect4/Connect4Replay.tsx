@@ -6,9 +6,10 @@ import Connect4AreaController, {
 import { Connect4GridPosition, Connect4Move } from '../../../../types/CoveyTownSocket';
 import { getMoves } from '../../../../../../townService/src/town/Database';
 import { yellow } from '@material-ui/core/colors';
+import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
 
-export type Connect4ReplayProps = {
-  gameAreaController: Connect4AreaController;
+export type Connect4Props = {
+  gameAreaController: Connect4ReplayAreaController;
 };
 
 /**
@@ -59,8 +60,11 @@ const StyledConnect4Board = chakra(Container, {
  *
  * @param gameAreaController the controller for the Connect4 game
  */
-export default function Connect4Replay({ gameAreaController }: Connect4ReplayProps): JSX.Element {
-  const [board, setBoard] = useState<Connect4Cell[][]>(gameAreaController.board);
+export default function Connect4Replay(props: {
+  gameAreaController: Connect4ReplayAreaController;
+  gameID: string;
+}): JSX.Element {
+  const [board, setBoard] = useState<Connect4Cell[][]>(props.gameAreaController.board);
   const [isYellowTurn, setIsYellowTurn] = useState<boolean>(true);
   const toast = useToast();
   const [movesYellow, setMovesYellow] = useState<Connect4GridPosition[]>([]);
@@ -85,13 +89,13 @@ export default function Connect4Replay({ gameAreaController }: Connect4ReplayPro
   }, []);
 
   useEffect(() => {
-    gameAreaController.addListener('turnChanged', setIsYellowTurn);
-    gameAreaController.addListener('boardChanged', setBoard);
+    props.gameAreaController.addListener('turnChanged', setIsYellowTurn);
+    props.gameAreaController.addListener('boardChanged', setBoard);
     return () => {
-      gameAreaController.removeListener('boardChanged', setBoard);
-      gameAreaController.removeListener('turnChanged', setIsYellowTurn);
+      props.gameAreaController.removeListener('boardChanged', setBoard);
+      props.gameAreaController.removeListener('turnChanged', setIsYellowTurn);
     };
-  }, [gameAreaController]);
+  }, [props.gameAreaController]);
 
   return (
     <StyledConnect4Board aria-label='Connect-4 Board' colorScheme='blue'>

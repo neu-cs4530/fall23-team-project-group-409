@@ -10,8 +10,6 @@ import {
   Container,
   Heading,
   Image,
-  List,
-  ListItem,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -24,7 +22,6 @@ import { useInteractable, useInteractableAreaController } from '../../../../clas
 import useTownController from '../../../../hooks/useTownController';
 import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
-import Connect4Leaderboard from '../Leaderboard';
 import Connect4Board from './Connect4Board';
 import Connect4Replay from './Connect4Replay';
 import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
@@ -70,18 +67,21 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
   const [gamesData, setGamesData] = useState<any[]>([]);
   const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
   const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
+  const [currentGameID, setCurrentGameID] = useState<string>('');
   const [toggleReplayPlayer, setToggleReplayPlayer] = useState<boolean>(false);
   const toast = useToast();
 
+  function handleGameClick(gameID: string) {
+    setCurrentGameID(gameID);
+    setToggleReplayPlayer(true);
+  }
+
   useEffect(() => {
+    setToggleReplayPlayer(false);
     const fetchGames = async () => {
       try {
         const games = await getGames();
-        if (!games.ok) {
-          throw new Error(`Request failed with status code ${games.status}`);
-        }
-        const gameData = await games.json();
-        setGamesData(gameData);
+        setGamesData(games);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -131,30 +131,38 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
    * once the button is clicked again, toggle back.
    */
 
-  return (
-    <Container>
-      <Accordion allowToggle>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                Game Replays
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            {gamesData &&
-              gamesData.map((game: unknown) => (
-                <Button key={game.gameId} onClick={() => setToggleReplayPlayer(true)}>
-                  Start Game {game.gameId}
-                </Button>
-              ))}
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-    </Container>
-  );
+  if (!toggleReplayPlayer) {
+    return (
+      <Container>
+        <Accordion allowToggle>
+          <AccordionItem>
+            <Heading as='h3'>
+              <AccordionButton>
+                <Box as='span' flex='1' textAlign='left'>
+                  Game Replays
+                  <AccordionIcon />
+                </Box>
+              </AccordionButton>
+            </Heading>
+            <AccordionPanel>
+              {gamesData &&
+                gamesData.map((game: any) => (
+                  <Button key={game.gameId} onClick={() => handleGameClick(game.gameId)}>
+                    Start Game {game.yellowPlayer} vs. {game.redPlayer}
+                  </Button>
+                ))}
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+      </Container>
+    );
+  } else {
+    return (
+      <div>
+        <Connect4Replay gameAreaController={gameAreaController} gameID={currentGameID} />
+      </div>
+    );
+  }
 }
 
 /**
