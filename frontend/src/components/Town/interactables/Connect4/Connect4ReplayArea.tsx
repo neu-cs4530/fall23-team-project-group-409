@@ -28,7 +28,7 @@ import Connect4Leaderboard from '../Leaderboard';
 import Connect4Board from './Connect4Board';
 import Connect4Replay from './Connect4Replay';
 import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
-import { getGames } from '../../../../../../townService/src/town/Database';
+import { getGames, getYellowFromGame } from '../../../../../../townService/src/town/Database';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -68,7 +68,6 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
   const townController = useTownController();
 
   const [gamesData, setGamesData] = useState<any[]>([]);
-  const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
   const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
   const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
   const [toggleReplayPlayer, setToggleReplayPlayer] = useState<boolean>(false);
@@ -78,6 +77,9 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
     const fetchGames = async () => {
       try {
         const games = await getGames();
+        if (!games.ok) {
+          throw new Error(`Request failed with status code ${games.status}`);
+        }
         const gameData = await games.json();
         setGamesData(gameData);
       } catch (error) {
@@ -94,7 +96,6 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
 
   useEffect(() => {
     const updateGameState = () => {
-      setHistory(gameAreaController.history);
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
     };
@@ -144,7 +145,7 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
           </Heading>
           <AccordionPanel>
             {gamesData &&
-              gamesData.map((game: any) => (
+              gamesData.map((game: unknown) => (
                 <Button key={game.gameId} onClick={() => setToggleReplayPlayer(true)}>
                   Start Game {game.gameId}
                 </Button>
