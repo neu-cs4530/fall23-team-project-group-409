@@ -68,7 +68,6 @@ describe('[T1] TicTacToeAreaController', () => {
         id,
         occupants: players,
         history: history || [],
-        gameReplays: [],
         type: 'TicTacToeArea',
         game: undefinedGame
           ? undefined

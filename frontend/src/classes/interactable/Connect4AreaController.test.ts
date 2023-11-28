@@ -122,7 +122,6 @@ describe('[T1] Connect4AreaController', () => {
         id,
         occupants: players,
         history: history || [],
-        gameReplays: [],
         type: 'Connect4Area',
         game: undefinedGame
           ? undefined
