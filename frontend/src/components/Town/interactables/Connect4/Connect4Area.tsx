@@ -86,7 +86,7 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
       //setPlayers(getAllPlayersInTownCaller(props.townId, players));
-      // getAllPlayersInTown(props.townId).then(users => setPlayers(users));
+      //getAllPlayersInTown(props.townId).then(users => setPlayers(users));
       const fetchData = async () => {
         try {
           getAllPlayersInTown(props.townId).then(users => setPlayers(users));

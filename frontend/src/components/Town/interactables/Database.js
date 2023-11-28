@@ -1,5 +1,4 @@
 import axios from 'axios';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 export const getAllPlayersInTown = async data => {
   const response = await axios.get(

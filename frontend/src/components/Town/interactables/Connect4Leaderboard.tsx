@@ -29,6 +29,9 @@ export default function Connect4Leaderboard({
         <Tr>
           <th>Player</th>
           <th>Elo</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Ties</th>
         </Tr>
       </Thead>
       <Tbody>
@@ -37,6 +40,9 @@ export default function Connect4Leaderboard({
             <Tr key={record.playerId}>
               <Td>{record.username}</Td>
               <Td>{record.elo}</Td>
+              <Td>{record.wins}</Td>
+              <Td>{record.losses}</Td>
+              <Td>{record.ties}</Td>
             </Tr>
           );
         })}

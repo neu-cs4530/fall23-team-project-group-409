@@ -19,12 +19,11 @@ import Connect4GameArea from './Connect4GameArea';
 
 jest.mock('../Database', () => ({
   addPlayer: jest.fn().mockResolvedValue(undefined),
-  editPlayerElo: jest.fn().mockResolvedValue(undefined),
+  editPlayerInfo: jest.fn().mockResolvedValue(undefined),
   getAllPlayersFromTown: jest.fn().mockResolvedValue([]),
-  getPlayerElo: jest.fn().mockResolvedValue({ elo: 1000 }),
+  getPlayerInfo: jest.fn().mockResolvedValue({ elo: 1000, wins: 0, losses: 0, ties: 0 }),
   writeGame: jest.fn().mockResolvedValue(undefined),
 }));
-
 jest.mock('../Elo', () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({

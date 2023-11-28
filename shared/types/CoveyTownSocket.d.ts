@@ -255,4 +255,7 @@ export interface PlayerDatabase {
   elo: number,
   whatTown: string,
   playerId: string,
+  wins: number,
+  losses: number,
+  ties: number,
 };
