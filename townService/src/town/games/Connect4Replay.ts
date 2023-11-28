@@ -132,8 +132,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
             status: 'OVER',
             winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
           };
-          // ADD GAME TO DATABASE //
-          this._updateDatabaseGame();
           return;
         }
       }
@@ -252,56 +250,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
         status: 'IN_PROGRESS',
       };
     }
-    // If the player is not in the database, add player
-    this._addPlayerToDatabase(player);
-  }
-
-  private async _addPlayerToDatabase(player: Player): Promise<void> {
-    const allPlayersInTown = await getAllPlayersFromTown(this._townID);
-    const allPlayersInTownList: string[] = allPlayersInTown.map(
-      (user: { playerId: string }) => user.playerId,
-    );
-    if (!allPlayersInTownList.includes(player.id)) {
-      await addPlayer({
-        username: player.userName,
-        elo: 1000,
-        whatTown: this._townID,
-        playerId: player.id,
-      });
-    }
-  }
-
-  private async _updateDatabaseGame(): Promise<void> {
-    const redMoves: number[] = this.state.moves
-      .filter(move => move.gamePiece === 'Red')
-      .map(move => move.col);
-    const yellowMoves: number[] = this.state.moves
-      .filter(move => move.gamePiece === 'Yellow')
-      .map(move => move.col);
-
-    await writeGame({
-      gameId: this.id,
-      townId: this._townID,
-      redPlayer: this.state.red,
-      yellowPlayer: this.state.yellow,
-      winner: this.state.winner,
-      redMoves,
-      yellowMoves,
-    });
-    // ADJUST ELO //
-    const playerYellowElo = await getPlayerElo(this.state.yellow);
-    const playerRedElo = await getPlayerElo(this.state.red);
-    let result = '';
-    if (this.state.winner === this.state.red) {
-      result = 'win';
-    } else if (this.state.winner === this.state.yellow) {
-      result = 'loss';
-    } else {
-      result = 'draw';
-    }
-    const ratingChanges = calculateEloRating(playerRedElo.elo, playerYellowElo.elo, 10, result);
-    await editPlayerElo(this.state.red, ratingChanges.newRedRating);
-    await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
   }
 
   /**

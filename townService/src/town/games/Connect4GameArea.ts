@@ -47,22 +47,6 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
           });
         }
       }
-      // If there isn't a replay for the game that ended, create one and add it to the list of replays
-      if (gameID && !this._gameReplays.find(eachReplay => eachReplay.gameID === gameID)) {
-        const { yellow, red } = updatedState.state;
-        if (yellow && red) {
-          const yellowName =
-            this._occupants.find(eachPlayer => eachPlayer.id === yellow)?.userName || yellow;
-          const redName =
-            this._occupants.find(eachPlayer => eachPlayer.id === red)?.userName || red;
-          this._gameReplays.push({
-            gameID,
-            playerRed: redName,
-            playerYellow: yellowName,
-            moves: updatedState.state.moves,
-          });
-        }
-      }
     }
 
     this._emitAreaChanged();

@@ -13,7 +13,7 @@ import {
   InteractableType,
   TicTacToeMove,
 } from '../../types/CoveyTownSocket';
-import Connect4Game from './Connect4Game';
+import Connect4Replay from './Connect4Replay';
 import GameArea from './GameArea';
 
 /**
@@ -21,9 +21,9 @@ import GameArea from './GameArea';
  * @see Connect4Game
  * @see GameArea
  */
-export default class Connect4ReplayArea extends GameArea<Connect4Game> {
+export default class Connect4ReplayArea extends GameArea<Connect4Replay> {
   protected getType(): InteractableType {
-    return 'Connect4Area';
+    return 'Connect4ReplayArea';
   }
 
   private _stateUpdated(updatedState: GameInstance<Connect4GameState>) {
@@ -47,24 +47,7 @@ export default class Connect4ReplayArea extends GameArea<Connect4Game> {
           });
         }
       }
-      // If there isn't a replay for the game that ended, create one and add it to the list of replays
-      if (gameID && !this._gameReplays.find(eachReplay => eachReplay.gameID === gameID)) {
-        const { yellow, red } = updatedState.state;
-        if (yellow && red) {
-          const yellowName =
-            this._occupants.find(eachPlayer => eachPlayer.id === yellow)?.userName || yellow;
-          const redName =
-            this._occupants.find(eachPlayer => eachPlayer.id === red)?.userName || red;
-          this._gameReplays.push({
-            gameID,
-            playerRed: redName,
-            playerYellow: yellowName,
-            moves: updatedState.state.moves,
-          });
-        }
-      }
     }
-
     this._emitAreaChanged();
   }
 
