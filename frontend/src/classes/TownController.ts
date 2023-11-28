@@ -28,6 +28,7 @@ import {
 } from '../types/CoveyTownSocket';
 import {
   isConnect4Area,
+  isConnect4BotArea,
   isConnect4ReplayArea,
   isConversationArea,
   isTicTacToeArea,
@@ -43,6 +44,7 @@ import Connect4AreaController from './interactable/Connect4AreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import PlayerController from './PlayerController';
 import Connect4ReplayAreaController from './interactable/Connect4ReplayAreaController';
+import Connect4BotAreaController from './interactable/Connect4BotAreaController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY_MS = 300;
 const SOCKET_COMMAND_TIMEOUT_MS = 5000;
@@ -617,7 +619,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._interactableControllers.push(
               new Connect4AreaController(eachInteractable.id, eachInteractable, this),
             );
-          } else if (isConnect4ReplayArea(eachInteractable)) {
+          } else if (isConnect4BotArea(eachInteractable)) {
+            this._interactableControllers.push(
+              new Connect4BotAreaController(eachInteractable.id, eachInteractable, this),
+            );
+          }
+        else if (isConnect4ReplayArea(eachInteractable)) {
             this._interactableControllers.push(
               new Connect4ReplayAreaController(eachInteractable.id, eachInteractable, this),
             );

@@ -218,7 +218,10 @@ export default function Connect4AreaWrapper(): JSX.Element {
     }
   }, [townController, gameArea]);
 
-  if (gameArea && gameArea.getData('type') === 'Connect4') {
+  if (
+    gameArea &&
+    (gameArea.getData('type') === 'Connect4' || gameArea.getData('type') === 'Connect4Bot')
+  ) {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />

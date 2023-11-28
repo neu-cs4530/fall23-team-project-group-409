@@ -618,7 +618,7 @@
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"Connect4"
+                         "value":"Connect4Bot"
                         }],
                  "rotation":0,
                  "type":"GameArea",

@@ -7,19 +7,34 @@ const TownsController = (app) => {
 }
 
 const findAllTowns = async (req, res) => {
-    const towns = await townsDao.findAllTowns();
-    res.json(towns);
+    try {
+        const towns = await townsDao.findAllTowns();
+        res.json(towns);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 } 
 
 const findTownByTownId = async (req, res) => {
-    const townId = req.params.townId;
-    const town = await townsDao.findTownsByTownId(townId);
-    res.json(town);
+    try {
+        const townId = req.params.townId;
+        const town = await townsDao.findTownsByTownId(townId);
+        res.json(town);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 const createTown = async (req, res) => {
-    const newTown = await townsDao.createTown(req.body);
-    res.json(newTown)
+    try {
+        const newTown = await townsDao.createTown(req.body);
+        res.json(newTown)
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 export default TownsController

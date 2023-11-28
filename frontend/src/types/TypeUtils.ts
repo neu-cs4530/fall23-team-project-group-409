@@ -38,3 +38,9 @@ export function isConnect4ReplayArea(
 ): interactable is GameArea<Connect4GameState> {
   return interactable.type === 'Connect4ReplayArea';
 }
+
+export function isConnect4BotArea(
+  interactable: Interactable,
+): interactable is GameArea<Connect4GameState> {
+  return interactable.type === 'Connect4BotArea';
+}
