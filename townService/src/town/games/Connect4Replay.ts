@@ -12,13 +12,12 @@ import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTown
 import Game from './Game';
 import {
   addPlayer,
-  editPlayerElo,
   getAllPlayersFromTown,
-  getPlayerElo,
+  getMoves,
+  getRedFromGame,
+  getYellowFromGame,
   writeGame,
 } from '../Database';
-// eslint-disable-next-line import/no-named-as-default
-import calculateEloRating from '../Elo';
 
 /**
  * A Connect4Game is a Game that implements the rules of Connect 4.
@@ -56,6 +55,38 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
       }
     }
     return board;
+  }
+
+  // i need to be able to apply of the moves made in a game at once
+  // this is so that i can replay a game
+
+  public async applyAllMoves(moves: Connect4Move[]) {
+    for (const move of moves) {
+      this._validateMove(move);
+      this._applyMove(move);
+    }
+  }
+
+  // Get the yellow moves from db given the gameID
+
+  // Get the red moves given the gameID
+
+  // OR Get the yellow and red moves given the gameID
+  public async getMoves(gameID: string) {
+    const { yellowMoves, redMoves } = await getMoves(gameID);
+    return { yellowMoves, redMoves };
+  }
+
+  // Get the Yellow player in the game given the gameID
+  public async getYellowPlayer(gameID: string) {
+    const players = await getYellowFromGame(gameID);
+    return players;
+  }
+
+  // Get the Red player in the game given the gameID
+  public async getRedPlayer(gameID: string) {
+    const players = await getRedFromGame(gameID);
+    return players;
   }
 
   private async _checkForGameEnding() {

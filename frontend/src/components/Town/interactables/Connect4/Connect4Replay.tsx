@@ -66,14 +66,11 @@ export default function Connect4Replay({ gameAreaController }: Connect4GameProps
   const toast = useToast();
   const [movesYellow, setMovesYellow] = useState<Connect4GridPosition[]>([]);
   const [movesRed, setMovesRed] = useState<Connect4GridPosition[]>([]);
-  // const { yellowMoves, redMoves } = await getMoves(gameAreaController.id);
-  //const yellowMoves: Connect4GridPosition[] = [];
-  //const redMoves: Connect4GridPosition[] = [];
 
   useEffect(() => {
     const fetchMoves = async () => {
       try {
-        const { yellowMoves, redMoves } = await getMoves(gameAreaController.id);
+        const { yellowMoves, redMoves } = await getMoves('');
 
         const data1 = await yellowMoves.json();
         const data2 = await redMoves.json();
