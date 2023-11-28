@@ -1,4 +1,4 @@
-import { Table, Tbody, Td, Thead, Tr } from '@chakra-ui/react';
+import { Container, Table, Tbody, Td, Thead, Tr, List, ListItem } from '@chakra-ui/react';
 import React from 'react';
 import { PlayerDatabase } from '../../../types/CoveyTownSocket';
 
@@ -23,30 +23,49 @@ export default function Connect4Leaderboard({
 }): JSX.Element {
   results.sort((a, b) => b.elo - a.elo);
 
+  const playerWithHighestWins = results.reduce(
+    (prevPlayer: PlayerDatabase, currentPlayer: PlayerDatabase) => {
+      return currentPlayer.wins > prevPlayer.wins ? currentPlayer : prevPlayer;
+    },
+    results[0],
+  );
+  const playerWithHighestLosses = results.reduce(
+    (prevPlayer: PlayerDatabase, currentPlayer: PlayerDatabase) => {
+      return currentPlayer.losses > prevPlayer.losses ? currentPlayer : prevPlayer;
+    },
+    results[0],
+  );
+
   return (
-    <Table>
-      <Thead>
-        <Tr>
-          <th>Player</th>
-          <th>Elo</th>
-          <th>Wins</th>
-          <th>Losses</th>
-          <th>Ties</th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {results.map(record => {
-          return (
-            <Tr key={record.playerId}>
-              <Td>{record.username}</Td>
-              <Td>{record.elo}</Td>
-              <Td>{record.wins}</Td>
-              <Td>{record.losses}</Td>
-              <Td>{record.ties}</Td>
-            </Tr>
-          );
-        })}
-      </Tbody>
-    </Table>
+    <Container>
+      <List aria-label='leaderboard top stats'>
+        <ListItem>Most Wins: {playerWithHighestWins?.username || ''}</ListItem>
+        <ListItem>Most Losses: {playerWithHighestLosses?.username || ''}</ListItem>
+      </List>
+      <Table>
+        <Thead>
+          <Tr>
+            <th>Player</th>
+            <th>Elo</th>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Ties</th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {results.map(record => {
+            return (
+              <Tr key={record.playerId}>
+                <Td>{record.username}</Td>
+                <Td>{record.elo}</Td>
+                <Td>{record.wins}</Td>
+                <Td>{record.losses}</Td>
+                <Td>{record.ties}</Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+    </Container>
   );
 }
