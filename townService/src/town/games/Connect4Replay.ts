@@ -57,20 +57,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
     return board;
   }
 
-  // i need to be able to apply of the moves made in a game at once
-  // this is so that i can replay a game
-
-  public async applyAllMoves(moves: Connect4Move[]) {
-    for (const move of moves) {
-      this._validateMove(move);
-      this._applyMove(move);
-    }
-  }
-
-  // Get the yellow moves from db given the gameID
-
-  // Get the red moves given the gameID
-
   // OR Get the yellow and red moves given the gameID
   public async getMoves(gameID: string) {
     const { yellowMoves, redMoves } = await getMoves(gameID);
