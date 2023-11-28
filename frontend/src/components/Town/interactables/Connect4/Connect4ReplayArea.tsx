@@ -125,10 +125,6 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
     };
   }, [townController, gameAreaController, toast]);
 
-  const handleGameStart = async (gameID: string) => {
-    console.log(`Starting game with ID: ${gameID}`);
-  };
-
   // Add game replays for all of the gameIds given
   /* When a game is clicked, toggle a value to true, and show the game,
    * once the button is clicked again, toggle back.
@@ -149,18 +145,13 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
           <AccordionPanel>
             {gamesData &&
               gamesData.map((game: any) => (
-                <Button
-                  key={game.gameId}
-                  onClick={() => handleGameStart(game.gameId)}
-                  // Customize the button text or other properties as needed
-                >
+                <Button key={game.gameId} onClick={() => setToggleReplayPlayer(true)}>
                   Start Game {game.gameId}
                 </Button>
               ))}
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Connect4Replay gameAreaController={gameAreaController} />
     </Container>
   );
 }

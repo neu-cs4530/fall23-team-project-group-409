@@ -2,7 +2,6 @@ import _ from 'lodash';
 import {
   GameArea,
   GameInstanceID,
-  GameReplay,
   GameResult,
   GameState,
   InteractableID,

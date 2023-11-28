@@ -7,7 +7,7 @@ import { Connect4GridPosition, Connect4Move } from '../../../../types/CoveyTownS
 import { getMoves } from '../../../../../../townService/src/town/Database';
 import { yellow } from '@material-ui/core/colors';
 
-export type Connect4GameProps = {
+export type Connect4ReplayProps = {
   gameAreaController: Connect4AreaController;
 };
 
@@ -59,7 +59,7 @@ const StyledConnect4Board = chakra(Container, {
  *
  * @param gameAreaController the controller for the Connect4 game
  */
-export default function Connect4Replay({ gameAreaController }: Connect4GameProps): JSX.Element {
+export default function Connect4Replay({ gameAreaController }: Connect4ReplayProps): JSX.Element {
   const [board, setBoard] = useState<Connect4Cell[][]>(gameAreaController.board);
   const [isYellowTurn, setIsYellowTurn] = useState<boolean>(true);
   const toast = useToast();
@@ -83,35 +83,6 @@ export default function Connect4Replay({ gameAreaController }: Connect4GameProps
     // Immediately invoke the async function
     fetchMoves();
   }, []);
-
-  useEffect(() => {
-    const handleReplay = async () => {
-      if (replayIndex < movesYellow.length) {
-        let move = movesYellow[replayIndex];
-        if (!isYellowTurn) {
-          move = movesRed[replayIndex];
-        }
-        try {
-          await gameAreaController.makeMove(move);
-          if (isYellowTurn) {
-            setIsYellowTurn(false);
-          }
-          if (!isYellowTurn) {
-            setIsYellowTurn(true);
-          }
-        } catch (e) {
-          toast({
-            title: 'Error making move',
-            description: (e as Error).toString(),
-            status: 'error',
-          });
-        }
-      }
-    };
-
-    const waitForNextMove = setInterval(handleReplay, 1000);
-    return () => clearInterval(waitForNextMove);
-  }, [gameAreaController, toast]);
 
   useEffect(() => {
     gameAreaController.addListener('turnChanged', setIsYellowTurn);
