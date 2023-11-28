@@ -11,25 +11,47 @@ const GamesController = (app) => {
 }
 
 const findGames = async (req, res) => {
-    const games = await gamesDao.findAllGames();
-    res.json(games);
+    try {
+        const games = await gamesDao.findAllGames();
+        res.json(games);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 const findGamesByTownId = async (req, res) => {
-    const townId = req.params.id;
-    const games = await gamesModel.find({townId: townId});
+    try {
+        const townId = req.params.id;
+        const games = await gamesModel.find({ townId: townId });
+        res.json(games)
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 const findGameByGameId = async (req, res) => {
-    const id = req.params.id;
-    const game = await gamesDao.findGameById({gameId: id});
-    res.json(game);
+    try {
+        const id = req.params.id;
+        const game = await gamesDao.findGameById({ gameId: id });
+        res.json(game);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
 }
 
 const findGamesByPlayerId = async (req, res) => {
-    const id = req.params.id;
-    const games = await gamesDao.findAllGamesByPlayer(id)
-    res.json(games);
+    try {
+        const id = req.params.id;
+        const games = await gamesDao.findAllGamesByPlayer(id)
+        res.json(games);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 /*
@@ -45,8 +67,13 @@ Body formatting should be like so:
 }
 */
 const createGame = async (req, res) => {
-    const newGame = await gamesDao.createGame(req.body);
-    res.json(newGame);
+    try {
+        const newGame = await gamesDao.createGame(req.body);
+        res.json(newGame);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 
@@ -59,23 +86,29 @@ Body formatting should be like so:
 }
 */
 const updateGame = async (req, res) => {
-    const updateFields = req.body;
-    const game = await gamesDao.findGameById({gameId: req.params.id});
+    try {
+        const updateFields = req.body;
+        const game = await gamesDao.findGameById({ gameId: req.params.id });
 
-    if(updateFields.playerId === game.redPlayer) {
-        game.redMoves.push(updateFields.move);
-    } else if (updateFields.playerId === game.yellowPlayer) {
-        game.yellowMoves.push(updateFields.move);
-    } else {
-        console.log("Error handling for later")
+        if (updateFields.playerId === game.redPlayer) {
+            game.redMoves.push(updateFields.move);
+        } else if (updateFields.playerId === game.yellowPlayer) {
+            game.yellowMoves.push(updateFields.move);
+        } else {
+            console.log("Error handling for later")
+        }
+
+        if (winner) {
+            game.winner = updateFields.winner;
+        }
+
+        const updatedGame = await game.save();
+        res.json(updatedGame);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    if (winner) {
-        game.winner = updateFields.winner;
-    }
-
-    const updatedGame = await game.save();
-    res.json(updatedGame);
 }
 
 export default GamesController
