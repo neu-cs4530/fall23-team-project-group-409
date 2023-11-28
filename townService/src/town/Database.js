@@ -55,15 +55,3 @@ export const getGames = async () => {
   const games = response.data;
   return games;
 };
-
-export const getYellowFromGame = async gameID => {
-  const response = await axios.get(`${process.env.DATABASE_URL}/api/games/${gameID}`);
-  const { yellowPlayer } = response.data;
-  return yellowPlayer;
-};
-
-export const getRedFromGame = async gameID => {
-  const response = await axios.get(`${process.env.DATABASE_URL}/api/games/${gameID}`);
-  const { redPlayer } = response.data;
-  return redPlayer;
-};
