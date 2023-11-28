@@ -2,6 +2,7 @@ import _ from 'lodash';
 import {
   GameArea,
   GameInstanceID,
+  GameReplay,
   GameResult,
   GameState,
   InteractableID,
@@ -46,6 +47,10 @@ export default abstract class GameAreaController<
 
   get history(): GameResult[] {
     return this._model.history;
+  }
+
+  get gameReplays(): GameReplay[] {
+    return this._model.gameReplays;
   }
 
   get players(): PlayerController[] {

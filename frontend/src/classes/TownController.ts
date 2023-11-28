@@ -28,6 +28,7 @@ import {
 } from '../types/CoveyTownSocket';
 import {
   isConnect4Area,
+  isConnect4ReplayArea,
   isConversationArea,
   isTicTacToeArea,
   isViewingArea,
@@ -612,6 +613,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
               new TicTacToeAreaController(eachInteractable.id, eachInteractable, this),
             );
           } else if (isConnect4Area(eachInteractable)) {
+            this._interactableControllers.push(
+              new Connect4AreaController(eachInteractable.id, eachInteractable, this),
+            );
+          } else if (isConnect4ReplayArea(eachInteractable)) {
             this._interactableControllers.push(
               new Connect4AreaController(eachInteractable.id, eachInteractable, this),
             );
