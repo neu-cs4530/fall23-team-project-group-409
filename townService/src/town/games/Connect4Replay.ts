@@ -24,7 +24,7 @@ import calculateEloRating from '../Elo';
  * A Connect4Game is a Game that implements the rules of Connect 4.
  * @see https://en.wikipedia.org/wiki/connect-4
  */
-export default class Connect4Game extends Game<Connect4GameState, Connect4Move> {
+export default class Connect4Replay extends Game<Connect4GameState, Connect4Move> {
   public constructor(townID: string) {
     super(
       {
