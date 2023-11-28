@@ -33,14 +33,9 @@ export const getAllPlayersFromTown = async data => {
 };
 
 export const getMoves = async gameID => {
-  try {
-    const response = await axios.get(`${process.env.DATABASE_URL}/api/games/${gameID}`);
-    const { yellowMoves, redMoves } = response.data;
-    return { redMoves, yellowMoves };
-  } catch (error) {
-    console.error('Error getting moves from database:', error);
-    throw error;
-  }
+  const response = await axios.get(`${process.env.DATABASE_URL}/api/games/${gameID}`);
+  const { yellowMoves, redMoves } = response.data;
+  return { redMoves, yellowMoves };
 };
 
 export const getYellowFromGame = async gameID => {
@@ -53,4 +48,10 @@ export const getRedFromGame = async gameID => {
   const response = await axios.get(`${process.env.DATABASE_URL}/api/games/${gameID}`);
   const { redPlayer } = response.data;
   return redPlayer;
+};
+
+export const getGames = async () => {
+  const response = await axios.get(`${process.env.DATABASE_URL}/api/games`);
+  const games = response.data;
+  return games;
 };

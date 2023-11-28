@@ -59,8 +59,33 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
 
   // OR Get the yellow and red moves given the gameID
   public async getMoves(gameID: string) {
-    const { yellowMoves, redMoves } = await getMoves(gameID);
-    return { yellowMoves, redMoves };
+    try {
+      const { yellowMoves, redMoves } = await getMoves(gameID);
+      return { yellowMoves, redMoves };
+    } catch (error) {
+      console.error('Error getting moves:', error);
+      throw error;
+    }
+  }
+
+  public async getYellowMoves(gameID: string) {
+    try {
+      const { yellowMoves } = await this.getMoves(gameID);
+      return yellowMoves;
+    } catch (error) {
+      console.error('Error getting yellow moves:', error);
+      throw error;
+    }
+  }
+
+  public async getRedMoves(gameID: string) {
+    try {
+      const { redMoves } = await this.getMoves(gameID);
+      return redMoves;
+    } catch (error) {
+      console.error('Error getting red moves:', error);
+      throw error;
+    }
   }
 
   // Get the Yellow player in the game given the gameID
@@ -225,6 +250,7 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
     } else {
       gamePiece = 'Red';
     }
+
     const cleanMove = {
       gamePiece,
       col: move.move.col,

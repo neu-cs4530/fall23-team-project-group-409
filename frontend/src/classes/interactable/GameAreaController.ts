@@ -49,10 +49,6 @@ export default abstract class GameAreaController<
     return this._model.history;
   }
 
-  get gameReplays(): GameReplay[] {
-    return this._model.gameReplays;
-  }
-
   get players(): PlayerController[] {
     return this._players;
   }

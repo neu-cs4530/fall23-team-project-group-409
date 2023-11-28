@@ -19,20 +19,16 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import Connect4AreaController from '../../../../classes/interactable/Connect4AreaController';
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import {
-  GameReplay,
-  GameResult,
-  GameStatus,
-  InteractableID,
-} from '../../../../types/CoveyTownSocket';
+import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import Connect4Leaderboard from '../Leaderboard';
 import Connect4Board from './Connect4Board';
 import Connect4Replay from './Connect4Replay';
+import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
+import { getGames } from '../../../../../../townService/src/town/Database';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -67,23 +63,38 @@ import Connect4Replay from './Connect4Replay';
  *
  */
 function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
-  const gameAreaController = useInteractableAreaController<Connect4AreaController>(interactableID);
+  const gameAreaController =
+    useInteractableAreaController<Connect4ReplayAreaController>(interactableID);
   const townController = useTownController();
 
+  const [gamesData, setGamesData] = useState<any[]>([]);
   const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
-  const [gameReplays, setGameReplays] = useState<GameReplay[]>(gameAreaController.gameReplays);
-  const [gameStatus, setGameStatus] = useState<GameStatus>(gameAreaController.status);
-  const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
   const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
+  const [toggleReplayPlayer, setToggleReplayPlayer] = useState<boolean>(false);
   const toast = useToast();
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const games = await getGames();
+        const gameData = await games.json();
+        setGamesData(gameData);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+    // Immediately invoke the async function
+    fetchGames();
+  }, []);
+
+  useEffect(() => {
+    // Implement playing the game through recursive applying move
+  }, [toggleReplayPlayer]);
 
   useEffect(() => {
     const updateGameState = () => {
       setHistory(gameAreaController.history);
-      setGameReplays(gameAreaController.gameReplays);
-      setGameStatus(gameAreaController.status || 'WAITING_TO_START');
-      setMoveCount(gameAreaController.moveCount || 0);
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
     };
@@ -114,18 +125,9 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
     };
   }, [townController, gameAreaController, toast]);
 
-  let gameStatusText = <></>;
-  if (gameStatus === 'IN_PROGRESS') {
-    gameStatusText = (
-      <>
-        Game in progress, {moveCount} moves in, currently{' '}
-        {gameAreaController.whoseTurn === townController.ourPlayer
-          ? 'your'
-          : gameAreaController.whoseTurn?.userName + "'s"}{' '}
-        turn
-      </>
-    );
-  }
+  const handleGameStart = async (gameID: string) => {
+    console.log(`Starting game with ID: ${gameID}`);
+  };
 
   // Add game replays for all of the gameIds given
   /* When a game is clicked, toggle a value to true, and show the game,
@@ -145,11 +147,19 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
             </AccordionButton>
           </Heading>
           <AccordionPanel>
-            <Connect4Leaderboard results={history} />
+            {gamesData &&
+              gamesData.map((game: any) => (
+                <Button
+                  key={game.gameId}
+                  onClick={() => handleGameStart(game.gameId)}
+                  // Customize the button text or other properties as needed
+                >
+                  Start Game {game.gameId}
+                </Button>
+              ))}
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      {gameStatusText}
       <Connect4Replay gameAreaController={gameAreaController} />
     </Container>
   );
@@ -172,7 +182,7 @@ export default function Connect4ReplayAreaWrapper(): JSX.Element {
     }
   }, [townController, gameArea]);
 
-  if (gameArea && gameArea.getData('type') === 'Connect4') {
+  if (gameArea && gameArea.getData('type') === 'Connect4Replay') {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />

@@ -62,7 +62,6 @@ const StyledConnect4Board = chakra(Container, {
 export default function Connect4Replay({ gameAreaController }: Connect4GameProps): JSX.Element {
   const [board, setBoard] = useState<Connect4Cell[][]>(gameAreaController.board);
   const [isYellowTurn, setIsYellowTurn] = useState<boolean>(true);
-  const [replayIndex, setReplayIndex] = useState<number>(0);
   const toast = useToast();
   const [movesYellow, setMovesYellow] = useState<Connect4GridPosition[]>([]);
   const [movesRed, setMovesRed] = useState<Connect4GridPosition[]>([]);
@@ -99,7 +98,6 @@ export default function Connect4Replay({ gameAreaController }: Connect4GameProps
           }
           if (!isYellowTurn) {
             setIsYellowTurn(true);
-            setReplayIndex(replayIndex + 1);
           }
         } catch (e) {
           toast({
@@ -113,7 +111,7 @@ export default function Connect4Replay({ gameAreaController }: Connect4GameProps
 
     const waitForNextMove = setInterval(handleReplay, 1000);
     return () => clearInterval(waitForNextMove);
-  }, [replayIndex, gameAreaController, toast]);
+  }, [gameAreaController, toast]);
 
   useEffect(() => {
     gameAreaController.addListener('turnChanged', setIsYellowTurn);
