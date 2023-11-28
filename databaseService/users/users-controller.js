@@ -13,17 +13,27 @@ const UsersController = (app) => {
 export default UsersController
 
 const findAllUsers = async (req, res) => {
-    const users = await usersDao.findAllUsers();
-    res.json(users);
+    try {
+        const users = await usersDao.findAllUsers();
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 /*
     Search by PlayerID
 */
 const findUserById = async (req, res) => {
-    const id = req.params.id;
-    const user = await usersDao.findUserById(id);
-    res.json(user);
+    try {
+        const id = req.params.id;
+        const user = await usersDao.findUserById(id);
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 /*
@@ -33,14 +43,20 @@ For this method, pass in username=townId in :usernameTown of request.
 Example: /api/usernametown/hello=townGang will return user with matching username hello and townid townGang
 */
 const findUserByUsernameAndTown = async (req, res) => {
-    const usernameAndTown = req.params.usertown;
-    const usernameAndTownPair = usernameAndTown.split("=");
-    const username = usernameAndTownPair[0];
-    const townId = usernameAndTownPair[1];
+    try {
+        const usernameAndTown = req.params.usertown;
+        const usernameAndTownPair = usernameAndTown.split("=");
+        const username = usernameAndTownPair[0];
+        const townId = usernameAndTownPair[1];
 
-    const user = await usersModel.findOne({username: username, whatTown: townId});
+        const user = await usersModel.findOne({ username: username, whatTown: townId });
 
-    res.json(user)
+        res.json(user)
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
 }
 
 /*
@@ -55,20 +71,36 @@ Body Format for createUser
 
 */
 const createUser = async (req, res) => {
-    const user = await usersDao.createUser(req.body);
-    res.json(user)
+    try {
+        const user = await usersDao.createUser(req.body);
+        res.json(user)
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 const updateELO = async (req, res) => {
-    const id = req.params.id;
-    const newELO = req.body.elo;
-    const user = await usersModel.updateOne({playerId : id}, {$set: {elo : newELO}});
+    try {
+        const id = req.params.id;
+        const newELO = req.body.elo;
+        const user = await usersModel.updateOne({ playerId: id }, { $set: { elo: newELO } });
 
-    res.json(user);
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 const findUsersByTown = async (req, res) => {
-    const townId = req.params.id;
-    const users = await usersModel.find({whatTown : townId})
-    res.json(users)
+    try {
+        const townId = req.params.id;
+        const users = await usersModel.find({ whatTown: townId })
+        res.json(users)
+    } catch (error) {
+        console.error('Error fetching towns:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
 }
