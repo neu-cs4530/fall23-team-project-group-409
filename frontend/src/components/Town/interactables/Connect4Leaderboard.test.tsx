@@ -1,9 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import { GameResult, PlayerDatabase } from '../../../types/CoveyTownSocket';
+import { PlayerDatabase } from '../../../types/CoveyTownSocket';
 import Connect4Leaderboard from './Connect4Leaderboard';
-import Leaderboard from './Leaderboard';
 
 describe('[T4] Leaderboard', () => {
   // Spy on console.error and intercept react key warnings to fail test
