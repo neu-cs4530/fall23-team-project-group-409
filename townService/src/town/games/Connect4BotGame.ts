@@ -1,63 +1,31 @@
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
-  BOARD_POSITION_NOT_EMPTY_MESSAGE,
-  MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
-import {
-  GameMove,
-  Connect4GameState,
-  Connect4Move,
-  Connect4GridPosition,
-} from '../../types/CoveyTownSocket';
-import { addPlayer, getAllPlayersFromTown, writeGame } from '../Database';
+import { GameMove, Connect4Move, Connect4GridPosition } from '../../types/CoveyTownSocket';
 import { getMoveScores, ScoreList } from './Connect4BotSearch';
-import Game from './Game';
+import Connect4Game from './Connect4Game';
 
 /**
- * A Connect4Game is a Game that implements the rules of Connect 4.
+ * A Connect4BotGame is a Game that implements the rules of Connect 4, with a bot.
  * @see https://en.wikipedia.org/wiki/connect-4
  */
-export default class Connect4BotGame extends Game<Connect4GameState, Connect4Move> {
+export default class Connect4BotGame extends Connect4Game {
   private _depth: number;
 
   public constructor(townID: string, depth: number) {
-    super(
-      {
-        moves: [],
-        status: 'WAITING_TO_START',
-      },
-      townID,
-    );
+    super(townID);
     this._depth = depth;
   }
 
-  // DONE
-  private get _board() {
-    const { moves } = this.state;
-    const board = [
-      ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', ''],
-    ];
-    // Checks each row from the bottom up for emptyness, and place the lowest (latest) undefined row with the move
-    for (const move of moves) {
-      for (let i = 5; i >= 0; i--) {
-        if (board[i][move.col] === '') {
-          board[i][move.col] = move.gamePiece;
-          break;
-        }
-      }
-    }
-    return board;
-  }
-
+  /**
+   * Returns the best move for the bot in the current board state.
+   * It does so by delegating to the Connect4BotGame, which calls search functions
+   * to get the best move out of all possible moves.
+   */
   private _getBestBotMove(): Connect4GridPosition {
     const board = this._board;
 
@@ -78,130 +46,6 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
       return col;
     }
     return 0;
-  }
-
-  private _checkForGameEnding() {
-    const board = this._board;
-    // A game ends when there are 4 in a row, column, or diagonal
-
-    // lambda functions to check for each win condition
-    const cH = (r: number, c: number) =>
-      board[r][c] === board[r][c + 1] &&
-      board[r][c] === board[r][c + 2] &&
-      board[r][c] === board[r][c + 3];
-
-    const cV = (r: number, c: number) =>
-      board[r][c] === board[r + 1][c] &&
-      board[r][c] === board[r + 2][c] &&
-      board[r][c] === board[r + 3][c];
-
-    const cDL = (r: number, c: number) =>
-      board[r][c] === board[r + 1][c - 1] &&
-      board[r][c] === board[r + 2][c - 2] &&
-      board[r][c] === board[r + 3][c - 3];
-
-    const cDR = (r: number, c: number) =>
-      board[r][c] === board[r + 1][c + 1] &&
-      board[r][c] === board[r + 2][c + 2] &&
-      board[r][c] === board[r + 3][c + 3];
-
-    // create a 'checking matrix' which defines functions to be applied to each spot of the board to check for winner
-    // for example, spot (0,0) must be checked horizontally, vertically, and diagonally to the right
-    const checkMat = [
-      [
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR, cDL],
-        [cV, cDL],
-        [cV, cDL],
-        [cV, cDL],
-      ],
-      [
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR, cDL],
-        [cV, cDL],
-        [cV, cDL],
-        [cV, cDL],
-      ],
-      [
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR, cDL],
-        [cV, cDL],
-        [cV, cDL],
-        [cV, cDL],
-      ],
-      [[cH], [cH], [cH], [cH], [], [], []],
-      [[cH], [cH], [cH], [cH], [], [], []],
-      [[cH], [cH], [cH], [cH], [], [], []],
-    ];
-
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[0].length; j++) {
-        // get the calculations for each column
-        // if at least one is true, update the winner and return
-        let isWinner = false;
-        checkMat[i][j].forEach(fun => {
-          isWinner = isWinner || (fun(i, j) && board[i][j] !== '');
-        });
-        if (isWinner) {
-          this.state = {
-            ...this.state,
-            status: 'OVER',
-            winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
-          };
-          // ADD GAME TO DATABASE //
-          this._updateDatabaseGame();
-          return;
-        }
-      }
-    }
-
-    // Check for no more moves
-    if (this.state.moves.length === 6 * 7) {
-      this.state = {
-        ...this.state,
-        status: 'OVER',
-        winner: undefined,
-      };
-    }
-  }
-
-  // IMPLEMENT
-  private _validateMove(move: Connect4Move) {
-    // A move is valid if the space is empty
-    let count = 0;
-    for (const m of this.state.moves) {
-      if (m.col === move.col) {
-        count++;
-        if (count === 6) {
-          throw new InvalidParametersError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
-        }
-      }
-    }
-
-    // A move is only valid if it is the player's turn
-    if (move.gamePiece === 'Yellow' && this.state.moves.length % 2 === 1) {
-      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece === 'Red' && this.state.moves.length % 2 === 0) {
-      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    }
-    // A move is valid only if game is in progress
-    if (this.state.status !== 'IN_PROGRESS') {
-      throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-    }
-  }
-
-  private _applyMove(move: Connect4Move): void {
-    this.state = {
-      ...this.state,
-      moves: [...this.state.moves, move],
-    };
-    this._checkForGameEnding();
   }
 
   /*
@@ -330,49 +174,5 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
         winner: this.state.yellow,
       };
     }
-  }
-
-  /**
-   * Adds a player to the database.
-   * @param player Player to add
-   */
-  private async _addPlayerToDatabase(player: Player): Promise<void> {
-    const allPlayersInTown = await getAllPlayersFromTown(this._townID);
-    const allPlayersInTownList: string[] = allPlayersInTown.map(
-      (user: { playerId: string }) => user.playerId,
-    );
-    if (!allPlayersInTownList.includes(player.id)) {
-      await addPlayer({
-        username: player.userName,
-        elo: 1000,
-        whatTown: this._townID,
-        playerId: player.id,
-        wins: 0,
-        losses: 0,
-        ties: 0,
-      });
-    }
-  }
-
-  /**
-   * Updates the database by adding the game with its moves and the winner
-   */
-  private async _updateDatabaseGame(): Promise<void> {
-    const redMoves: number[] = this.state.moves
-      .filter(move => move.gamePiece === 'Red')
-      .map(move => move.col);
-    const yellowMoves: number[] = this.state.moves
-      .filter(move => move.gamePiece === 'Yellow')
-      .map(move => move.col);
-
-    await writeGame({
-      gameId: this.id,
-      townId: this._townID,
-      redPlayer: this.state.red,
-      yellowPlayer: this.state.yellow,
-      winner: this.state.winner,
-      redMoves,
-      yellowMoves,
-    });
   }
 }
