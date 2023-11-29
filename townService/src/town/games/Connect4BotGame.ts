@@ -21,7 +21,9 @@ import Game from './Game';
  * @see https://en.wikipedia.org/wiki/connect-4
  */
 export default class Connect4BotGame extends Game<Connect4GameState, Connect4Move> {
-  public constructor(townID: string) {
+  private _depth: number;
+
+  public constructor(townID: string, depth: number) {
     super(
       {
         moves: [],
@@ -29,6 +31,7 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
       },
       townID,
     );
+    this._depth = depth;
   }
 
   // DONE
@@ -57,7 +60,7 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
   private _getBestBotMove(): Connect4GridPosition {
     const board = this._board;
 
-    const scores: ScoreList = getMoveScores(board, 'Red');
+    const scores: ScoreList = getMoveScores(board, 'Red', this._depth);
     const values = Object.keys(scores).map(k => scores[Number(k)]);
     const keys = Object.keys(scores);
     keys.sort((a, b) => values[keys.indexOf(b)] - values[keys.indexOf(a)]);

@@ -13,7 +13,7 @@ describe('Connect4BotGame', () => {
   let game: Connect4BotGame;
 
   beforeEach(() => {
-    game = new Connect4BotGame('FFFFF');
+    game = new Connect4BotGame('FFFFF', 4);
   });
 
   describe('[T1.1] _join', () => {

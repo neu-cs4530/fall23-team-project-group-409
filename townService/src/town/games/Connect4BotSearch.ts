@@ -128,7 +128,10 @@ function minimax(
     for (let i = 0; i < 7; i++) {
       if (isValidMove(board, i)) {
         const newBoard = applyMove(board, i, player === 'Red' ? 'Red' : 'Yellow');
-        best = Math.max(best, minimax(newBoard, depth - 1, player, !isMaximizing, alpha, beta));
+        best = Math.max(
+          best,
+          minimax(newBoard, depth - 1, player, !isMaximizing, alpha, beta) * 0.99,
+        );
         alpha = Math.max(alpha, best);
         if (alpha >= beta) {
           break;
@@ -156,12 +159,16 @@ function minimax(
  * and a score for how good the move is.
  * @param board Board of the connect 4 game, which each space represented as strings.
  */
-export function getMoveScores(board: string[][], player: 'Yellow' | 'Red'): ScoreList {
+export function getMoveScores(
+  board: string[][],
+  player: 'Yellow' | 'Red',
+  depth: number,
+): ScoreList {
   const scores: ScoreList = {};
   for (let i: Connect4GridPosition = 0; i < 7; i++) {
     if (isValidMove(board, i)) {
       const newBoard = applyMove(board, i, player);
-      scores[i] = minimax(newBoard, 4, player, false, -Infinity, Infinity);
+      scores[i] = minimax(newBoard, depth, player, false, -Infinity, Infinity);
     }
   }
   return scores;

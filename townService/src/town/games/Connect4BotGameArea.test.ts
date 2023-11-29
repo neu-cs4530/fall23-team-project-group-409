@@ -80,7 +80,7 @@ describe('Connect4BotGameArea', () => {
     describe('[T3.1] when given a JoinGame command', () => {
       describe('when there is no game in progress', () => {
         it('should create a new game and call _emitAreaChanged', () => {
-          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          const { gameID } = gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
           expect(gameID).toBeDefined();
           if (!game) {
             throw new Error('Game was not created by the first call to join');
@@ -91,20 +91,20 @@ describe('Connect4BotGameArea', () => {
       });
       describe('when there is a game in progress', () => {
         it('should dispatch the join command to the game and call _emitAreaChanged', () => {
-          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          const { gameID } = gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
           if (!game) {
             throw new Error('Game was not created by the first call to join');
           }
           expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
 
           const joinSpy = jest.spyOn(game, 'join');
-          const gameID2 = gameArea.handleCommand({ type: 'JoinGame' }, player2).gameID;
+          const gameID2 = gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player2).gameID;
           expect(joinSpy).toHaveBeenCalledWith(player2);
           expect(gameID).toEqual(gameID2);
           expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
         });
         it('should not call _emitAreaChanged if the game throws an error', () => {
-          gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
           if (!game) {
             throw new Error('Game was not created by the first call to join');
           }
@@ -113,9 +113,9 @@ describe('Connect4BotGameArea', () => {
           const joinSpy = jest.spyOn(game, 'join').mockImplementationOnce(() => {
             throw new Error('Test Error');
           });
-          expect(() => gameArea.handleCommand({ type: 'JoinGame' }, player2)).toThrowError(
-            'Test Error',
-          );
+          expect(() =>
+            gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player2),
+          ).toThrowError('Test Error');
           expect(joinSpy).toHaveBeenCalledWith(player2);
           expect(interactableUpdateSpy).not.toHaveBeenCalled();
         });
@@ -131,8 +131,8 @@ describe('Connect4BotGameArea', () => {
       describe('when there is a game in progress', () => {
         let gameID: GameInstanceID;
         beforeEach(() => {
-          gameID = gameArea.handleCommand({ type: 'JoinGame' }, player1).gameID;
-          gameArea.handleCommand({ type: 'JoinGame' }, player2);
+          gameID = gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1).gameID;
+          gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player2);
           interactableUpdateSpy.mockClear();
         });
         it('should throw an error when the game ID does not match', () => {
@@ -246,7 +246,7 @@ describe('Connect4BotGameArea', () => {
       });
       describe('when there is a game in progress', () => {
         it('should throw an error when the game ID does not match', () => {
-          gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
           interactableUpdateSpy.mockClear();
           expect(() =>
             gameArea.handleCommand({ type: 'LeaveGame', gameID: nanoid() }, player1),
@@ -254,7 +254,7 @@ describe('Connect4BotGameArea', () => {
           expect(interactableUpdateSpy).not.toHaveBeenCalled();
         });
         it('should dispatch the leave command to the game and call _emitAreaChanged', () => {
-          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          const { gameID } = gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
           if (!game) {
             throw new Error('Game was not created by the first call to join');
           }
@@ -265,7 +265,7 @@ describe('Connect4BotGameArea', () => {
           expect(interactableUpdateSpy).toHaveBeenCalledTimes(2);
         });
         it('should not call _emitAreaChanged if the game throws an error', () => {
-          gameArea.handleCommand({ type: 'JoinGame' }, player1);
+          gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
           if (!game) {
             throw new Error('Game was not created by the first call to join');
           }
@@ -280,8 +280,8 @@ describe('Connect4BotGameArea', () => {
           expect(interactableUpdateSpy).not.toHaveBeenCalled();
         });
         it('should update the history if the game is over', () => {
-          const { gameID } = gameArea.handleCommand({ type: 'JoinGame' }, player1);
-          gameArea.handleCommand({ type: 'JoinGame' }, player2);
+          const { gameID } = gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player1);
+          gameArea.handleCommand({ type: 'JoinGameBot', depth: 4 }, player2);
           interactableUpdateSpy.mockClear();
           jest.spyOn(game, 'leave').mockImplementationOnce(() => {
             game.endGame(player1.id);
