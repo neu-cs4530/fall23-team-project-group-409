@@ -203,7 +203,7 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
 
 /**
  * A wrapper component for the Connect4Area component.
- * Determines if the player is currently in a tic tac toe area on the map, and if so,
+ * Determines if the player is currently in a connect 4 area on the map, and if so,
  * renders the Connect4Area component in a modal.
  *
  */
