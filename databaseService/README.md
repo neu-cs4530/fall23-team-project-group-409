@@ -83,6 +83,12 @@ THERE ARE TWO WAYS YOU CAN DEAL WITH SAVING GAMES:
 1. Create the entire game entry at the end of the game. This might be weird to trace back your steps.
 2. Create a game at the start of a game, and then update game each move with updateGame. 
 
+## Manual Testing Strategy
+
+In order to verify the behavior of our API calls, it was important for us to test its functionality manually. Especially with varying requirements as we made design decisions for the logic behind our game and statistics systems (leaderboard, ELO, replays, etc.). 
+
+In order to verify expected logic, developers initially ran our database service locally, so they could have immediate access to our logs and error handling available in the terminal. Additionally, developers were given connection strings to our MongoDB service, which they could access through MongoDBCompass or some other service to view changes in documents and collections. Thus, any new API requests could be quickly verified for their behavior through theses methods.
+
 ## Other
 
 Here are some example axios calls:
@@ -110,3 +116,5 @@ export const loginUser = async (username, password) => {
 ```
 
 Look at how loginUser has both a field for link and body. Calls can have both (except for GET).
+
+
