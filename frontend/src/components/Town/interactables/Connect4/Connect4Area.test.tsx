@@ -308,37 +308,37 @@ describe('[T2] Connect4Area', () => {
         {},
       );
     });
-    // it('Renders the leaderboard with the history when the game is updated', () => {
-    //   const mockPlayers: PlayerDatabase[] = [];
-    //   renderConnect4Area();
-    //   expect(leaderboardComponentSpy).toHaveBeenCalledWith(
-    //     {
-    //       results: mockPlayers,
-    //     },
-    //     {},
-    //   );
+    it('Renders the leaderboard with the history when the game is updated', () => {
+      const mockPlayers: PlayerDatabase[] = [];
+      renderConnect4Area();
+      expect(leaderboardComponentSpy).toHaveBeenCalledWith(
+        {
+          results: mockPlayers,
+        },
+        {},
+      );
 
-    //   const mockPlayers2: PlayerDatabase[] = [
-    //     {
-    //       username: nanoid(),
-    //       whatTown: nanoid(),
-    //       playerId: nanoid(),
-    //       elo: 1000,
-    //       wins: 0,
-    //       losses: 0,
-    //       ties: 0,
-    //     },
-    //   ];
-    //   act(() => {
-    //     gameAreaController.emit('gameUpdated');
-    //   });
-    //   expect(leaderboardComponentSpy).toHaveBeenCalledWith(
-    //     {
-    //       results: mockPlayers2,
-    //     },
-    //     {},
-    //   );
-    // });
+      const mockPlayers2: PlayerDatabase[] = [
+        {
+          username: nanoid(),
+          whatTown: nanoid(),
+          playerId: nanoid(),
+          elo: 1000,
+          wins: 0,
+          losses: 0,
+          ties: 0,
+        },
+      ];
+      act(() => {
+        gameAreaController.emit('gameUpdated');
+      });
+      expect(leaderboardComponentSpy).toHaveBeenCalledWith(
+        {
+          results: mockPlayers2,
+        },
+        {},
+      );
+    });
   });
   describe('[T2.3] Join game button', () => {
     it('Is not shown when the player is in a not-yet-started game', () => {
