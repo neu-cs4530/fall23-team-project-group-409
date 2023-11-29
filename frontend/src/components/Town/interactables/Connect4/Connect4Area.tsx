@@ -72,7 +72,7 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
   );
   const townController = useTownController();
 
-  const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
+  //const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
   const [gameStatus, setGameStatus] = useState<GameStatus>(gameAreaController.status);
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
@@ -84,14 +84,14 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
 
   useEffect(() => {
     const updateGameState = () => {
-      setHistory(gameAreaController.history);
+      // setHistory(gameAreaController.history);
       setGameStatus(gameAreaController.status || 'WAITING_TO_START');
       setMoveCount(gameAreaController.moveCount || 0);
       setObservers(gameAreaController.observers);
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
       // setPlayers(gameAreaController.updatePlayers(props.townId));
-      getAllPlayersInTown(props.townId).then(users => setPlayers(users));
+      gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
@@ -124,7 +124,7 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
   }, [townController, gameAreaController, toast, props.townId, players]);
 
   useEffect(() => {
-    getAllPlayersInTown(props.townId).then(users => setPlayers(users));
+    gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
   });
 
   let gameStatusText = <></>;

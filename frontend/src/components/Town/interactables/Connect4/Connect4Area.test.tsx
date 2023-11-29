@@ -62,6 +62,8 @@ class MockConnect4AreaController extends Connect4AreaController {
 
   joinGame = jest.fn();
 
+  updatePlayer = jest.fn();
+
   mockBoard: Connect4Cell[][] = [
     [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
@@ -96,6 +98,8 @@ class MockConnect4AreaController extends Connect4AreaController {
   mockIsActive = false;
 
   mockHistory: GameResult[] = [];
+
+  public mockPlayersList: PlayerDatabase[] = [];
 
   public constructor() {
     super(nanoid(), mock<GameArea<Connect4GameState>>(), mock<TownController>());
@@ -318,23 +322,21 @@ describe('[T2] Connect4Area', () => {
         {},
       );
 
-      const mockPlayers2: PlayerDatabase[] = [
-        {
-          username: nanoid(),
-          whatTown: nanoid(),
-          playerId: nanoid(),
-          elo: 1000,
-          wins: 0,
-          losses: 0,
-          ties: 0,
-        },
-      ];
+      gameAreaController.updatePlayer({
+        username: nanoid(),
+        whatTown: nanoid(),
+        playerId: nanoid(),
+        elo: 1000,
+        wins: 0,
+        losses: 0,
+        ties: 0,
+      });
       act(() => {
         gameAreaController.emit('gameUpdated');
       });
       expect(leaderboardComponentSpy).toHaveBeenCalledWith(
         {
-          results: mockPlayers2,
+          results: gameAreaController.mockPlayersList,
         },
         {},
       );
