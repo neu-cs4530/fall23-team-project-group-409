@@ -623,8 +623,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
             this._interactableControllers.push(
               new Connect4BotAreaController(eachInteractable.id, eachInteractable, this),
             );
-          }
-        else if (isConnect4ReplayArea(eachInteractable)) {
+          } else if (isConnect4ReplayArea(eachInteractable)) {
             this._interactableControllers.push(
               new Connect4ReplayAreaController(eachInteractable.id, eachInteractable, this),
             );
