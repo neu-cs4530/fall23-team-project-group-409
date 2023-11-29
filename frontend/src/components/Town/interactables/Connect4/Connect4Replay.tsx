@@ -142,9 +142,13 @@ export default function Connect4Replay(props: {
         const yellowPlayerID = await getYellowFromGame(props.gameID);
         console.log(yellowPlayerID);
         const yellowUser = await getPlayerInfo(yellowPlayerID);
-        const redUser = await getPlayerInfo(redPlayerID);
+        let redUserName = 'Bot';
+        if (redPlayerID !== 'Bot') {
+          const redUser = await getPlayerInfo(redPlayerID);
+          redUserName = redUser.username;
+        }
         setYellowPlayerName(yellowUser.username);
-        setRedPlayerName(redUser.username);
+        setRedPlayerName(redUserName);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
