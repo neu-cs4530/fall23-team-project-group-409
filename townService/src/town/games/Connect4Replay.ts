@@ -57,49 +57,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
     return board;
   }
 
-  // OR Get the yellow and red moves given the gameID
-  public async getMoves(gameID: string) {
-    try {
-      const { yellowMoves, redMoves } = await getMoves(gameID);
-      return { yellowMoves, redMoves };
-    } catch (error) {
-      console.error('Error getting moves:', error);
-      throw error;
-    }
-  }
-
-  public async getYellowMoves(gameID: string) {
-    try {
-      const { yellowMoves } = await this.getMoves(gameID);
-      return yellowMoves;
-    } catch (error) {
-      console.error('Error getting yellow moves:', error);
-      throw error;
-    }
-  }
-
-  public async getRedMoves(gameID: string) {
-    try {
-      const { redMoves } = await this.getMoves(gameID);
-      return redMoves;
-    } catch (error) {
-      console.error('Error getting red moves:', error);
-      throw error;
-    }
-  }
-
-  // Get the Yellow player in the game given the gameID
-  public async getYellowPlayer(gameID: string) {
-    const players = await getYellowFromGame(gameID);
-    return players;
-  }
-
-  // Get the Red player in the game given the gameID
-  public async getRedPlayer(gameID: string) {
-    const players = await getRedFromGame(gameID);
-    return players;
-  }
-
   private async _checkForGameEnding() {
     const board = this._board;
     // A game ends when there are 4 in a row, column, or diagonal
@@ -189,30 +146,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
     }
   }
 
-  private _validateMove(move: Connect4Move) {
-    // A move is valid if the space is empty
-    let count = 0;
-    for (const m of this.state.moves) {
-      if (m.col === move.col) {
-        count++;
-        if (count === 6) {
-          throw new InvalidParametersError(BOARD_POSITION_NOT_EMPTY_MESSAGE);
-        }
-      }
-    }
-
-    // A move is only valid if it is the player's turn
-    if (move.gamePiece === 'Yellow' && this.state.moves.length % 2 === 1) {
-      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece === 'Red' && this.state.moves.length % 2 === 0) {
-      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    }
-    // A move is valid only if game is in progress
-    if (this.state.status !== 'IN_PROGRESS') {
-      throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-    }
-  }
-
   private _applyMove(move: Connect4Move): void {
     this.state = {
       ...this.state,
@@ -255,7 +188,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
       gamePiece,
       col: move.move.col,
     };
-    this._validateMove(cleanMove);
     this._applyMove(cleanMove);
   }
 
@@ -287,7 +219,7 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
     } else {
       throw new InvalidParametersError(GAME_FULL_MESSAGE);
     }
-    if (this.state.yellow && this.state.red) {
+    if (this.state.yellow) {
       this.state = {
         ...this.state,
         status: 'IN_PROGRESS',

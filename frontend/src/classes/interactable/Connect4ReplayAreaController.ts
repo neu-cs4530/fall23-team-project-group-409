@@ -161,6 +161,7 @@ export default class Connect4ReplayAreaController extends GameAreaController<
    * If the turn has changed, emits a 'turnChanged' event with true if it is our turn, and false otherwise.
    * If the turn has not changed, does not emit the event.
    */
+  // List of moves taken in, left button gives new list with one less, right button gives new list with one more until end
   protected _updateFrom(newModel: GameArea<Connect4GameState>): void {
     const wasOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     super._updateFrom(newModel);
@@ -200,17 +201,18 @@ export default class Connect4ReplayAreaController extends GameAreaController<
    *
    * @param col Column of the move
    */
-  public async makeMove(col: Connect4GridPosition) {
+  public async makeMove(col: Connect4GridPosition, gamePieceGiven: 'Yellow' | 'Red') {
     const instanceID = this._instanceID;
-    if (!instanceID || this._model.game?.state.status !== 'IN_PROGRESS') {
-      throw new Error(NO_GAME_IN_PROGRESS_ERROR);
+    console.log(instanceID);
+    if (!instanceID) {
+      throw new Error('NO_GAME_IN_PROGRESS_ERROR');
     }
     await this._townController.sendInteractableCommand(this.id, {
       type: 'GameMove',
       gameID: instanceID,
       move: {
         col,
-        gamePiece: this.gamePiece,
+        gamePiece: gamePieceGiven,
       },
     });
   }

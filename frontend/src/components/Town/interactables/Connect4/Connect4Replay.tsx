@@ -1,4 +1,4 @@
-import { IconButton, chakra, Container, useToast } from '@chakra-ui/react';
+import { IconButton, chakra, Container, useToast, Button } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Connect4AreaController, {
   Connect4Cell,
@@ -42,6 +42,10 @@ const StyledConnect4Board = chakra(Container, {
   },
 });
 
+function timeout(delay: number) {
+  return new Promise(res => setTimeout(res, delay));
+}
+
 /**
  * A component that renders the Connect4 board
  *
@@ -67,19 +71,77 @@ export default function Connect4Replay(props: {
   const [board, setBoard] = useState<Connect4Cell[][]>(props.gameAreaController.board);
   const [isYellowTurn, setIsYellowTurn] = useState<boolean>(true);
   const toast = useToast();
+  //const [yellowPlayer, setYellowPlayer] = useState<PlayerController | undefined>(];
   const [movesYellow, setMovesYellow] = useState<Connect4GridPosition[]>([]);
   const [movesRed, setMovesRed] = useState<Connect4GridPosition[]>([]);
+  const [currentMoves, setCurrentMoves] = useState<Connect4Move[]>([]);
+
+  function changeBoard(newMoves: Connect4Move[]) {
+    const newBoard: Connect4Cell[][] = [
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    ];
+    // Added logic for moving pieces to the bottom of the boards availability for the column specified
+    newMoves.forEach(move => {
+      for (let x = 5; x >= 0; x--) {
+        if (newBoard[x][move.col] === undefined) {
+          newBoard[x][move.col] = move.gamePiece;
+          break;
+        }
+      }
+    });
+    setBoard(newBoard);
+  }
+
+  function handleBackTurnClick() {
+    if (currentMoves.length >= 0) {
+      const movesTemp = currentMoves;
+      movesTemp.pop();
+      setCurrentMoves(movesTemp);
+      changeBoard(currentMoves);
+    }
+    console.log(currentMoves);
+  }
+
+  function handleForwardTurnClick() {
+    console.log('hi');
+    if (currentMoves.length < movesYellow.length + movesRed.length) {
+      if (currentMoves.length % 2 === 0) {
+        currentMoves.push({
+          col: movesYellow[currentMoves.length / 2],
+          gamePiece: 'Yellow',
+        });
+        setCurrentMoves([...currentMoves]);
+        changeBoard(currentMoves);
+      } else {
+        const redIndex = Math.floor(currentMoves.length / 2);
+        currentMoves.push({
+          col: movesRed[redIndex],
+          gamePiece: 'Red',
+        });
+        setCurrentMoves([...currentMoves]);
+        changeBoard(currentMoves);
+      }
+    }
+    console.log(currentMoves);
+  }
 
   useEffect(() => {
     const fetchMoves = async () => {
       try {
-        const { yellowMoves, redMoves } = await getMoves('');
+        const { yellowMoves, redMoves } = await getMoves(props.gameID);
 
-        const data1 = await yellowMoves.json();
-        const data2 = await redMoves.json();
+        console.log(props.gameID);
 
-        setMovesYellow(data1);
-        setMovesRed(data2);
+        setMovesYellow(yellowMoves);
+        setMovesRed(redMoves);
+
+        console.log(yellowMoves);
+        console.log(redMoves);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -97,8 +159,13 @@ export default function Connect4Replay(props: {
     };
   }, [props.gameAreaController]);
 
+  useEffect(() => {
+    console.log(currentMoves);
+  }, [board, currentMoves]);
+
   return (
     <StyledConnect4Board aria-label='Connect-4 Board' colorScheme='blue'>
+      <h1>{}</h1>
       {board.map((row, rowIndex) => {
         return row.map((cell, colIndex) => {
           return (
@@ -113,6 +180,8 @@ export default function Connect4Replay(props: {
           );
         });
       })}
+      <Button onClick={() => handleBackTurnClick()}>Back</Button>
+      <Button onClick={() => handleForwardTurnClick()}>Forward</Button>
     </StyledConnect4Board>
   );
 }

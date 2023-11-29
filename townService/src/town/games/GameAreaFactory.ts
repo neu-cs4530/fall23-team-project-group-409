@@ -30,7 +30,7 @@ export default function GameAreaFactory(
   if (gameType === 'Connect4') {
     return new Connect4GameArea(name, rect, broadcastEmitter, townID);
   }
-    if (gameType === 'Connect4Replay') {
+  if (gameType === 'Connect4Replay') {
     return new Connect4ReplayArea(name, rect, broadcastEmitter, townID);
   }
   if (gameType === 'Connect4Bot') {

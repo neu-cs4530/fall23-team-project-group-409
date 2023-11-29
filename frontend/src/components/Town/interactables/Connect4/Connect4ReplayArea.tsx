@@ -22,7 +22,6 @@ import { useInteractable, useInteractableAreaController } from '../../../../clas
 import useTownController from '../../../../hooks/useTownController';
 import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
-import Connect4Board from './Connect4Board';
 import Connect4Replay from './Connect4Replay';
 import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
 import { getGames, getYellowFromGame } from '../../../../../../townService/src/town/Database';
