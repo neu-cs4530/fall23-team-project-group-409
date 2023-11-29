@@ -16,7 +16,7 @@ describe('Connect4BotSearch', () => {
 
   describe('getMoveScores', () => {
     it('should return a list of 7 scores when the bot can move anywhere', () => {
-      expect(getMoveScores(board, 'Red')).toEqual({
+      expect(getMoveScores(board, 'Red', 4)).toEqual({
         0: 0,
         1: 0,
         2: 0,
@@ -35,7 +35,7 @@ describe('Connect4BotSearch', () => {
         ['Red', 'Red', 'Red', 'Red', 'Red', 'Red', 'Red'],
         ['Red', 'Red', 'Red', 'Red', 'Red', 'Red', 'Red'],
       ];
-      expect(getMoveScores(board, 'Red')).toEqual({
+      expect(getMoveScores(board, 'Red', 4)).toEqual({
         4: 10,
       });
     });
@@ -48,7 +48,7 @@ describe('Connect4BotSearch', () => {
         ['Red', 'Red', 'Red', 'Red', 'Red', 'Red', 'Red'],
         ['Red', 'Red', 'Red', 'Red', 'Red', 'Red', 'Red'],
       ];
-      expect(getMoveScores(board, 'Red')).toEqual({});
+      expect(getMoveScores(board, 'Red', 4)).toEqual({});
     });
   });
 
@@ -62,7 +62,7 @@ describe('Connect4BotSearch', () => {
         ['Red', '', '', '', '', '', ''],
         ['Red', '', '', '', '', '', ''],
       ];
-      expect(getMoveScores(board, 'Red')).toEqual({
+      expect(getMoveScores(board, 'Red', 4)).toEqual({
         0: 10,
         1: 0,
         2: 0,
@@ -81,7 +81,7 @@ describe('Connect4BotSearch', () => {
         ['Yellow', '', '', '', '', '', ''],
         ['Yellow', '', '', '', '', '', ''],
       ];
-      expect(getMoveScores(board, 'Red')).toEqual({
+      expect(getMoveScores(board, 'Red', 4)).toEqual({
         0: 0,
         1: -10,
         2: -10,
@@ -100,7 +100,7 @@ describe('Connect4BotSearch', () => {
         ['Red', '', '', 'Yellow', '', '', ''],
         ['Red', '', '', 'Yellow', '', '', ''],
       ];
-      expect(getMoveScores(board, 'Red')).toEqual({
+      expect(getMoveScores(board, 'Red', 4)).toEqual({
         0: 10,
         1: -10,
         2: -10,

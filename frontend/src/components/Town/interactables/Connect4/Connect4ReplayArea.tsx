@@ -193,6 +193,7 @@ export default function Connect4ReplayAreaWrapper(): JSX.Element {
         <ModalContent>
           <Center>
             <Image src='/assets/connect-four.png' width='50%'></Image>
+            <Image src='/assets/replay_icon.png' width='10%' marginLeft='3'></Image>
           </Center>
           <ModalCloseButton />
           <Connect4ReplayArea interactableID={gameArea.name} />;

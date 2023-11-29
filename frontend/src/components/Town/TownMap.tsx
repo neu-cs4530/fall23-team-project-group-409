@@ -6,7 +6,7 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import NewConversationModal from './interactables/NewCoversationModal';
 import TownGameScene from './TownGameScene';
 import TicTacToeAreaWrapper from './interactables/TicTacToe/TicTacToeArea';
-import Connect4AreaWrapper from './interactables/Connect4/Connect4Area';
+import Connect4AreaWrapper, { Connect4BotAreaWrapper } from './interactables/Connect4/Connect4Area';
 import Connect4ReplayAreaWrapper from './interactables/Connect4/Connect4ReplayArea';
 
 export default function TownMap(): JSX.Element {
@@ -53,6 +53,7 @@ export default function TownMap(): JSX.Element {
       <NewConversationModal />
       <TicTacToeAreaWrapper />
       <Connect4AreaWrapper />
+      <Connect4BotAreaWrapper />
       <Connect4ReplayAreaWrapper />
 
       <div id='map-container' />

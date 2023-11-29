@@ -13,6 +13,7 @@ import {
   Connect4Move,
   Connect4GridPosition,
 } from '../../types/CoveyTownSocket';
+import { addPlayer, getAllPlayersFromTown, writeGame } from '../Database';
 import { getMoveScores, ScoreList } from './Connect4BotSearch';
 import Game from './Game';
 
@@ -21,7 +22,9 @@ import Game from './Game';
  * @see https://en.wikipedia.org/wiki/connect-4
  */
 export default class Connect4BotGame extends Game<Connect4GameState, Connect4Move> {
-  public constructor(townID: string) {
+  private _depth: number;
+
+  public constructor(townID: string, depth: number) {
     super(
       {
         moves: [],
@@ -29,6 +32,7 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
       },
       townID,
     );
+    this._depth = depth;
   }
 
   // DONE
@@ -57,7 +61,7 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
   private _getBestBotMove(): Connect4GridPosition {
     const board = this._board;
 
-    const scores: ScoreList = getMoveScores(board, 'Red');
+    const scores: ScoreList = getMoveScores(board, 'Red', this._depth);
     const values = Object.keys(scores).map(k => scores[Number(k)]);
     const keys = Object.keys(scores);
     keys.sort((a, b) => values[keys.indexOf(b)] - values[keys.indexOf(a)]);
@@ -150,6 +154,8 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
             status: 'OVER',
             winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
           };
+          // ADD GAME TO DATABASE //
+          this._updateDatabaseGame();
           return;
         }
       }
@@ -284,6 +290,8 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
         status: 'IN_PROGRESS',
       };
     }
+    // If the player is not in the database, add player
+    this._addPlayerToDatabase(player);
   }
 
   /**
@@ -322,5 +330,49 @@ export default class Connect4BotGame extends Game<Connect4GameState, Connect4Mov
         winner: this.state.yellow,
       };
     }
+  }
+
+  /**
+   * Adds a player to the database.
+   * @param player Player to add
+   */
+  private async _addPlayerToDatabase(player: Player): Promise<void> {
+    const allPlayersInTown = await getAllPlayersFromTown(this._townID);
+    const allPlayersInTownList: string[] = allPlayersInTown.map(
+      (user: { playerId: string }) => user.playerId,
+    );
+    if (!allPlayersInTownList.includes(player.id)) {
+      await addPlayer({
+        username: player.userName,
+        elo: 1000,
+        whatTown: this._townID,
+        playerId: player.id,
+        wins: 0,
+        losses: 0,
+        ties: 0,
+      });
+    }
+  }
+
+  /**
+   * Updates the database by adding the game with its moves and the winner
+   */
+  private async _updateDatabaseGame(): Promise<void> {
+    const redMoves: number[] = this.state.moves
+      .filter(move => move.gamePiece === 'Red')
+      .map(move => move.col);
+    const yellowMoves: number[] = this.state.moves
+      .filter(move => move.gamePiece === 'Yellow')
+      .map(move => move.col);
+
+    await writeGame({
+      gameId: this.id,
+      townId: this._townID,
+      redPlayer: this.state.red,
+      yellowPlayer: this.state.yellow,
+      winner: this.state.winner,
+      redMoves,
+      yellowMoves,
+    });
   }
 }

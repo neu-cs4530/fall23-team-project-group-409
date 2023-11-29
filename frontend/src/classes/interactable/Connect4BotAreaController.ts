@@ -41,6 +41,8 @@ export default class Connect4BotAreaController extends GameAreaController<
     moving: false,
   });
 
+  protected _depth = 4;
+
   /**
    * Returns the current state of the board.
    *
@@ -222,5 +224,24 @@ export default class Connect4BotAreaController extends GameAreaController<
         gamePiece: this.gamePiece,
       },
     });
+  }
+
+  public set depth(d: number) {
+    this._depth = d;
+  }
+
+  /**
+   * Sends a request to the server to join the game
+   *
+   * If the game is not in progress, throws an error NO_GAME_IN_PROGRESS_ERROR
+   *
+   * @param col Column of the move
+   */
+  public async joinGame() {
+    const { gameID } = await this._townController.sendInteractableCommand(this.id, {
+      type: 'JoinGameBot',
+      depth: this._depth,
+    });
+    this._instanceID = gameID;
   }
 }

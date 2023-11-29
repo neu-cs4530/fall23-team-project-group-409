@@ -16,6 +16,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
+  RadioGroup,
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -27,6 +28,7 @@ import { GameStatus, InteractableID, PlayerDatabase } from '../../../../types/Co
 import GameAreaInteractable from '../GameArea';
 import Connect4Board from './Connect4Board';
 import Connect4Leaderboard from '../Connect4Leaderboard';
+import Connect4BotAreaController from '../../../../classes/interactable/Connect4BotAreaController';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -216,7 +218,7 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
 
 /**
  * A wrapper component for the Connect4Area component.
- * Determines if the player is currently in a tic tac toe area on the map, and if so,
+ * Determines if the player is currently in a connect 4 area on the map, and if so,
  * renders the Connect4Area component in a modal.
  *
  */
@@ -231,18 +233,93 @@ export default function Connect4AreaWrapper(): JSX.Element {
     }
   }, [townController, gameArea]);
 
-  if (
-    gameArea &&
-    (gameArea.getData('type') === 'Connect4' || gameArea.getData('type') === 'Connect4Bot')
-  ) {
+  if (gameArea && gameArea.getData('type') === 'Connect4') {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <Center>
             <Image src='/assets/connect-four.png' width='50%'></Image>
+            <Image src='/assets/versus_icon.png' width='9%' marginLeft='2'></Image>
           </Center>
           <ModalCloseButton />
+          <Connect4Area interactableID={gameArea.name} townId={townController.townID} />;
+        </ModalContent>
+      </Modal>
+    );
+  }
+  return <></>;
+}
+
+export function Connect4BotAreaWrapper(): JSX.Element {
+  const gameArea = useInteractable<GameAreaInteractable>('gameArea');
+  const townController = useTownController();
+  const [selectedButton, setSelectedButton] = useState(0);
+  const updateDepth = (d: number) => {
+    if (gameArea) {
+      const controller = townController.getGameAreaController(
+        gameArea,
+      ) as Connect4BotAreaController;
+      controller.depth = d;
+    }
+  };
+  const closeModal = useCallback(() => {
+    if (gameArea) {
+      townController.interactEnd(gameArea);
+      const controller = townController.getGameAreaController(gameArea);
+      controller.leaveGame();
+    }
+  }, [townController, gameArea]);
+
+  if (gameArea && gameArea.getData('type') === 'Connect4Bot') {
+    return (
+      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
+        <ModalOverlay />
+        <ModalContent>
+          <Center>
+            <Image src='/assets/connect-four.png' width='50%'></Image>
+            <Image src='/assets/little_robot.png' width='10%' marginLeft='2'></Image>
+          </Center>
+          <ModalCloseButton />
+          <RadioGroup aria-label='bot-difficulty-selector'>
+            <Center>
+              <Button
+                value='2'
+                marginBottom='1'
+                colorScheme={selectedButton === 1 ? 'blue' : 'gray'}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                onClick={() => {
+                  setSelectedButton(1);
+                  updateDepth(2);
+                }}>
+                Easy
+              </Button>
+              <Button
+                value='4'
+                marginRight='2'
+                marginLeft='2'
+                marginBottom='3'
+                colorScheme={selectedButton === 2 ? 'blue' : 'gray'}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                onClick={() => {
+                  setSelectedButton(2);
+                  updateDepth(4);
+                }}>
+                Medium
+              </Button>
+              <Button
+                value='6'
+                marginBottom='1'
+                colorScheme={selectedButton === 3 ? 'blue' : 'gray'}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                onClick={() => {
+                  setSelectedButton(3);
+                  updateDepth(6);
+                }}>
+                Hard
+              </Button>
+            </Center>
+          </RadioGroup>
           <Connect4Area interactableID={gameArea.name} townId={townController.townID} />;
         </ModalContent>
       </Modal>

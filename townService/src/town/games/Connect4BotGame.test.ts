@@ -9,15 +9,23 @@ import {
 import Player from '../../lib/Player';
 import Connect4BotGame from './Connect4BotGame';
 
+jest.mock('../Database', () => ({
+  addPlayer: jest.fn().mockResolvedValue(undefined),
+  editPlayerInfo: jest.fn().mockResolvedValue(undefined),
+  getAllPlayersFromTown: jest.fn().mockResolvedValue([]),
+  getPlayerInfo: jest.fn().mockResolvedValue({ elo: 1000, wins: 0, losses: 0, ties: 0 }),
+  writeGame: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe('Connect4BotGame', () => {
   let game: Connect4BotGame;
 
   beforeEach(() => {
-    game = new Connect4BotGame('FFFFF');
+    game = new Connect4BotGame('FFFFF', 4);
   });
 
   describe('[T1.1] _join', () => {
-    it('should throw an error if the player is already in the game', () => {
+    it('should throw an error if the player is already in the game', async () => {
       const player = createPlayerForTesting();
       game.join(player);
       expect(() => game.join(player)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
@@ -73,7 +81,6 @@ describe('Connect4BotGame', () => {
     describe('[T2.2] when given an invalid move', () => {
       it('should throw an error if the game is not in progress', () => {
         const player1 = createPlayerForTesting();
-        // game.join(player1);
         expect(() =>
           game.applyMove({
             gameID: game.id,

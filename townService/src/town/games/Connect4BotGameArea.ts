@@ -95,11 +95,11 @@ export default class Connect4BotGameArea extends GameArea<Connect4BotGame> {
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }
-    if (command.type === 'JoinGame') {
+    if (command.type === 'JoinGameBot') {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new Connect4BotGame(this.townID);
+        game = new Connect4BotGame(this.townID, command.depth);
         this._game = game;
       }
       game.join(player);

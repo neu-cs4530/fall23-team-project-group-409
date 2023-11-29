@@ -199,13 +199,18 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | GameMoveCommand<Connect4Move>;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | GameMoveCommand<Connect4Move> | JoinGameBotCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
 }
 export interface JoinGameCommand {
   type: 'JoinGame';
+}
+
+export interface JoinGameBotCommand {
+  type: 'JoinGameBot';
+  depth: number;
 }
 export interface LeaveGameCommand {
   type: 'LeaveGame';
@@ -218,6 +223,7 @@ export interface GameMoveCommand<MoveType> {
 }
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
+  CommandType extends JoinGameBotCommand ? { gameID: string }:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
