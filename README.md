@@ -16,6 +16,14 @@ A backend service (in the `townService` directory) implements the application lo
 
 Running the application locally entails running both the backend service and a frontend.
 
+### Group 409 Information
+Hello. The instructions to running our town is really similar to the original instructions. 
+Please go to our [final report](https://docs.google.com/document/d/1qlpTJBVoq2mti3tbF0cRTTmZ2vdeHzGExvVaKljuB1U/edit?usp=sharing) to find all of the instructions to run our game.
+The main chnages in the setup instructions is the additional running of a database and changes to the creation of .env files.
+
+Please contact Andrew Lee for additional support.
+Thank you.
+
 ### Setting up the backend
 
 To run the backend, you will need a Twilio account. Twilio provides new accounts with $15 of credit, which is more than enough to get started.
