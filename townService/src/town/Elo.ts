@@ -1,5 +1,5 @@
 // Function to calculate new Elo ratings
-export function calculateEloRating(
+function calculateEloRating(
   redPlayer: number,
   yellowPlayer: number,
   kFactor: number,

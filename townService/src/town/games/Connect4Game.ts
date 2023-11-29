@@ -17,7 +17,6 @@ import {
   getPlayerInfo,
   writeGame,
 } from '../Database';
-// eslint-disable-next-line import/no-named-as-default
 import calculateEloRating from '../Elo';
 
 /**
