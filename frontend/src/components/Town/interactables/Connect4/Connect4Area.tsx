@@ -23,11 +23,7 @@ import Connect4AreaController from '../../../../classes/interactable/Connect4Are
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import {
-  GameStatus,
-  InteractableID,
-  PlayerDatabase,
-} from '../../../../types/CoveyTownSocket';
+import { GameStatus, InteractableID, PlayerDatabase } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import Connect4Board from './Connect4Board';
 import Connect4Leaderboard from '../Connect4Leaderboard';
