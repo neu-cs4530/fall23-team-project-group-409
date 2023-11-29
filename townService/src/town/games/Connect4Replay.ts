@@ -1,9 +1,4 @@
 /* eslint-disable no-await-in-loop */
-import InvalidParametersError, {
-  GAME_FULL_MESSAGE,
-  PLAYER_ALREADY_IN_GAME_MESSAGE,
-  PLAYER_NOT_IN_GAME_MESSAGE,
-} from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 import Game from './Game';
@@ -25,7 +20,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
 
   // DONE
   private get _board() {
-    const { moves } = this.state;
     const board = [
       ['', '', '', '', '', '', ''],
       ['', '', '', '', '', '', ''],
@@ -34,105 +28,7 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
       ['', '', '', '', '', '', ''],
       ['', '', '', '', '', '', ''],
     ];
-    // Checks each row from the bottom up for emptyness, and place the lowest (latest) undefined row with the move
-    for (const move of moves) {
-      for (let i = 5; i >= 0; i--) {
-        if (board[i][move.col] === '') {
-          board[i][move.col] = move.gamePiece;
-          break;
-        }
-      }
-    }
     return board;
-  }
-
-  private async _checkForGameEnding() {
-    const board = this._board;
-    // A game ends when there are 4 in a row, column, or diagonal
-
-    // lambda functions to check for each win condition
-    const cH = (r: number, c: number) =>
-      board[r][c] === board[r][c + 1] &&
-      board[r][c] === board[r][c + 2] &&
-      board[r][c] === board[r][c + 3];
-
-    const cV = (r: number, c: number) =>
-      board[r][c] === board[r + 1][c] &&
-      board[r][c] === board[r + 2][c] &&
-      board[r][c] === board[r + 3][c];
-
-    const cDL = (r: number, c: number) =>
-      board[r][c] === board[r + 1][c - 1] &&
-      board[r][c] === board[r + 2][c - 2] &&
-      board[r][c] === board[r + 3][c - 3];
-
-    const cDR = (r: number, c: number) =>
-      board[r][c] === board[r + 1][c + 1] &&
-      board[r][c] === board[r + 2][c + 2] &&
-      board[r][c] === board[r + 3][c + 3];
-
-    // create a 'checking matrix' which defines functions to be applied to each spot of the board to check for winner
-    // for example, spot (0,0) must be checked horizontally, vertically, and diagonally to the right
-    const checkMat = [
-      [
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR, cDL],
-        [cV, cDL],
-        [cV, cDL],
-        [cV, cDL],
-      ],
-      [
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR, cDL],
-        [cV, cDL],
-        [cV, cDL],
-        [cV, cDL],
-      ],
-      [
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR],
-        [cH, cV, cDR, cDL],
-        [cV, cDL],
-        [cV, cDL],
-        [cV, cDL],
-      ],
-      [[cH], [cH], [cH], [cH], [], [], []],
-      [[cH], [cH], [cH], [cH], [], [], []],
-      [[cH], [cH], [cH], [cH], [], [], []],
-    ];
-
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[0].length; j++) {
-        // get the calculations for each column
-        // if at least one is true, update the winner and return
-        let isWinner = false;
-        checkMat[i][j].forEach(fun => {
-          isWinner = isWinner || (fun(i, j) && board[i][j] !== '');
-        });
-        if (isWinner) {
-          this.state = {
-            ...this.state,
-            status: 'OVER',
-            winner: board[i][j] === 'Red' ? this.state.red : this.state.yellow,
-          };
-          return;
-        }
-      }
-    }
-
-    // Check for no more moves
-    if (this.state.moves.length === 6 * 7) {
-      this.state = {
-        ...this.state,
-        status: 'OVER',
-        winner: undefined,
-      };
-    }
   }
 
   private _applyMove(move: Connect4Move): void {
@@ -140,7 +36,6 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
       ...this.state,
       moves: [...this.state.moves, move],
     };
-    this._checkForGameEnding();
   }
 
   /*
@@ -181,76 +76,16 @@ export default class Connect4Replay extends Game<Connect4GameState, Connect4Move
   }
 
   /**
-   * Adds a player to the game.
-   * Updates the game's state to reflect the new player.
-   * If the game is now full (has two players), updates the game's state to set the status to IN_PROGRESS.
-   *
-   * When there are no players, the first player to join is yellow
-   *
-   * @param player The player to join the game
-   * @throws InvalidParametersError if the player is already in the game (PLAYER_ALREADY_IN_GAME_MESSAGE)
-   *  or the game is full (GAME_FULL_MESSAGE)
+   * Shouldn't be called
    */
   protected _join(player: Player): void {
-    if (this.state.yellow === player.id || this.state.red === player.id) {
-      throw new InvalidParametersError(PLAYER_ALREADY_IN_GAME_MESSAGE);
-    }
-    if (!this.state.yellow) {
-      this.state = {
-        ...this.state,
-        yellow: player.id,
-      };
-    } else if (!this.state.red) {
-      this.state = {
-        ...this.state,
-        red: player.id,
-      };
-    } else {
-      throw new InvalidParametersError(GAME_FULL_MESSAGE);
-    }
-    if (this.state.yellow) {
-      this.state = {
-        ...this.state,
-        status: 'IN_PROGRESS',
-      };
-    }
+    // Not necessary but must exist for Connect4ReplayArea
   }
 
   /**
-   * Removes a player from the game.
-   * Updates the game's state to reflect the player leaving.
-   * If the game has two players in it at the time of call to this method,
-   *   updates the game's status to OVER and sets the winner to the other player.
-   * If the game does not yet have two players in it at the time of call to this method,
-   *   updates the game's status to WAITING_TO_START.
-   *
-   * @param player The player to remove from the game
-   * @throws InvalidParametersError if the player is not in the game (PLAYER_NOT_IN_GAME_MESSAGE)
+   * Shouldn't be called
    */
   protected _leave(player: Player): void {
-    if (this.state.yellow !== player.id && this.state.red !== player.id) {
-      throw new InvalidParametersError(PLAYER_NOT_IN_GAME_MESSAGE);
-    }
-    // Handles case where the game has not started yet
-    if (this.state.red === undefined) {
-      this.state = {
-        moves: [],
-        status: 'WAITING_TO_START',
-      };
-      return;
-    }
-    if (this.state.yellow === player.id) {
-      this.state = {
-        ...this.state,
-        status: 'OVER',
-        winner: this.state.red,
-      };
-    } else {
-      this.state = {
-        ...this.state,
-        status: 'OVER',
-        winner: this.state.yellow,
-      };
-    }
+    // Not necessary but must exist for Connect4ReplayArea
   }
 }
