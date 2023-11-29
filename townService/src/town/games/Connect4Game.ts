@@ -34,7 +34,8 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     );
   }
 
-  protected get _board() {
+  // DONE
+  private get _board() {
     const { moves } = this.state;
     const board = [
       ['', '', '', '', '', '', ''],
@@ -56,11 +57,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     return board;
   }
 
-  /**
-   * Checks the current game to see if it is over, and updates the state as necessary
-   * @returns A promise for adding the game to the database.
-   */
-  protected async _checkForGameEnding() {
+  private async _checkForGameEnding() {
     const board = this._board;
     // A game ends when there are 4 in a row, column, or diagonal
 
@@ -151,11 +148,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
   }
 
-  /**
-   * Handles errors for invalid moves in the Connect 4 game.
-   * @param move Move to validate
-   */
-  protected _validateMove(move: Connect4Move) {
+  private _validateMove(move: Connect4Move) {
     // A move is valid if the space is empty
     let count = 0;
     for (const m of this.state.moves) {
@@ -179,10 +172,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
   }
 
-  /**
-   * Apply the update to the state given a move to add.
-   */
-  protected _applyMove(move: Connect4Move): void {
+  private _applyMove(move: Connect4Move): void {
     this.state = {
       ...this.state,
       moves: [...this.state.moves, move],
@@ -265,11 +255,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     this._addPlayerToDatabase(player);
   }
 
-  /**
-   * Adds the given player into the database. If add fails, an exception will be thrown.
-   * @param player Player to add to the database
-   */
-  protected async _addPlayerToDatabase(player: Player): Promise<void> {
+  private async _addPlayerToDatabase(player: Player): Promise<void> {
     const allPlayersInTown = await getAllPlayersFromTown(this._townID);
     const allPlayersInTownList: string[] = allPlayersInTown.map(
       (user: { playerId: string }) => user.playerId,
@@ -287,10 +273,7 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
     }
   }
 
-  /**
-   * Adds the current game into the database. If add fails, an exception will be thrown.
-   */
-  protected async _updateDatabaseGame(): Promise<void> {
+  private async _updateDatabaseGame(): Promise<void> {
     const redMoves: number[] = this.state.moves
       .filter(move => move.gamePiece === 'Red')
       .map(move => move.col);
