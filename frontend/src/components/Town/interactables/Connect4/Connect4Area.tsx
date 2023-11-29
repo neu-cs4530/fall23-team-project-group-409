@@ -117,7 +117,14 @@ function Connect4Area(props: { interactableID: InteractableID; townId: string })
   }, [townController, gameAreaController, toast, props.townId, players]);
 
   useEffect(() => {
-    gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
+    const fetchData = async () => {
+      try {
+        await gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
   });
 
   let gameStatusText = <></>;
