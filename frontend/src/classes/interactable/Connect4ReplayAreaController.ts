@@ -203,7 +203,6 @@ export default class Connect4ReplayAreaController extends GameAreaController<
    */
   public async makeMove(col: Connect4GridPosition, gamePieceGiven: 'Yellow' | 'Red') {
     const instanceID = this._instanceID;
-    console.log(instanceID);
     if (!instanceID) {
       throw new Error('NO_GAME_IN_PROGRESS_ERROR');
     }

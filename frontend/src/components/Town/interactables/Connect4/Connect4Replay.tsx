@@ -102,11 +102,9 @@ export default function Connect4Replay(props: {
       setCurrentMoves(movesTemp);
       changeBoard(currentMoves);
     }
-    console.log(currentMoves);
   }
 
   function handleForwardTurnClick() {
-    console.log('hi');
     if (currentMoves.length < movesYellow.length + movesRed.length) {
       if (currentMoves.length % 2 === 0) {
         currentMoves.push({
@@ -125,22 +123,17 @@ export default function Connect4Replay(props: {
         changeBoard(currentMoves);
       }
     }
-    console.log(currentMoves);
   }
 
   useEffect(() => {
     const fetchMovesAndNames = async () => {
       try {
         const { yellowMoves, redMoves } = await getMoves(props.gameID);
-        console.log(props.gameID);
         setMovesYellow(yellowMoves);
         setMovesRed(redMoves);
-        console.log(yellowMoves);
-        console.log(redMoves);
 
         const redPlayerID = await getRedFromGame(props.gameID);
         const yellowPlayerID = await getYellowFromGame(props.gameID);
-        console.log(yellowPlayerID);
         const yellowUser = await getPlayerInfo(yellowPlayerID);
         let redUserName = 'Bot';
         if (redPlayerID !== 'Bot') {
@@ -166,7 +159,7 @@ export default function Connect4Replay(props: {
   }, [props.gameAreaController]);
 
   useEffect(() => {
-    console.log(currentMoves);
+    // Re-render whenever the board or currentMoves array changes (back button or next button is clicked)
   }, [board, currentMoves]);
 
   return (
