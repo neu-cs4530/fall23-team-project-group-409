@@ -21,14 +21,17 @@ export default abstract class Game<StateType extends GameState, MoveType> {
 
   protected _players: Player[] = [];
 
+  protected _townID: string;
+
   /**
    * Creates a new Game instance.
    * @param initialState State to initialize the game with.
    * @param emitAreaChanged A callback to invoke when the state of the game changes. This is used to notify clients.
    */
-  public constructor(initialState: StateType) {
+  public constructor(initialState: StateType, townID: string) {
     this.id = nanoid() as GameInstanceID;
     this._state = initialState;
+    this._townID = townID;
   }
 
   public get state() {

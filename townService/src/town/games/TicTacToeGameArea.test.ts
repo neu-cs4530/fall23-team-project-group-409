@@ -19,10 +19,13 @@ import Game from './Game';
 
 class TestingGame extends Game<TicTacToeGameState, TicTacToeMove> {
   public constructor() {
-    super({
-      moves: [],
-      status: 'WAITING_TO_START',
-    });
+    super(
+      {
+        moves: [],
+        status: 'WAITING_TO_START',
+      },
+      'FFFFF',
+    );
   }
 
   public applyMove(): void {}
@@ -65,6 +68,7 @@ describe('TicTacToeGameArea', () => {
       nanoid(),
       { x: 0, y: 0, width: 100, height: 100 },
       mock<TownEmitter>(),
+      'FFFFF',
     );
     gameArea.add(player1);
     gameArea.add(player2);

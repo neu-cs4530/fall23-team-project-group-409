@@ -36,7 +36,7 @@ describe('InteractableArea', () => {
 
   beforeEach(() => {
     mockClear(townEmitter);
-    testArea = new TestInteractableArea(id, testAreaBox, townEmitter);
+    testArea = new TestInteractableArea(id, testAreaBox, townEmitter, 'FFFFF');
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
     testArea.add(newPlayer);
   });
@@ -178,6 +178,7 @@ describe('InteractableArea', () => {
             { id: 'testArea', occupants: [] },
             intersectBox,
             mock<TownEmitter>(),
+            'FFFFF',
           ),
         ),
       ).toBe(true);
@@ -220,6 +221,7 @@ describe('InteractableArea', () => {
               { id: 'testArea', occupants: [] },
               intersectBox,
               mock<TownEmitter>(),
+              'FFFFF',
             ),
           ),
         ).toBe(true);
@@ -261,6 +263,7 @@ describe('InteractableArea', () => {
             { id: 'testArea', occupants: [] },
             intersectBox,
             mock<TownEmitter>(),
+            'FFFFF',
           ),
         ),
       ).toBe(false);

@@ -30,6 +30,7 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
     if (updatedState.state.status === 'OVER') {
       // If we haven't yet recorded the outcome, do so now.
       const gameID = this._game?.id;
+      // If there isn't a history/score for the game that ended, create one and add it to the history of games
       if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
         const { yellow, red } = updatedState.state;
         if (yellow && red) {
@@ -47,6 +48,7 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
         }
       }
     }
+
     this._emitAreaChanged();
   }
 
@@ -99,7 +101,7 @@ export default class Connect4GameArea extends GameArea<Connect4Game> {
       let game = this._game;
       if (!game || game.state.status === 'OVER') {
         // No game in progress, make a new one
-        game = new Connect4Game();
+        game = new Connect4Game(this.townID);
         this._game = game;
       }
       game.join(player);

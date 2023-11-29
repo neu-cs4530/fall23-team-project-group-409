@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'Connect4Area';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'Connect4Area' | 'Connect4ReplayArea' | 'Connect4BotArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -199,13 +199,18 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | GameMoveCommand<Connect4Move>;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | GameMoveCommand<Connect4Move> | JoinGameBotCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
 }
 export interface JoinGameCommand {
   type: 'JoinGame';
+}
+
+export interface JoinGameBotCommand {
+  type: 'JoinGameBot';
+  depth: number;
 }
 export interface LeaveGameCommand {
   type: 'LeaveGame';
@@ -218,6 +223,7 @@ export interface GameMoveCommand<MoveType> {
 }
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
+  CommandType extends JoinGameBotCommand ? { gameID: string }:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
@@ -249,3 +255,13 @@ export interface ClientToServerEvents {
   interactableUpdate: (update: Interactable) => void;
   interactableCommand: (command: InteractableCommand & InteractableCommandBase) => void;
 }
+
+export interface PlayerDatabase {
+  username: string,
+  elo: number,
+  whatTown: string,
+  playerId: string,
+  wins: number,
+  losses: number,
+  ties: number,
+};

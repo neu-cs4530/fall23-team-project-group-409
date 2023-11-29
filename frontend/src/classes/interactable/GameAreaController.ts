@@ -1,10 +1,12 @@
 import _ from 'lodash';
+import { getAllPlayersInTown } from '../../components/Town/interactables/Database';
 import {
   GameArea,
   GameInstanceID,
   GameResult,
   GameState,
   InteractableID,
+  PlayerDatabase,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import TownController from '../TownController';
@@ -34,6 +36,8 @@ export default abstract class GameAreaController<
 
   protected _players: PlayerController[] = [];
 
+  public _playerDb: PlayerDatabase[] = [];
+
   constructor(id: InteractableID, gameArea: GameArea<State>, townController: TownController) {
     super(id);
     this._model = gameArea;
@@ -42,6 +46,8 @@ export default abstract class GameAreaController<
     const game = gameArea.game;
     if (game && game.players)
       this._players = game.players.map(playerID => this._townController.getPlayer(playerID));
+
+    this._playerDb = [];
   }
 
   get history(): GameResult[] {
@@ -114,6 +120,16 @@ export default abstract class GameAreaController<
       //eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.emit('gameEnd');
+    }
+  }
+
+  public async updatePlayers(townId: string) {
+    try {
+      this._playerDb = await getAllPlayersInTown(townId).then(users => (this._playerDb = users));
+      return this._playerDb;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return this._playerDb;
     }
   }
 

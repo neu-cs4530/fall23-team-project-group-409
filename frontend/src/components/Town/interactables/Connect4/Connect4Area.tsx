@@ -6,15 +6,17 @@ import {
   AccordionPanel,
   Box,
   Button,
+  Center,
   Container,
   Heading,
+  Image,
   List,
   ListItem,
   Modal,
   ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
+  RadioGroup,
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -22,10 +24,11 @@ import Connect4AreaController from '../../../../classes/interactable/Connect4Are
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
+import { GameStatus, InteractableID, PlayerDatabase } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
-import Connect4Leaderboard from '../Leaderboard';
 import Connect4Board from './Connect4Board';
+import Connect4Leaderboard from '../Connect4Leaderboard';
+import Connect4BotAreaController from '../../../../classes/interactable/Connect4BotAreaController';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -59,11 +62,12 @@ import Connect4Board from './Connect4Board';
  *    - Our player lost: description 'You lost :('
  *
  */
-function Connect4Area({ interactableID }: { interactableID: InteractableID }): JSX.Element {
-  const gameAreaController = useInteractableAreaController<Connect4AreaController>(interactableID);
+function Connect4Area(props: { interactableID: InteractableID; townId: string }): JSX.Element {
+  const gameAreaController = useInteractableAreaController<Connect4AreaController>(
+    props.interactableID,
+  );
   const townController = useTownController();
 
-  const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
   const [gameStatus, setGameStatus] = useState<GameStatus>(gameAreaController.status);
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
@@ -71,15 +75,16 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
   const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
   const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
   const toast = useToast();
+  const [players, setPlayers] = useState<PlayerDatabase[]>([]);
 
   useEffect(() => {
     const updateGameState = () => {
-      setHistory(gameAreaController.history);
       setGameStatus(gameAreaController.status || 'WAITING_TO_START');
       setMoveCount(gameAreaController.moveCount || 0);
       setObservers(gameAreaController.observers);
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
+      gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
@@ -109,7 +114,18 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
       gameAreaController.removeListener('gameEnd', onGameEnd);
       gameAreaController.removeListener('gameUpdated', updateGameState);
     };
-  }, [townController, gameAreaController, toast]);
+  }, [townController, gameAreaController, toast, props.townId, players]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  });
 
   let gameStatusText = <></>;
   if (gameStatus === 'IN_PROGRESS') {
@@ -169,7 +185,7 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
             </AccordionButton>
           </Heading>
           <AccordionPanel>
-            <Connect4Leaderboard results={history} />
+            <Connect4Leaderboard results={players} />
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem>
@@ -202,7 +218,7 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
 
 /**
  * A wrapper component for the Connect4Area component.
- * Determines if the player is currently in a tic tac toe area on the map, and if so,
+ * Determines if the player is currently in a connect 4 area on the map, and if so,
  * renders the Connect4Area component in a modal.
  *
  */
@@ -222,9 +238,89 @@ export default function Connect4AreaWrapper(): JSX.Element {
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{gameArea.name}</ModalHeader>
+          <Center>
+            <Image src='/assets/connect-four.png' width='50%'></Image>
+            <Image src='/assets/versus_icon.png' width='9%' marginLeft='2'></Image>
+          </Center>
           <ModalCloseButton />
-          <Connect4Area interactableID={gameArea.name} />;
+          <Connect4Area interactableID={gameArea.name} townId={townController.townID} />;
+        </ModalContent>
+      </Modal>
+    );
+  }
+  return <></>;
+}
+
+export function Connect4BotAreaWrapper(): JSX.Element {
+  const gameArea = useInteractable<GameAreaInteractable>('gameArea');
+  const townController = useTownController();
+  const [selectedButton, setSelectedButton] = useState(0);
+  const updateDepth = (d: number) => {
+    if (gameArea) {
+      const controller = townController.getGameAreaController(
+        gameArea,
+      ) as Connect4BotAreaController;
+      controller.depth = d;
+    }
+  };
+  const closeModal = useCallback(() => {
+    if (gameArea) {
+      townController.interactEnd(gameArea);
+      const controller = townController.getGameAreaController(gameArea);
+      controller.leaveGame();
+    }
+  }, [townController, gameArea]);
+
+  if (gameArea && gameArea.getData('type') === 'Connect4Bot') {
+    return (
+      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
+        <ModalOverlay />
+        <ModalContent>
+          <Center>
+            <Image src='/assets/connect-four.png' width='50%'></Image>
+            <Image src='/assets/little_robot.png' width='10%' marginLeft='2'></Image>
+          </Center>
+          <ModalCloseButton />
+          <RadioGroup aria-label='bot-difficulty-selector'>
+            <Center>
+              <Button
+                value='2'
+                marginBottom='1'
+                colorScheme={selectedButton === 1 ? 'blue' : 'gray'}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                onClick={() => {
+                  setSelectedButton(1);
+                  updateDepth(2);
+                }}>
+                Easy
+              </Button>
+              <Button
+                value='4'
+                marginRight='2'
+                marginLeft='2'
+                marginBottom='3'
+                colorScheme={selectedButton === 2 ? 'blue' : 'gray'}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                onClick={() => {
+                  setSelectedButton(2);
+                  updateDepth(4);
+                }}>
+                Medium
+              </Button>
+              <Button
+                value='6'
+                marginBottom='1'
+                colorScheme={selectedButton === 3 ? 'blue' : 'gray'}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
+                onClick={() => {
+                  setSelectedButton(3);
+                  updateDepth(6);
+                }}>
+                Hard
+              </Button>
+            </Center>
+          </RadioGroup>
+          <Connect4Area interactableID={gameArea.name} townId={townController.townID} />;
         </ModalContent>
       </Modal>
     );
