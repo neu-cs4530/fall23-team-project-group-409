@@ -50,14 +50,13 @@ const StyledConnect4Board = chakra(Container, {
  * The board is re-rendered whenever the board changes, and each cell is re-rendered whenever the value
  * of that cell changes.
  *
- * If the current player is in the game, then each StyledConnect4Square is clickable, and clicking
- * on it will make a move in that cell. If there is an error making the move, then a toast will be
- * displayed with the error message as the description of the toast. If it is not the current player's
- * turn, then the StyledConnect4Square will be disabled.
+ * Clicking on the move forward button with the right button will move the game forward by one move.
+ * Clicking on the move back button with the left button will move the game back by one move.
  *
  * @param gameID the ID for the Connect4 game
  */
 export default function Connect4Replay(props: { gameID: string }): JSX.Element {
+  // Sets the initial states for required users and moves (and board)
   const [board, setBoard] = useState<Connect4Cell[][]>([
     [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
@@ -74,6 +73,7 @@ export default function Connect4Replay(props: { gameID: string }): JSX.Element {
   const [currentMoves, setCurrentMoves] = useState<Connect4Move[]>([]);
 
   function changeBoard(newMoves: Connect4Move[]) {
+    // Completely recreate the board based on the changed moves array and re-render on change
     const newBoard: Connect4Cell[][] = [
       [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
       [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
@@ -94,6 +94,8 @@ export default function Connect4Replay(props: { gameID: string }): JSX.Element {
     setBoard(newBoard);
   }
 
+  // Handles the back button click
+  // Removes the last move from the currentMoves array and re-renders the board
   function handleBackTurnClick() {
     if (currentMoves.length >= 0) {
       const movesTemp = currentMoves;
@@ -103,6 +105,8 @@ export default function Connect4Replay(props: { gameID: string }): JSX.Element {
     }
   }
 
+  // Handles the forward button click
+  // Adds the next move from the movesYellow and movesRed arrays to the currentMoves array and re-renders the board
   function handleForwardTurnClick() {
     if (currentMoves.length < movesYellow.length + movesRed.length) {
       if (currentMoves.length % 2 === 0) {

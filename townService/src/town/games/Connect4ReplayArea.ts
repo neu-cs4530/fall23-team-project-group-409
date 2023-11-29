@@ -8,7 +8,7 @@ import Connect4Replay from './Connect4Replay';
 import GameArea from './GameArea';
 
 /**
- * A Connect4GameArea is a GameArea that hosts a Connect4Game.
+ * A Connect4ReplayArea is a GameArea that hosts a Connect4Replay.
  * @see Connect4Game
  * @see GameArea
  */
