@@ -7,18 +7,23 @@ export const writeGame = async data => {
 };
 
 export const getPlayerInfo = async userID => {
-  const response = await axios.get(`${process.env.DATABASE_URL}/api/users/${userID}`);
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_TOWN_DATABASE_URL}/api/users/${userID}`,
+  );
   const user = response.data[0];
   return user;
 };
 
 export const editPlayerInfo = async (userID, newElo, newWins, newLosses, newTies) => {
-  const response = await axios.put(`${process.env.DATABASE_URL}/api/userselo/${userID}`, {
-    elo: newElo,
-    wins: newWins,
-    losses: newLosses,
-    ties: newTies,
-  });
+  const response = await axios.put(
+    `${process.env.NEXT_PUBLIC_TOWN_DATABASE_URL}/api/userselo/${userID}`,
+    {
+      elo: newElo,
+      wins: newWins,
+      losses: newLosses,
+      ties: newTies,
+    },
+  );
   const user = response.data;
   return user;
 };

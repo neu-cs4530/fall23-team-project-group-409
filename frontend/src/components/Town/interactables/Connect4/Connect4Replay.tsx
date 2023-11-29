@@ -143,8 +143,8 @@ export default function Connect4Replay(props: {
         console.log(yellowPlayerID);
         const yellowUser = await getPlayerInfo(yellowPlayerID);
         const redUser = await getPlayerInfo(redPlayerID);
-        setYellowPlayerName(yellowUser[0].username);
-        setRedPlayerName(redUser[0].username);
+        setYellowPlayerName(yellowUser.username);
+        setRedPlayerName(redUser.username);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
