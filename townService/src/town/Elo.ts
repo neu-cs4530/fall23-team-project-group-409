@@ -1,5 +1,5 @@
 // Function to calculate new Elo ratings
-export function calculateEloRating(
+function calculateEloRating(
   redPlayer: number,
   yellowPlayer: number,
   kFactor: number,
@@ -25,8 +25,10 @@ export function calculateEloRating(
     throw new Error('Invalid result. Must be "win", "loss", or "draw".');
   }
 
-  const newRedRating = redPlayer + kFactor * (actualOutcomeWinner - expectedOutcomeWinner);
-  const newYellowRating = yellowPlayer + kFactor * (actualOutcomeLoser - expectedOutcomeLoser);
+  const newRedRating: number =
+    redPlayer + Math.round(kFactor * (actualOutcomeWinner - expectedOutcomeWinner));
+  const newYellowRating: number =
+    yellowPlayer + Math.round(kFactor * (actualOutcomeLoser - expectedOutcomeLoser));
 
   return { newRedRating, newYellowRating };
 }

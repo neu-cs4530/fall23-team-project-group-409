@@ -7,12 +7,7 @@ import {
   getYellowFromGame,
   getRedFromGame,
 } from '../../../../../../townService/src/town/Database';
-import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
 import { getPlayerInfo } from '../../../../../../townService/src/town/Database';
-
-export type Connect4Props = {
-  gameAreaController: Connect4ReplayAreaController;
-};
 
 /**
  * A component that will render a single cell in the Connect4 board, styled
@@ -55,18 +50,21 @@ const StyledConnect4Board = chakra(Container, {
  * The board is re-rendered whenever the board changes, and each cell is re-rendered whenever the value
  * of that cell changes.
  *
- * If the current player is in the game, then each StyledConnect4Square is clickable, and clicking
- * on it will make a move in that cell. If there is an error making the move, then a toast will be
- * displayed with the error message as the description of the toast. If it is not the current player's
- * turn, then the StyledConnect4Square will be disabled.
+ * Clicking on the move forward button with the right button will move the game forward by one move.
+ * Clicking on the move back button with the left button will move the game back by one move.
  *
- * @param gameAreaController the controller for the Connect4 game
+ * @param gameID the ID for the Connect4 game
  */
-export default function Connect4Replay(props: {
-  gameAreaController: Connect4ReplayAreaController;
-  gameID: string;
-}): JSX.Element {
-  const [board, setBoard] = useState<Connect4Cell[][]>(props.gameAreaController.board);
+export default function Connect4Replay(props: { gameID: string }): JSX.Element {
+  // Sets the initial states for required users and moves (and board)
+  const [board, setBoard] = useState<Connect4Cell[][]>([
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  ]);
   const [yellowPlayerName, setYellowPlayerName] = useState<string>('');
   const [redPlayerName, setRedPlayerName] = useState<string>('');
 
@@ -75,6 +73,7 @@ export default function Connect4Replay(props: {
   const [currentMoves, setCurrentMoves] = useState<Connect4Move[]>([]);
 
   function changeBoard(newMoves: Connect4Move[]) {
+    // Completely recreate the board based on the changed moves array and re-render on change
     const newBoard: Connect4Cell[][] = [
       [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
       [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
@@ -95,6 +94,8 @@ export default function Connect4Replay(props: {
     setBoard(newBoard);
   }
 
+  // Handles the back button click
+  // Removes the last move from the currentMoves array and re-renders the board
   function handleBackTurnClick() {
     if (currentMoves.length >= 0) {
       const movesTemp = currentMoves;
@@ -102,11 +103,11 @@ export default function Connect4Replay(props: {
       setCurrentMoves(movesTemp);
       changeBoard(currentMoves);
     }
-    console.log(currentMoves);
   }
 
+  // Handles the forward button click
+  // Adds the next move from the movesYellow and movesRed arrays to the currentMoves array and re-renders the board
   function handleForwardTurnClick() {
-    console.log('hi');
     if (currentMoves.length < movesYellow.length + movesRed.length) {
       if (currentMoves.length % 2 === 0) {
         currentMoves.push({
@@ -125,22 +126,17 @@ export default function Connect4Replay(props: {
         changeBoard(currentMoves);
       }
     }
-    console.log(currentMoves);
   }
 
   useEffect(() => {
     const fetchMovesAndNames = async () => {
       try {
         const { yellowMoves, redMoves } = await getMoves(props.gameID);
-        console.log(props.gameID);
         setMovesYellow(yellowMoves);
         setMovesRed(redMoves);
-        console.log(yellowMoves);
-        console.log(redMoves);
 
         const redPlayerID = await getRedFromGame(props.gameID);
         const yellowPlayerID = await getYellowFromGame(props.gameID);
-        console.log(yellowPlayerID);
         const yellowUser = await getPlayerInfo(yellowPlayerID);
         let redUserName = 'Bot';
         if (redPlayerID !== 'Bot') {
@@ -159,14 +155,7 @@ export default function Connect4Replay(props: {
   }, []);
 
   useEffect(() => {
-    props.gameAreaController.addListener('boardChanged', setBoard);
-    return () => {
-      props.gameAreaController.removeListener('boardChanged', setBoard);
-    };
-  }, [props.gameAreaController]);
-
-  useEffect(() => {
-    console.log(currentMoves);
+    // Re-render whenever the board or currentMoves array changes (back button or next button is clicked)
   }, [board, currentMoves]);
 
   return (

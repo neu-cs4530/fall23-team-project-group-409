@@ -26,35 +26,14 @@ import Connect4ReplayAreaController from '../../../../classes/interactable/Conne
 import { getGames } from '../../../../../../townService/src/town/Database';
 
 /**
- * The Connect4Area component renders the Connect4 game area.
- * It renders the current state of the area, optionally allowing the player to join the game.
+ * The Connect4ReplayArea component renders the Connect4 replay area
  *
- * It uses Chakra-UI components (does not use other GUI widgets)
+ * This should show all of the previously played games that are stored in the database, allowing
+ * the user to click on a game and choose to replay whichever moves they played within the game.
  *
- * It uses the Connect4AreaController to get the current state of the game.
- * It listens for the 'gameUpdated' and 'gameEnd' events on the controller, and re-renders accordingly.
- * It subscribes to these events when the component mounts, and unsubscribes when the component unmounts. It also unsubscribes when the gameAreaController changes.
+ * They can click next for the next move and back to the previous move.
  *
- * It renders the following:
- * - A leaderboard (@see Leaderboard.tsx), which is passed the game history as a prop
- * - A list of observers' usernames (in a list with the aria-label 'list of observers in the game', one username per-listitem)
- * - A list of players' usernames (in a list with the aria-label 'list of players in the game', one item for X and one for O)
- *    - If there is no player in the game, the username is '(No player yet!)'
- *    - List the players as (exactly) `X: ${username}` and `O: ${username}`
- * - A message indicating the current game status:
- *    - If the game is in progress, the message is 'Game in progress, {moveCount} moves in, currently {whoseTurn}'s turn'. If it is currently our player's turn, the message is 'Game in progress, {moveCount} moves in, currently your turn'
- *    - Otherwise the message is 'Game {not yet started | over}.'
- * - If the game is in status WAITING_TO_START or OVER, a button to join the game is displayed, with the text 'Join New Game'
- *    - Clicking the button calls the joinGame method on the gameAreaController
- *    - Before calling joinGame method, the button is disabled and has the property isLoading set to true, and is re-enabled when the method call completes
- *    - If the method call fails, a toast is displayed with the error message as the description of the toast (and status 'error')
- *    - Once the player joins the game, the button dissapears
- * - The Connect4Board component, which is passed the current gameAreaController as a prop (@see Connect4Board.tsx)
- *
- * - When the game ends, a toast is displayed with the result of the game:
- *    - Tie: description 'Game ended in a tie'
- *    - Our player won: description 'You won!'
- *    - Our player lost: description 'You lost :('
+ * They can then exit and re-enter to watch another replay.
  *
  */
 function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
@@ -163,7 +142,7 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
   } else {
     return (
       <div>
-        <Connect4Replay gameAreaController={gameAreaController} gameID={currentGameID} />
+        <Connect4Replay gameID={currentGameID} />
       </div>
     );
   }

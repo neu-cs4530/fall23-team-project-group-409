@@ -19,6 +19,11 @@ function applyMove(brd: string[][], move: number, p: string): string[][] {
   return newBoard;
 }
 
+/**
+ * Checks the board for a win or tie and returns the correct value to be used in minimax search
+ * @param board Current board
+ * @returns 0 if tie, 1 if bot wins, -1 if player wins
+ */
 function getWinner(board: string[][]): number {
   // A game ends when there are 4 in a row, column, or diagonal
 
@@ -103,6 +108,17 @@ function getWinner(board: string[][]): number {
   return -2;
 }
 
+/**
+ * Recursive Minimax search, which will search through one layer of the tree
+ * until depth or terminal states are reached
+ * @param board Board to search
+ * @param depth Depth of search
+ * @param player Player whose turn it was at the start of the search
+ * @param isMaximizing True if the player we are searching for is the maximizing player (the bot)
+ * @param alpha Alpha parameter for minimax
+ * @param beta Beta parameter for minimax
+ * @returns The max/min value of the possible moves the player can make
+ */
 function minimax(
   board: string[][],
   depth: number,

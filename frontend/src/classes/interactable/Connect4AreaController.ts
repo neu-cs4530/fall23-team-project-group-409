@@ -37,10 +37,10 @@ export default class Connect4AreaController extends GameAreaController<
   /**
    * Returns the current state of the board.
    *
-   * The board is a 3x3 array of Connect4Cell, which is either 'Yellow', 'Red', or undefined.
+   * The board is a 7x6 array of Connect4Cell, which is either 'Yellow', 'Red', or undefined.
    *
    * The 2-dimensional array is indexed by row and then column, so board[0][0] is the top-left cell,
-   * and board[2][2] is the bottom-right cell
+   * and board[7][6] is the bottom-right cell
    */
   get board(): Connect4Cell[][] {
     return this._board;

@@ -1,6 +1,6 @@
-# Welcome to David's super duper awesome incredibly concise and well-written database backend (11/21 @ 5PM)
+# Welcome to our database backend (11/29 @ 5PM)
 
-Here, I will explain rationale behind the API calls and how you (Drew, Andrew, and Brian) should utilize them.
+Here, I will explain rationale behind the API calls.
 
 Here's some quick API info:
 - When I say parameter, I'm referring to a field within the API request link (i.e. stuff thats preceded with a ":")
@@ -12,11 +12,7 @@ Here's some mongo shenanigans:
 
 ## Users
 
-This is the weirdest because of confusion behind how we're dealing with user authentication with ELO/leaderboards per town but whatever:
-
-IT SHOULD BE NOTED: Since covey.town generates a new id every time you login as a user, we're using the combination of username and town to identify unique players. HOWEVER, because using tuple pairs are dumb, I'm providing an API call to find a user by user and town, which will return the entire user including their ID. THIS ID IS WHAT WILL BE USED TO IDENTIFY UNIQUE USERS IN OTHER CALLS.
-
-At the time of writing, there are 5 available API calls
+Since covey.town generates a new id every time you login as a user, we're using the combination of username and town to identify unique players. 
 
     app.get('/api/users', findAllUsers);
     app.get('/api/users/:id', findUserById);
@@ -51,6 +47,7 @@ Have some game rationale.
 There are a lot of fields that aren't super explanatory:
 ```
   gameId: {type: String, required: true, unique: true},
+  townId: {type: String, required: true},
   redPlayer: {type: String, required: true},
   yellowPlayer: {type: String, required: true},
   winner: {type: String},
@@ -59,13 +56,12 @@ There are a lot of fields that aren't super explanatory:
 ```
 
 - gameID : SEPARATE FROM ID, assign whatever with this. I'm not sure if we'll need this but I tossed it in for funsies.
+- townId: self-explanatory
 - redPlayer : USE USER ID, not USERNAME OR TOWN
 - yellowPlayer : see above
 - winner : THIS SHOULD ONLY BE DEFINED WHEN THE GAME IS OVER, if it's a draw label it "draw" or some other unique identifier.
 - redMoves : a list of numbers, where each number denotes the column played
 - yellowMoves : see above
-
-You'll have to do some coding to order the redMoves and yellowMoves, I didn't want to mess with tuples
 
 Here are the API calls:
 
@@ -86,6 +82,12 @@ Here are the API calls:
 THERE ARE TWO WAYS YOU CAN DEAL WITH SAVING GAMES:
 1. Create the entire game entry at the end of the game. This might be weird to trace back your steps.
 2. Create a game at the start of a game, and then update game each move with updateGame. 
+
+## Manual Testing Strategy
+
+In order to verify the behavior of our API calls, it was important for us to test its functionality manually. Especially with varying requirements as we made design decisions for the logic behind our game and statistics systems (leaderboard, ELO, replays, etc.). 
+
+In order to verify expected logic, developers initially ran our database service locally, so they could have immediate access to our logs and error handling available in the terminal. Additionally, developers were given connection strings to our MongoDB service, which they could access through MongoDBCompass or some other service to view changes in documents and collections. Thus, any new API requests could be quickly verified for their behavior through theses methods.
 
 ## Other
 
@@ -114,3 +116,5 @@ export const loginUser = async (username, password) => {
 ```
 
 Look at how loginUser has both a field for link and body. Calls can have both (except for GET).
+
+
