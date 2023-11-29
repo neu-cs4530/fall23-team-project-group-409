@@ -23,10 +23,10 @@ import Connect4AreaController from '../../../../classes/interactable/Connect4Are
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
+import { GameStatus, InteractableID, PlayerDatabase } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
-import Connect4Leaderboard from '../Leaderboard';
 import Connect4Board from './Connect4Board';
+import Connect4Leaderboard from '../Connect4Leaderboard';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -60,11 +60,12 @@ import Connect4Board from './Connect4Board';
  *    - Our player lost: description 'You lost :('
  *
  */
-function Connect4Area({ interactableID }: { interactableID: InteractableID }): JSX.Element {
-  const gameAreaController = useInteractableAreaController<Connect4AreaController>(interactableID);
+function Connect4Area(props: { interactableID: InteractableID; townId: string }): JSX.Element {
+  const gameAreaController = useInteractableAreaController<Connect4AreaController>(
+    props.interactableID,
+  );
   const townController = useTownController();
 
-  const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
   const [gameStatus, setGameStatus] = useState<GameStatus>(gameAreaController.status);
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
@@ -72,15 +73,16 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
   const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
   const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
   const toast = useToast();
+  const [players, setPlayers] = useState<PlayerDatabase[]>([]);
 
   useEffect(() => {
     const updateGameState = () => {
-      setHistory(gameAreaController.history);
       setGameStatus(gameAreaController.status || 'WAITING_TO_START');
       setMoveCount(gameAreaController.moveCount || 0);
       setObservers(gameAreaController.observers);
       setY(gameAreaController.yellow);
       setR(gameAreaController.red);
+      gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
@@ -110,7 +112,11 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
       gameAreaController.removeListener('gameEnd', onGameEnd);
       gameAreaController.removeListener('gameUpdated', updateGameState);
     };
-  }, [townController, gameAreaController, toast]);
+  }, [townController, gameAreaController, toast, props.townId, players]);
+
+  useEffect(() => {
+    gameAreaController.updatePlayers(props.townId).then(users => setPlayers(users));
+  });
 
   let gameStatusText = <></>;
   if (gameStatus === 'IN_PROGRESS') {
@@ -170,7 +176,7 @@ function Connect4Area({ interactableID }: { interactableID: InteractableID }): J
             </AccordionButton>
           </Heading>
           <AccordionPanel>
-            <Connect4Leaderboard results={history} />
+            <Connect4Leaderboard results={players} />
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem>
@@ -230,7 +236,7 @@ export default function Connect4AreaWrapper(): JSX.Element {
             <Image src='/assets/connect-four.png' width='50%'></Image>
           </Center>
           <ModalCloseButton />
-          <Connect4Area interactableID={gameArea.name} />;
+          <Connect4Area interactableID={gameArea.name} townId={townController.townID} />;
         </ModalContent>
       </Modal>
     );

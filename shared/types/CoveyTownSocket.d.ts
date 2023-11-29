@@ -249,3 +249,13 @@ export interface ClientToServerEvents {
   interactableUpdate: (update: Interactable) => void;
   interactableCommand: (command: InteractableCommand & InteractableCommandBase) => void;
 }
+
+export interface PlayerDatabase {
+  username: string,
+  elo: number,
+  whatTown: string,
+  playerId: string,
+  wins: number,
+  losses: number,
+  ties: number,
+};
