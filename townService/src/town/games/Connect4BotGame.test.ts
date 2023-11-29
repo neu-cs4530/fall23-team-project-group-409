@@ -52,7 +52,6 @@ describe('Connect4BotGame', () => {
   describe('[T1.2] _leave', () => {
     it('should throw an error if the player is not in the game', () => {
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);
-      // TODO weaker test suite only does one of these - above or below
       const player = createPlayerForTesting();
       game.join(player);
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);

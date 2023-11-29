@@ -24,7 +24,6 @@ describe('TicTacToeGame', () => {
       game.join(player);
       expect(() => game.join(player)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
       const player2 = createPlayerForTesting();
-      // TODO weaker test suite doesn't add this
       game.join(player2);
       expect(() => game.join(player2)).toThrowError(PLAYER_ALREADY_IN_GAME_MESSAGE);
     });
@@ -69,7 +68,6 @@ describe('TicTacToeGame', () => {
   describe('[T1.2] _leave', () => {
     it('should throw an error if the player is not in the game', () => {
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);
-      // TODO weaker test suite only does one of these - above or below
       const player = createPlayerForTesting();
       game.join(player);
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);
@@ -211,7 +209,6 @@ describe('TicTacToeGame', () => {
               },
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
-          // TODO this is a tricky one - the weaker test suite doesn't check that the player 2's move is out of turn after their first move
           game.applyMove({
             gameID: game.id,
             playerID: player2.id,
