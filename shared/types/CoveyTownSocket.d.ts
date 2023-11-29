@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'Connect4Area' | 'Connect4BotArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'Connect4Area' | 'Connect4ReplayArea' | 'Connect4BotArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;

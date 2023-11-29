@@ -635,7 +635,7 @@
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"Connect4"
+                         "value":"Connect4Replay"
                         }],
                  "rotation":0,
                  "type":"GameArea",

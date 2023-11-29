@@ -29,6 +29,7 @@ import {
 import {
   isConnect4Area,
   isConnect4BotArea,
+  isConnect4ReplayArea,
   isConversationArea,
   isTicTacToeArea,
   isViewingArea,
@@ -42,6 +43,7 @@ import TicTacToeAreaController from './interactable/TicTacToeAreaController';
 import Connect4AreaController from './interactable/Connect4AreaController';
 import ViewingAreaController from './interactable/ViewingAreaController';
 import PlayerController from './PlayerController';
+import Connect4ReplayAreaController from './interactable/Connect4ReplayAreaController';
 import Connect4BotAreaController from './interactable/Connect4BotAreaController';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY_MS = 300;
@@ -620,6 +622,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
           } else if (isConnect4BotArea(eachInteractable)) {
             this._interactableControllers.push(
               new Connect4BotAreaController(eachInteractable.id, eachInteractable, this),
+            );
+          } else if (isConnect4ReplayArea(eachInteractable)) {
+            this._interactableControllers.push(
+              new Connect4ReplayAreaController(eachInteractable.id, eachInteractable, this),
             );
           }
         });
