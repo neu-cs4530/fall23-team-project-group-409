@@ -170,7 +170,7 @@ export default function Connect4Replay(props: {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <h1>
           <b style={{ fontSize: '12px', color: 'red' }}>
-            {yellowPlayerName + ' Yellow'} vs. {redPlayerName + ' Red'}
+            {yellowPlayerName + ' (Yellow)'} vs. {redPlayerName + ' (Red)'}
           </b>
         </h1>
       </div>
@@ -202,7 +202,7 @@ export default function Connect4Replay(props: {
             backgroundColor: '#ccc',
           }}
           onClick={() => handleForwardTurnClick()}>
-          Forward
+          Next
         </Button>
       </div>
     </div>

@@ -132,8 +132,14 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
           <AccordionItem>
             <Heading as='h3'>
               <AccordionButton>
-                <Box as='span' flex='1' textAlign='left'>
-                  Game Replays
+                <Box
+                  as='span'
+                  flex='1'
+                  textAlign='left'
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <h1>
+                    <b>Game Replays</b>
+                  </h1>
                   <AccordionIcon />
                 </Box>
               </AccordionButton>
@@ -142,7 +148,10 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
               {gamesData &&
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 gamesData.map((game: any) => (
-                  <Button key={game.gameId} onClick={() => handleGameClick(game.gameId)}>
+                  <Button
+                    key={game.gameId}
+                    onClick={() => handleGameClick(game.gameId)}
+                    style={{ marginTop: '10px' }}>
                     Start Game {game.yellowPlayer} vs. {game.redPlayer}
                   </Button>
                 ))}
