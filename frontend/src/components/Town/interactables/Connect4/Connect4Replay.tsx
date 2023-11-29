@@ -4,9 +4,13 @@ import Connect4AreaController, {
   Connect4Cell,
 } from '../../../../classes/interactable/Connect4AreaController';
 import { Connect4GridPosition, Connect4Move } from '../../../../types/CoveyTownSocket';
-import { getMoves } from '../../../../../../townService/src/town/Database';
-import { yellow } from '@material-ui/core/colors';
+import {
+  getMoves,
+  getYellowFromGame,
+  getRedFromGame,
+} from '../../../../../../townService/src/town/Database';
 import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
+import { getPlayerInfo } from '../../../../../../townService/src/town/Database';
 
 export type Connect4Props = {
   gameAreaController: Connect4ReplayAreaController;
@@ -69,9 +73,11 @@ export default function Connect4Replay(props: {
   gameID: string;
 }): JSX.Element {
   const [board, setBoard] = useState<Connect4Cell[][]>(props.gameAreaController.board);
+  const [yellowPlayerName, setYellowPlayerName] = useState<string>('');
+  const [redPlayerName, setRedPlayerName] = useState<string>('');
   const [isYellowTurn, setIsYellowTurn] = useState<boolean>(true);
   const toast = useToast();
-  //const [yellowPlayer, setYellowPlayer] = useState<PlayerController | undefined>(];
+
   const [movesYellow, setMovesYellow] = useState<Connect4GridPosition[]>([]);
   const [movesRed, setMovesRed] = useState<Connect4GridPosition[]>([]);
   const [currentMoves, setCurrentMoves] = useState<Connect4Move[]>([]);
@@ -131,23 +137,28 @@ export default function Connect4Replay(props: {
   }
 
   useEffect(() => {
-    const fetchMoves = async () => {
+    const fetchMovesAndNames = async () => {
       try {
         const { yellowMoves, redMoves } = await getMoves(props.gameID);
-
         console.log(props.gameID);
-
         setMovesYellow(yellowMoves);
         setMovesRed(redMoves);
-
         console.log(yellowMoves);
         console.log(redMoves);
+
+        const redPlayerID = await getRedFromGame(props.gameID);
+        const yellowPlayerID = await getYellowFromGame(props.gameID);
+        console.log(yellowPlayerID);
+        const yellowUser = await getPlayerInfo(yellowPlayerID);
+        const redUser = await getPlayerInfo(redPlayerID);
+        setYellowPlayerName(yellowUser[0].username);
+        setRedPlayerName(redUser[0].username);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
     };
     // Immediately invoke the async function
-    fetchMoves();
+    fetchMovesAndNames();
   }, []);
 
   useEffect(() => {
@@ -164,24 +175,45 @@ export default function Connect4Replay(props: {
   }, [board, currentMoves]);
 
   return (
-    <StyledConnect4Board aria-label='Connect-4 Board' colorScheme='blue'>
-      <h1>{}</h1>
-      {board.map((row, rowIndex) => {
-        return row.map((cell, colIndex) => {
-          return (
-            <StyledConnect4Square
-              key={`${rowIndex}.${colIndex}`}
-              isRound={true}
-              disabled={true}
-              aria-label={`Cell ${rowIndex},${colIndex}`}
-              colorScheme={cell?.toLowerCase()}>
-              {}
-            </StyledConnect4Square>
-          );
-        });
-      })}
-      <Button onClick={() => handleBackTurnClick()}>Back</Button>
-      <Button onClick={() => handleForwardTurnClick()}>Forward</Button>
-    </StyledConnect4Board>
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <h1>
+          <b style={{ fontSize: '12px', color: 'red' }}>
+            {yellowPlayerName + ' Yellow'} vs. {redPlayerName + ' Red'}
+          </b>
+        </h1>
+      </div>
+      <StyledConnect4Board aria-label='Connect-4 Board' colorScheme='blue'>
+        {board.map((row, rowIndex) => {
+          return row.map((cell, colIndex) => {
+            return (
+              <StyledConnect4Square
+                key={`${rowIndex}.${colIndex}`}
+                isRound={true}
+                disabled={true}
+                aria-label={`Cell ${rowIndex},${colIndex}`}
+                colorScheme={cell?.toLowerCase()}>
+                {}
+              </StyledConnect4Square>
+            );
+          });
+        })}
+      </StyledConnect4Board>
+      <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
+        <Button
+          style={{ boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: '#ccc' }}
+          onClick={() => handleBackTurnClick()}>
+          Back
+        </Button>
+        <Button
+          style={{
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            backgroundColor: '#ccc',
+          }}
+          onClick={() => handleForwardTurnClick()}>
+          Forward
+        </Button>
+      </div>
+    </div>
   );
 }

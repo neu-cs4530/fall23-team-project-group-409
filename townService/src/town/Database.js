@@ -14,6 +14,14 @@ export const getPlayerElo = async userID => {
   return user;
 };
 
+export const getPlayerInfo = async userID => {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_TOWN_DATABASE_URL}/api/users/${userID}`,
+  );
+  const user = response.data;
+  return user;
+};
+
 export const editPlayerElo = async (userID, newElo) => {
   const response = await axios.put(
     `${process.env.NEXT_PUBLIC_TOWN_DATABASE_URL}/api/userselo/${userID}`,
