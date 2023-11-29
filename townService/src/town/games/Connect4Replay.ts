@@ -1,23 +1,12 @@
 /* eslint-disable no-await-in-loop */
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
-  GAME_NOT_IN_PROGRESS_MESSAGE,
-  BOARD_POSITION_NOT_EMPTY_MESSAGE,
-  MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTownSocket';
 import Game from './Game';
-import {
-  addPlayer,
-  getAllPlayersFromTown,
-  getMoves,
-  getRedFromGame,
-  getYellowFromGame,
-  writeGame,
-} from '../Database';
 
 /**
  * A Connect4Game is a Game that implements the rules of Connect 4.

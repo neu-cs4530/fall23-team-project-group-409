@@ -1,8 +1,6 @@
-import { IconButton, chakra, Container, useToast, Button } from '@chakra-ui/react';
+import { IconButton, chakra, Container, Button } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import Connect4AreaController, {
-  Connect4Cell,
-} from '../../../../classes/interactable/Connect4AreaController';
+import { Connect4Cell } from '../../../../classes/interactable/Connect4AreaController';
 import { Connect4GridPosition, Connect4Move } from '../../../../types/CoveyTownSocket';
 import {
   getMoves,
@@ -46,10 +44,6 @@ const StyledConnect4Board = chakra(Container, {
   },
 });
 
-function timeout(delay: number) {
-  return new Promise(res => setTimeout(res, delay));
-}
-
 /**
  * A component that renders the Connect4 board
  *
@@ -75,8 +69,6 @@ export default function Connect4Replay(props: {
   const [board, setBoard] = useState<Connect4Cell[][]>(props.gameAreaController.board);
   const [yellowPlayerName, setYellowPlayerName] = useState<string>('');
   const [redPlayerName, setRedPlayerName] = useState<string>('');
-  const [isYellowTurn, setIsYellowTurn] = useState<boolean>(true);
-  const toast = useToast();
 
   const [movesYellow, setMovesYellow] = useState<Connect4GridPosition[]>([]);
   const [movesRed, setMovesRed] = useState<Connect4GridPosition[]>([]);
@@ -159,14 +151,13 @@ export default function Connect4Replay(props: {
     };
     // Immediately invoke the async function
     fetchMovesAndNames();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    props.gameAreaController.addListener('turnChanged', setIsYellowTurn);
     props.gameAreaController.addListener('boardChanged', setBoard);
     return () => {
       props.gameAreaController.removeListener('boardChanged', setBoard);
-      props.gameAreaController.removeListener('turnChanged', setIsYellowTurn);
     };
   }, [props.gameAreaController]);
 

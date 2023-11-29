@@ -17,14 +17,13 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
+import { InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import Connect4Replay from './Connect4Replay';
 import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
-import { getGames, getYellowFromGame } from '../../../../../../townService/src/town/Database';
+import { getGames } from '../../../../../../townService/src/town/Database';
 
 /**
  * The Connect4Area component renders the Connect4 game area.
@@ -63,9 +62,8 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
     useInteractableAreaController<Connect4ReplayAreaController>(interactableID);
   const townController = useTownController();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [gamesData, setGamesData] = useState<any[]>([]);
-  const [y, setY] = useState<PlayerController | undefined>(gameAreaController.yellow);
-  const [r, setR] = useState<PlayerController | undefined>(gameAreaController.red);
   const [currentGameID, setCurrentGameID] = useState<string>('');
   const [toggleReplayPlayer, setToggleReplayPlayer] = useState<boolean>(false);
   const toast = useToast();
@@ -94,10 +92,7 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
   }, [toggleReplayPlayer]);
 
   useEffect(() => {
-    const updateGameState = () => {
-      setY(gameAreaController.yellow);
-      setR(gameAreaController.red);
-    };
+    const updateGameState = () => {};
 
     gameAreaController.addListener('gameUpdated', updateGameState);
 
@@ -145,6 +140,7 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
             </Heading>
             <AccordionPanel>
               {gamesData &&
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 gamesData.map((game: any) => (
                   <Button key={game.gameId} onClick={() => handleGameClick(game.gameId)}>
                     Start Game {game.yellowPlayer} vs. {game.redPlayer}
