@@ -7,12 +7,7 @@ import {
   getYellowFromGame,
   getRedFromGame,
 } from '../../../../../../townService/src/town/Database';
-import Connect4ReplayAreaController from '../../../../classes/interactable/Connect4ReplayAreaController';
 import { getPlayerInfo } from '../../../../../../townService/src/town/Database';
-
-export type Connect4Props = {
-  gameAreaController: Connect4ReplayAreaController;
-};
 
 /**
  * A component that will render a single cell in the Connect4 board, styled
@@ -60,13 +55,17 @@ const StyledConnect4Board = chakra(Container, {
  * displayed with the error message as the description of the toast. If it is not the current player's
  * turn, then the StyledConnect4Square will be disabled.
  *
- * @param gameAreaController the controller for the Connect4 game
+ * @param gameID the ID for the Connect4 game
  */
-export default function Connect4Replay(props: {
-  gameAreaController: Connect4ReplayAreaController;
-  gameID: string;
-}): JSX.Element {
-  const [board, setBoard] = useState<Connect4Cell[][]>(props.gameAreaController.board);
+export default function Connect4Replay(props: { gameID: string }): JSX.Element {
+  const [board, setBoard] = useState<Connect4Cell[][]>([
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+  ]);
   const [yellowPlayerName, setYellowPlayerName] = useState<string>('');
   const [redPlayerName, setRedPlayerName] = useState<string>('');
 
@@ -150,13 +149,6 @@ export default function Connect4Replay(props: {
     fetchMovesAndNames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    props.gameAreaController.addListener('boardChanged', setBoard);
-    return () => {
-      props.gameAreaController.removeListener('boardChanged', setBoard);
-    };
-  }, [props.gameAreaController]);
 
   useEffect(() => {
     // Re-render whenever the board or currentMoves array changes (back button or next button is clicked)

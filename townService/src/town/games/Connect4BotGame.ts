@@ -6,6 +6,7 @@ import InvalidParametersError, {
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import { GameMove, Connect4Move, Connect4GridPosition } from '../../types/CoveyTownSocket';
+import { writeGame } from '../Database';
 import { getMoveScores, ScoreList } from './Connect4BotSearch';
 import Connect4Game from './Connect4Game';
 
@@ -174,5 +175,27 @@ export default class Connect4BotGame extends Connect4Game {
         winner: this.state.yellow,
       };
     }
+  }
+
+  /**
+   * Adds the current game into the database. If add fails, an exception will be thrown.
+   */
+  protected async _updateDatabaseGame(): Promise<void> {
+    const redMoves: number[] = this.state.moves
+      .filter(move => move.gamePiece === 'Red')
+      .map(move => move.col);
+    const yellowMoves: number[] = this.state.moves
+      .filter(move => move.gamePiece === 'Yellow')
+      .map(move => move.col);
+
+    await writeGame({
+      gameId: this.id,
+      townId: this._townID,
+      redPlayer: this.state.red,
+      yellowPlayer: this.state.yellow,
+      winner: this.state.winner,
+      redMoves,
+      yellowMoves,
+    });
   }
 }

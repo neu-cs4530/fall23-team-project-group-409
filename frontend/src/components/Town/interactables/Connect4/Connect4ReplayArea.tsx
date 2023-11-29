@@ -163,7 +163,7 @@ function Connect4ReplayArea({ interactableID }: { interactableID: InteractableID
   } else {
     return (
       <div>
-        <Connect4Replay gameAreaController={gameAreaController} gameID={currentGameID} />
+        <Connect4Replay gameID={currentGameID} />
       </div>
     );
   }
