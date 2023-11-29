@@ -12,9 +12,9 @@ import { GameMove, Connect4GameState, Connect4Move } from '../../types/CoveyTown
 import Game from './Game';
 import {
   addPlayer,
-  editPlayerElo,
+  editPlayerInfo,
   getAllPlayersFromTown,
-  getPlayerElo,
+  getPlayerInfo,
   writeGame,
 } from '../Database';
 // eslint-disable-next-line import/no-named-as-default
@@ -267,6 +267,9 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
         elo: 1000,
         whatTown: this._townID,
         playerId: player.id,
+        wins: 0,
+        losses: 0,
+        ties: 0,
       });
     }
   }
@@ -289,19 +292,43 @@ export default class Connect4Game extends Game<Connect4GameState, Connect4Move> 
       yellowMoves,
     });
     // ADJUST ELO //
-    const playerYellowElo = await getPlayerElo(this.state.yellow);
-    const playerRedElo = await getPlayerElo(this.state.red);
+    const playerYellowInfo = await getPlayerInfo(this.state.yellow);
+    const playerRedInfo = await getPlayerInfo(this.state.red);
     let result = '';
+    let newRedWins = playerRedInfo.wins;
+    let newRedLosses = playerRedInfo.losses;
+    let newRedTies = playerRedInfo.ties;
+    let newYellowWins = playerYellowInfo.wins;
+    let newYellowLosses = playerYellowInfo.losses;
+    let newYellowTies = playerYellowInfo.ties;
     if (this.state.winner === this.state.red) {
       result = 'win';
+      newRedWins = playerRedInfo.wins + 1;
+      newYellowLosses = playerYellowInfo.losses + 1;
     } else if (this.state.winner === this.state.yellow) {
       result = 'loss';
+      newYellowWins = playerYellowInfo.wins + 1;
+      newRedLosses = playerRedInfo.losses + 1;
     } else {
       result = 'draw';
+      newYellowTies = playerYellowInfo.ties + 1;
+      newRedTies = playerRedInfo.ties + 1;
     }
-    const ratingChanges = calculateEloRating(playerRedElo.elo, playerYellowElo.elo, 10, result);
-    await editPlayerElo(this.state.red, ratingChanges.newRedRating);
-    await editPlayerElo(this.state.yellow, ratingChanges.newYellowRating);
+    const ratingChanges = calculateEloRating(playerRedInfo.elo, playerYellowInfo.elo, 10, result);
+    await editPlayerInfo(
+      this.state.red,
+      ratingChanges.newRedRating,
+      newRedWins,
+      newRedLosses,
+      newRedTies,
+    );
+    await editPlayerInfo(
+      this.state.yellow,
+      ratingChanges.newYellowRating,
+      newYellowWins,
+      newYellowLosses,
+      newYellowTies,
+    );
   }
 
   /**

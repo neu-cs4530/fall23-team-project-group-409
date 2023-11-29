@@ -16,11 +16,16 @@ import {
   GameStatus,
   PlayerLocation,
   Connect4GameState,
+  PlayerDatabase,
 } from '../../../../types/CoveyTownSocket';
 import PhaserGameArea from '../GameArea';
-import * as Leaderboard from '../Leaderboard';
 import Connect4AreaWrapper from './Connect4Area';
 import * as Connect4Board from '../Connect4/Connect4Board';
+import * as Connect4Leaderboard from '../Connect4Leaderboard';
+
+jest.mock('../Database', () => ({
+  getAllPlayersInTown: jest.fn().mockResolvedValue([]),
+}));
 
 const mockToast = jest.fn();
 jest.mock('@chakra-ui/react', () => {
@@ -39,7 +44,7 @@ const useInteractableAreaControllerSpy = jest.spyOn(
   'useInteractableAreaController',
 );
 
-const leaderboardComponentSpy = jest.spyOn(Leaderboard, 'default');
+const leaderboardComponentSpy = jest.spyOn(Connect4Leaderboard, 'default');
 leaderboardComponentSpy.mockReturnValue(<div data-testid='leaderboard' />);
 
 const boardComponentSpy = jest.spyOn(Connect4Board, 'default');
@@ -56,6 +61,8 @@ class MockConnect4AreaController extends Connect4AreaController {
   makeMove = jest.fn();
 
   joinGame = jest.fn();
+
+  updatePlayer = jest.fn();
 
   mockBoard: Connect4Cell[][] = [
     [undefined, undefined, undefined, undefined, undefined, undefined, undefined],
@@ -91,6 +98,8 @@ class MockConnect4AreaController extends Connect4AreaController {
   mockIsActive = false;
 
   mockHistory: GameResult[] = [];
+
+  public mockPlayersList: PlayerDatabase[] = [];
 
   public constructor() {
     super(nanoid(), mock<GameArea<Connect4GameState>>(), mock<TownController>());
@@ -294,56 +303,40 @@ describe('[T2] Connect4Area', () => {
   });
   describe('[T2.2] Rendering the leaderboard', () => {
     it('Renders the leaderboard with the history when the component is mounted', () => {
-      gameAreaController.mockHistory = [
-        {
-          gameID: nanoid(),
-          scores: {
-            [nanoid()]: 1,
-            [nanoid()]: 0,
-          },
-        },
-      ];
+      const mockPlayers: PlayerDatabase[] = [];
       renderConnect4Area();
       expect(leaderboardComponentSpy).toHaveBeenCalledWith(
         {
-          results: gameAreaController.mockHistory,
+          results: mockPlayers,
         },
         {},
       );
     });
     it('Renders the leaderboard with the history when the game is updated', () => {
-      gameAreaController.mockHistory = [
-        {
-          gameID: nanoid(),
-          scores: {
-            [nanoid()]: 1,
-            [nanoid()]: 0,
-          },
-        },
-      ];
+      const mockPlayers: PlayerDatabase[] = [];
       renderConnect4Area();
       expect(leaderboardComponentSpy).toHaveBeenCalledWith(
         {
-          results: gameAreaController.mockHistory,
+          results: mockPlayers,
         },
         {},
       );
 
-      gameAreaController.mockHistory = [
-        {
-          gameID: nanoid(),
-          scores: {
-            [nanoid()]: 1,
-            [nanoid()]: 1,
-          },
-        },
-      ];
+      gameAreaController.updatePlayer({
+        username: nanoid(),
+        whatTown: nanoid(),
+        playerId: nanoid(),
+        elo: 1000,
+        wins: 0,
+        losses: 0,
+        ties: 0,
+      });
       act(() => {
         gameAreaController.emit('gameUpdated');
       });
       expect(leaderboardComponentSpy).toHaveBeenCalledWith(
         {
-          results: gameAreaController.mockHistory,
+          results: gameAreaController.mockPlayersList,
         },
         {},
       );

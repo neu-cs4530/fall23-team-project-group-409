@@ -7,7 +7,7 @@ const UsersController = (app) => {
     app.get('/api/usernametown/:usertown', findUserByUsernameAndTown);
     app.get('/api/bytown/:id', findUsersByTown);
     app.post('/api/users', createUser);
-    app.put('/api/userselo/:id', updateELO);
+    app.put('/api/userselo/:id', updateUser);
 }
 
 export default UsersController
@@ -80,11 +80,15 @@ const createUser = async (req, res) => {
     }
 }
 
-const updateELO = async (req, res) => {
+const updateUser = async (req, res) => {
     try {
         const id = req.params.id;
         const newELO = req.body.elo;
-        const user = await usersModel.updateOne({ playerId: id }, { $set: { elo: newELO } });
+        const newWins = req.body.wins;
+        const newLosses = req.body.losses;
+        const newTies = req.body.ties;
+        const user = await usersModel.updateOne({ playerId: id }, 
+            { $set: { elo: newELO, wins: newWins, losses: newLosses, ties: newTies } });
 
         res.json(user);
     } catch (error) {
